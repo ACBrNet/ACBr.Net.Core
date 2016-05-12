@@ -1,3 +1,33 @@
+// ***********************************************************************
+// Assembly         : ACBr.Net.Core
+// Author           : RFTD
+// Created          : 01-31-2016
+//
+// Last Modified By : RFTD
+// Last Modified On : 05-12-2016
+// ***********************************************************************
+// <copyright file="StringExtensions.cs" company="ACBr.Net">
+//		        		   The MIT License (MIT)
+//	     		    Copyright (c) 2016 Grupo ACBr.Net
+//
+//	 Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+//	 The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+// DEALINGS IN THE SOFTWARE.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
 using System;
 using System.Globalization;
 using System.Linq;
@@ -8,20 +38,20 @@ using System.Xml;
 
 namespace ACBr.Net.Core.Extensions
 {
-    /// <summary>
-    /// Class StringExtensions.
-    /// </summary>
-    public static class StringExtensions
+	/// <summary>
+	/// Class StringExtensions.
+	/// </summary>
+	public static class StringExtensions
     {
-        /// <summary>
-        /// Encrypts the specified data.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>System.String.</returns>
-        /// <exception cref="System.Exception">Erro ao criptografar a string</exception>
-        /// <exception cref="Exception">Erro ao criptografar string</exception>
-        public static string Encrypt(this string data, string key)
+		/// <summary>
+		/// Encrypts the specified data.
+		/// </summary>
+		/// <param name="data">The data.</param>
+		/// <param name="key">The key.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="System.Exception">Erro ao criptografar a string</exception>
+		/// <exception cref="Exception">Erro ao criptografar a string</exception>
+		public static string Encrypt(this string data, string key)
         {
             try
             {
@@ -44,15 +74,15 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Decrypts the specified data.
-        /// </summary>
-        /// <param name="data">The data.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>System.String.</returns>
-        /// <exception cref="System.Exception">Erro ao descriptografar string</exception>
-        /// <exception cref="Exception">Erro ao descriptografar string</exception>
-        public static string Decrypt(this string data, string key)
+		/// <summary>
+		/// Decrypts the specified data.
+		/// </summary>
+		/// <param name="data">The data.</param>
+		/// <param name="key">The key.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="System.Exception">Erro ao descriptografar string</exception>
+		/// <exception cref="Exception">Erro ao descriptografar string</exception>
+		public static string Decrypt(this string data, string key)
         {
             try
             {
@@ -75,14 +105,14 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// To the m d5 hash.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns>System.String.</returns>
-        /// <exception cref="System.Exception">Erro ao gerar hash MD5</exception>
-        /// <exception cref="Exception">Erro ao gerar hash MD5</exception>
-        public static string ToMd5Hash(this string input)
+		/// <summary>
+		/// To the m d5 hash.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="System.Exception">Erro ao gerar hash MD5</exception>
+		/// <exception cref="Exception">Erro ao gerar hash MD5</exception>
+		public static string ToMd5Hash(this string input)
         {
             try
             {
@@ -105,14 +135,14 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// To the sh a1 hash.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns>System.String.</returns>
-        /// <exception cref="System.Exception">Erro ao gerar SHA1 hash</exception>
-        /// <exception cref="Exception">Erro ao gerar SHA1 hash</exception>
-        public static string ToSha1Hash(this string input)
+		/// <summary>
+		/// To the sh a1 hash.
+		/// </summary>
+		/// <param name="input">The input.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="System.Exception">Erro ao gerar SHA1 hash</exception>
+		/// <exception cref="Exception">Erro ao gerar SHA1 hash</exception>
+		public static string ToSha1Hash(this string input)
         {
             try
             {
@@ -133,14 +163,14 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Strings the reverse.
-        /// </summary>
-        /// <param name="toReverse">To reverse.</param>
-        /// <returns>System.String.</returns>
-        /// <exception cref="System.Exception">Erro ao reverter string</exception>
-        /// <exception cref="Exception">Erro ao reverter string</exception>
-        public static string StringReverse(this string toReverse)
+		/// <summary>
+		/// Strings the reverse.
+		/// </summary>
+		/// <param name="toReverse">To reverse.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="System.Exception">Erro ao reverter string</exception>
+		/// <exception cref="Exception">Erro ao reverter string</exception>
+		public static string StringReverse(this string toReverse)
         {
             try
             {
@@ -195,15 +225,15 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// To the double.
-        /// </summary>
-        /// <param name="dados">The dados.</param>
-        /// <param name="def">The definition.</param>
-        /// <returns>System.Double.</returns>
-        /// <exception cref="System.Exception">Erro ao converter string</exception>
-        /// <exception cref="Exception">Erro ao converter string</exception>
-        public static double ToDouble(this string dados, double def = -1)
+		/// <summary>
+		/// To the double.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="def">The definition.</param>
+		/// <returns>System.Double.</returns>
+		/// <exception cref="System.Exception">Erro ao converter string</exception>
+		/// <exception cref="Exception">Erro ao converter string</exception>
+		public static double ToDouble(this string dados, double def = -1)
         {
             try
             {
@@ -221,15 +251,15 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// To the decimal.
-        /// </summary>
-        /// <param name="dados">The dados.</param>
-        /// <param name="def">The definition.</param>
-        /// <returns>System.Decimal.</returns>
-        /// <exception cref="System.Exception">Erro ao converter string</exception>
-        /// <exception cref="Exception">Erro ao converter string</exception>
-        public static decimal ToDecimal(this string dados, decimal def = -1)
+		/// <summary>
+		/// To the decimal.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="def">The definition.</param>
+		/// <returns>System.Decimal.</returns>
+		/// <exception cref="System.Exception">Erro ao converter string</exception>
+		/// <exception cref="Exception">Erro ao converter string</exception>
+		public static decimal ToDecimal(this string dados, decimal def = -1)
         {
             try
             {
@@ -247,15 +277,15 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// To the int32.
-        /// </summary>
-        /// <param name="dados">The dados.</param>
-        /// <param name="def">The definition.</param>
-        /// <returns>System.Int32.</returns>
-        /// <exception cref="System.Exception">Erro ao converter string</exception>
-        /// <exception cref="Exception">Erro ao converter string</exception>
-        public static int ToInt32(this string dados, int def = -1)
+		/// <summary>
+		/// To the int32.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="def">The definition.</param>
+		/// <returns>System.Int32.</returns>
+		/// <exception cref="System.Exception">Erro ao converter string</exception>
+		/// <exception cref="Exception">Erro ao converter string</exception>
+		public static int ToInt32(this string dados, int def = -1)
         {
             try
             {
@@ -273,15 +303,15 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// To the int64.
-        /// </summary>
-        /// <param name="dados">The dados.</param>
-        /// <param name="def">The definition.</param>
-        /// <returns>Int64.</returns>
-        /// <exception cref="System.Exception">Erro ao converter string</exception>
-        /// <exception cref="Exception">Erro ao converter string</exception>
-        public static long ToInt64(this string dados, long def = -1)
+		/// <summary>
+		/// To the int64.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="def">The definition.</param>
+		/// <returns>Int64.</returns>
+		/// <exception cref="System.Exception">Erro ao converter string</exception>
+		/// <exception cref="Exception">Erro ao converter string</exception>
+		public static long ToInt64(this string dados, long def = -1)
         {
             try
             {
@@ -299,14 +329,14 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// To the data.
-        /// </summary>
-        /// <param name="dados">The dados.</param>
-        /// <returns>DateTime.</returns>
-        /// <exception cref="System.Exception">Erro ao converter string</exception>
-        /// <exception cref="Exception">Erro ao converter string</exception>
-        public static DateTime ToData(this string dados)
+		/// <summary>
+		/// To the data.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <returns>DateTime.</returns>
+		/// <exception cref="System.Exception">Erro ao converter string</exception>
+		/// <exception cref="Exception">Erro ao converter string</exception>
+		public static DateTime ToData(this string dados)
         {
             try
             {
@@ -322,14 +352,14 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Retorna apenas os numeros da string.
-        /// </summary>
-        /// <param name="toNormalize">String para processar.</param>
-        /// <returns>System.String.</returns>
-        /// <exception cref="System.Exception">Erro ao processar a string</exception>
-        /// <exception cref="Exception">Erro ao processar a string</exception>
-        public static string OnlyNumbers(this string toNormalize)
+		/// <summary>
+		/// Retorna apenas os numeros da string.
+		/// </summary>
+		/// <param name="toNormalize">String para processar.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="System.Exception">Erro ao processar a string</exception>
+		/// <exception cref="Exception">Erro ao processar a string</exception>
+		public static string OnlyNumbers(this string toNormalize)
         {
             try
             {
@@ -345,21 +375,21 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Determines whether the specified cep is cep.
-        /// </summary>
-        /// <param name="cep">The cep.</param>
-        /// <returns><c>true</c> if the specified cep is cep; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.Exception">Erro ao validar CEP</exception>
-        /// <exception cref="Exception">Erro ao validar CEP</exception>
-        public static bool IsCep(this string cep)
+		/// <summary>
+		/// Determines whether the specified cep is cep.
+		/// </summary>
+		/// <param name="cep">The cep.</param>
+		/// <returns><c>true</c> if the specified cep is cep; otherwise, <c>false</c>.</returns>
+		/// <exception cref="System.Exception">Erro ao validar CEP</exception>
+		/// <exception cref="Exception">Erro ao validar CEP</exception>
+		public static bool IsCep(this string cep)
         {
             try
             {
                 cep = cep.OnlyNumbers();
 
                 if (cep.Length == 8)
-                    cep = string.Format("{0}-{1}", cep.Substring(0, 5), cep.Substring(5, 3));
+                    cep = $"{cep.Substring(0, 5)}-{cep.Substring(5, 3)}";
 
                 return Regex.IsMatch(cep, "[0-9]{5}-[0-9]{3}");
             }
@@ -369,13 +399,13 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Checar se a string é um [CPF ou CNPJ] válido.
-        /// </summary>
-        /// <param name="cpfcnpj">CPFCNPJ</param>
-        /// <returns><c>true</c> se o [CPF ou CNPJ] é válido; senão, <c>false</c>.</returns>
-        // ReSharper disable once InconsistentNaming
-        public static bool IsCPFOrCNPJ(this string cpfcnpj)
+		/// <summary>
+		/// Checar se a string é um [CPF ou CNPJ] válido.
+		/// </summary>
+		/// <param name="cpfcnpj">CPFCNPJ</param>
+		/// <returns><c>true</c> se o [CPF ou CNPJ] é válido; senão, <c>false</c>.</returns>
+		// ReSharper disable once InconsistentNaming
+		public static bool IsCPFOrCNPJ(this string cpfcnpj)
         {
 	        var value = cpfcnpj.OnlyNumbers();
 	        switch (value.Length)
@@ -391,14 +421,14 @@ namespace ACBr.Net.Core.Extensions
 	        }
         }
 
-	    /// <summary>
+		/// <summary>
 		/// Checa se a string é um CPF válido.
 		/// </summary>
 		/// <param name="vrCPF">CPF</param>
 		/// <param name="ajustarTamanho">if set to <c>true</c> [ajustar tamanho].</param>
 		/// <returns><c>true</c> se o CPF for válido; senão, <c>false</c>.</returns>
-		/// <exception cref="Exception">Erro ao validar CPF</exception>
 		/// <exception cref="System.Exception">Erro ao validar CPF</exception>
+		/// <exception cref="Exception">Erro ao validar CPF</exception>
 		public static bool IsCPF(this string vrCPF, bool ajustarTamanho = false)
         {
             try
@@ -461,8 +491,8 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="vrCNPJ">CNPJ.</param>
 		/// <param name="ajustarTamanho">if set to <c>true</c> [ajustar tamanho].</param>
 		/// <returns><c>true</c> se o CNPJ for válido; senão, <c>false</c>.</returns>
-		/// <exception cref="Exception">Erro ao validar CNPJ</exception>
 		/// <exception cref="System.Exception">Erro ao validar CNPJ</exception>
+		/// <exception cref="Exception">Erro ao validar CNPJ</exception>
 		public static bool IsCNPJ(this string vrCNPJ, bool ajustarTamanho = false)
         {
             try
@@ -516,15 +546,15 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Determines whether the specified p inscr is ie.
-        /// </summary>
-        /// <param name="pInscr">The p inscr.</param>
-        /// <param name="pUf">The p uf.</param>
-        /// <returns><c>true</c> if the specified p inscr is ie; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.Exception">Erro ao IE</exception>
-        /// <exception cref="Exception">Erro ao IE</exception>
-        public static bool IsIE(this string pInscr, string pUf)
+		/// <summary>
+		/// Determines whether the specified p inscr is ie.
+		/// </summary>
+		/// <param name="pInscr">The p inscr.</param>
+		/// <param name="pUf">The p uf.</param>
+		/// <returns><c>true</c> if the specified p inscr is ie; otherwise, <c>false</c>.</returns>
+		/// <exception cref="System.Exception">Erro ao IE</exception>
+		/// <exception cref="Exception">Erro ao IE</exception>
+		public static bool IsIE(this string pInscr, string pUf)
         {
 	        try
 	        {
@@ -1023,12 +1053,12 @@ namespace ACBr.Net.Core.Extensions
 							fsDocto.Formatar(mascara);
 		}
 
-	    /// <summary>
-	    /// Validars the uf.
-	    /// </summary>
-	    /// <param name="uf">The uf.</param>
-	    /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-	    public static bool ValidarUF(this string uf)
+		/// <summary>
+		/// Validars the uf.
+		/// </summary>
+		/// <param name="uf">The uf.</param>
+		/// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+		public static bool ValidarUF(this string uf)
 	    {
 			if(uf.IsEmpty())
 				return false;
@@ -1040,14 +1070,14 @@ namespace ACBr.Net.Core.Extensions
 		    return cUFsValidas.Contains(uf.Trim().ToUpper());
 	    }
 
-        /// <summary>
-        /// Determines whether the specified pis is pis.
-        /// </summary>
-        /// <param name="pis">The pis.</param>
-        /// <returns><c>true</c> if the specified pis is pis; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.Exception">Erro ao validar PIS</exception>
-        /// <exception cref="Exception">Erro ao validar PIS</exception>
-        public static bool IsPIS(this string pis)
+		/// <summary>
+		/// Determines whether the specified pis is pis.
+		/// </summary>
+		/// <param name="pis">The pis.</param>
+		/// <returns><c>true</c> if the specified pis is pis; otherwise, <c>false</c>.</returns>
+		/// <exception cref="System.Exception">Erro ao validar PIS</exception>
+		/// <exception cref="Exception">Erro ao validar PIS</exception>
+		public static bool IsPIS(this string pis)
         {
             try
             {
@@ -1078,14 +1108,14 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Determines whether the specified email is email.
-        /// </summary>
-        /// <param name="email">The email.</param>
-        /// <returns><c>true</c> if the specified email is email; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.Exception">Erro ao validar Email</exception>
-        /// <exception cref="Exception">Erro ao validar Email</exception>
-        public static bool IsEmail(this string email)
+		/// <summary>
+		/// Determines whether the specified email is email.
+		/// </summary>
+		/// <param name="email">The email.</param>
+		/// <returns><c>true</c> if the specified email is email; otherwise, <c>false</c>.</returns>
+		/// <exception cref="System.Exception">Erro ao validar Email</exception>
+		/// <exception cref="Exception">Erro ao validar Email</exception>
+		public static bool IsEmail(this string email)
         {
             try
             {
@@ -1109,14 +1139,14 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Determines whether the specified site is site.
-        /// </summary>
-        /// <param name="site">The site.</param>
-        /// <returns><c>true</c> if the specified site is site; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.Exception">Erro ao validar endereço web</exception>
-        /// <exception cref="Exception">Erro ao validar endereço web</exception>
-        public static bool IsSite(this string site)
+		/// <summary>
+		/// Determines whether the specified site is site.
+		/// </summary>
+		/// <param name="site">The site.</param>
+		/// <returns><c>true</c> if the specified site is site; otherwise, <c>false</c>.</returns>
+		/// <exception cref="System.Exception">Erro ao validar endereço web</exception>
+		/// <exception cref="Exception">Erro ao validar endereço web</exception>
+		public static bool IsSite(this string site)
         {
             try
             {
@@ -1132,14 +1162,14 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Verifica se a string é numerica.
-        /// </summary>
-        /// <param name="strNum">The string number.</param>
-        /// <returns>Retorna true/false se a string é numerica</returns>
-        /// <exception cref="System.Exception">Erro ao validar string</exception>
-        /// <exception cref="Exception">Erro ao validar string</exception>
-        public static bool IsNumeric(this string strNum)
+		/// <summary>
+		/// Verifica se a string é numerica.
+		/// </summary>
+		/// <param name="strNum">The string number.</param>
+		/// <returns>Retorna true/false se a string é numerica</returns>
+		/// <exception cref="System.Exception">Erro ao validar string</exception>
+		/// <exception cref="Exception">Erro ao validar string</exception>
+		public static bool IsNumeric(this string strNum)
         {
             try
             {
@@ -1152,14 +1182,14 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Converte a string para UTF8.
-        /// </summary>
-        /// <param name="value">The text.</param>
-        /// <returns>Uma string com a codificação UTF8</returns>
-        /// <exception cref="System.Exception">Erro ao codificar string</exception>
-        /// <exception cref="Exception">Erro ao codificar string</exception>
-        public static string ToUtf8(this string value)
+		/// <summary>
+		/// Converte a string para UTF8.
+		/// </summary>
+		/// <param name="value">The text.</param>
+		/// <returns>Uma string com a codificação UTF8</returns>
+		/// <exception cref="System.Exception">Erro ao codificar string</exception>
+		/// <exception cref="Exception">Erro ao codificar string</exception>
+		public static string ToUtf8(this string value)
 		{
 		    if (value == null)
 		        return string.Empty;
@@ -1175,13 +1205,13 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// To the XML string.
-        /// </summary>
-        /// <param name="value">The text.</param>
-        /// <returns>System.String.</returns>
-        /// <exception cref="System.Exception">Erro ao codificar string</exception>
-	    public static string ToXmlString(this string value)
+		/// <summary>
+		/// To the XML string.
+		/// </summary>
+		/// <param name="value">The text.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="System.Exception">Erro ao codificar string</exception>
+		public static string ToXmlString(this string value)
 	    {
             try
             {
@@ -1205,14 +1235,14 @@ namespace ACBr.Net.Core.Extensions
             }
 	    }
 
-        /// <summary>
-        /// Transforma um array de string em uma unica string.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <returns>String com todos os dados do array de strings</returns>
-        /// <exception cref="System.Exception">Erro ao converter array</exception>
-        /// <exception cref="Exception">Erro ao converter array</exception>
-        public static string AsString(this string[] array)
+		/// <summary>
+		/// Transforma um array de string em uma unica string.
+		/// </summary>
+		/// <param name="array">The array.</param>
+		/// <returns>String com todos os dados do array de strings</returns>
+		/// <exception cref="System.Exception">Erro ao converter array</exception>
+		/// <exception cref="Exception">Erro ao converter array</exception>
+		public static string AsString(this string[] array)
         {
             try
             {
@@ -1224,15 +1254,15 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Alinha a string a direita/esquerda e preenche com caractere informado ate ficar do tamanho especificado.
-        /// </summary>
-        /// <param name="text">O texto</param>
-        /// <param name="length">Tamanho final desejado</param>
-        /// <param name="with">Caractere para preencher</param>
-        /// <param name="esquerda">Direção do preenchimento</param>
-        /// <returns>String do tamanho especificado e se menor complementada com o caractere informado a direita/esquerda</returns>
-        public static string StringFill(this string text, int length, char with = ' ', bool esquerda = true)
+		/// <summary>
+		/// Alinha a string a direita/esquerda e preenche com caractere informado ate ficar do tamanho especificado.
+		/// </summary>
+		/// <param name="text">O texto</param>
+		/// <param name="length">Tamanho final desejado</param>
+		/// <param name="with">Caractere para preencher</param>
+		/// <param name="esquerda">Direção do preenchimento</param>
+		/// <returns>String do tamanho especificado e se menor complementada com o caractere informado a direita/esquerda</returns>
+		public static string StringFill(this string text, int length, char with = ' ', bool esquerda = true)
         {
             if (text == null)
                 text = string.Empty;
@@ -1254,15 +1284,15 @@ namespace ACBr.Net.Core.Extensions
             return text;
         }
 
-        /// <summary>
-        /// Alinha a string a direita e preenche a esquerda com o caracter informado até ficar do tamanho especificado.
-        /// Se tamanho menor que a string atual retorna uma string do tamanho especificado.
-        /// </summary>
-        /// <param name="text">O texto.</param>
-        /// <param name="length">Tamanho final desejado</param>
-        /// <param name="with">Caractere para preencher</param>
-        /// <returns>String do tamanho especificado e se menor complementada com o caractere informado a esquerda</returns>
-        public static string FillRight(this string text, int length, char with = ' ')
+		/// <summary>
+		/// Alinha a string a direita e preenche a esquerda com o caracter informado até ficar do tamanho especificado.
+		/// Se tamanho menor que a string atual retorna uma string do tamanho especificado.
+		/// </summary>
+		/// <param name="text">O texto.</param>
+		/// <param name="length">Tamanho final desejado</param>
+		/// <param name="with">Caractere para preencher</param>
+		/// <returns>String do tamanho especificado e se menor complementada com o caractere informado a esquerda</returns>
+		public static string FillRight(this string text, int length, char with = ' ')
         {
             if (text == null)
                 text = string.Empty;
@@ -1270,15 +1300,15 @@ namespace ACBr.Net.Core.Extensions
             return text.StringFill(length, with);
         }
 
-        /// <summary>
-        /// Alinha a string a esquerda e preenche a direita com o caracter informado até ficar do tamanho especificado.
-        /// Se tamanho menor que a string atual retorna uma string do tamanho especificado.
-        /// </summary>
-        /// <param name="text">O texto.</param>
-        /// <param name="length">Tamanho final desejado</param>
-        /// <param name="with">Caractere para preencher</param>
-        /// <returns>String do tamanho especificado e se menor complementada com o caractere informado a direita</returns>
-        public static string FillLeft(this string text, int length, char with = ' ')
+		/// <summary>
+		/// Alinha a string a esquerda e preenche a direita com o caracter informado até ficar do tamanho especificado.
+		/// Se tamanho menor que a string atual retorna uma string do tamanho especificado.
+		/// </summary>
+		/// <param name="text">O texto.</param>
+		/// <param name="length">Tamanho final desejado</param>
+		/// <param name="with">Caractere para preencher</param>
+		/// <returns>String do tamanho especificado e se menor complementada com o caractere informado a direita</returns>
+		public static string FillLeft(this string text, int length, char with = ' ')
         {
             if (text == null)
                 text = string.Empty;
@@ -1286,13 +1316,13 @@ namespace ACBr.Net.Core.Extensions
             return text.StringFill(length, with, false);
         }
 
-        /// <summary>
-        /// Preenche uma string com zero a direita ate ficar do tamanho especificado.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="length">Tamanho final desejado</param>
-        /// <returns>String do tamanho especificado e se menor complementada com zero a direita/esquerda</returns>
-        public static string ZeroFill(this string text, int length)
+		/// <summary>
+		/// Preenche uma string com zero a direita ate ficar do tamanho especificado.
+		/// </summary>
+		/// <param name="text">The text.</param>
+		/// <param name="length">Tamanho final desejado</param>
+		/// <returns>String do tamanho especificado e se menor complementada com zero a direita/esquerda</returns>
+		public static string ZeroFill(this string text, int length)
         {
             if (text == null)
                 text = string.Empty;
@@ -1300,12 +1330,12 @@ namespace ACBr.Net.Core.Extensions
             return text.OnlyNumbers().StringFill(length, '0');
         }
 
-        /// <summary>
-        /// Normalize e substitui os caracteres especiais de uma string.
-        /// </summary>
-        /// <param name="value">The text.</param>
-        /// <returns>String sem carateres especiais e normalizada</returns>
-        public static string RemoveCe(this string value)
+		/// <summary>
+		/// Normalize e substitui os caracteres especiais de uma string.
+		/// </summary>
+		/// <param name="value">The text.</param>
+		/// <returns>String sem carateres especiais e normalizada</returns>
+		public static string RemoveCe(this string value)
 		{
 		    if (value == null)
 		        return string.Empty;
@@ -1319,12 +1349,12 @@ namespace ACBr.Net.Core.Extensions
             return retorno.SubstituiCe();
         }
 
-        /// <summary>
-        /// Substitue os caracteres especiais de uma string.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <returns>String sem carateres especiais</returns>
-        public static string SubstituiCe(this string text)
+		/// <summary>
+		/// Substitue os caracteres especiais de uma string.
+		/// </summary>
+		/// <param name="text">The text.</param>
+		/// <returns>String sem carateres especiais</returns>
+		public static string SubstituiCe(this string text)
         {
             try
             {
@@ -1376,12 +1406,12 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Formata o CPF ou CNPJ no formato: 000.000.000-00, 00.000.000/0001-00 respectivamente.
-        /// </summary>
-        /// <param name="value">The text.</param>
-        /// <returns>CPF/CNPJ Formatado</returns>
-        public static string FormataCPFCNPJ(this string value)
+		/// <summary>
+		/// Formata o CPF ou CNPJ no formato: 000.000.000-00, 00.000.000/0001-00 respectivamente.
+		/// </summary>
+		/// <param name="value">The text.</param>
+		/// <returns>CPF/CNPJ Formatado</returns>
+		public static string FormataCPFCNPJ(this string value)
 		{
 		    value = value.OnlyNumbers();
 		    switch (value.Trim().Length)
@@ -1396,12 +1426,12 @@ namespace ACBr.Net.Core.Extensions
 		    }
 		}
 
-        /// <summary>
-        /// Formata o número do CPF 92074286520 para 920.742.865-20
-        /// </summary>
-        /// <param name="cpf">Sequencia numérica de 11 dígitos. Exemplo: 00000000000</param>
-        /// <returns>CPF formatado</returns>
-        public static string FormataCPF(this string cpf)
+		/// <summary>
+		/// Formata o número do CPF 92074286520 para 920.742.865-20
+		/// </summary>
+		/// <param name="cpf">Sequencia numérica de 11 dígitos. Exemplo: 00000000000</param>
+		/// <returns>CPF formatado</returns>
+		public static string FormataCPF(this string cpf)
         {
             try
             {
@@ -1413,12 +1443,12 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Formata o CNPJ. Exemplo 00.316.449/0001-63
-        /// </summary>
-        /// <param name="cnpj">Sequencia numérica de 14 dígitos. Exemplo: 00000000000000</param>
-        /// <returns>CNPJ formatado</returns>
-        public static string FormataCNPJ(this string cnpj)
+		/// <summary>
+		/// Formata o CNPJ. Exemplo 00.316.449/0001-63
+		/// </summary>
+		/// <param name="cnpj">Sequencia numérica de 14 dígitos. Exemplo: 00000000000000</param>
+		/// <returns>CNPJ formatado</returns>
+		public static string FormataCNPJ(this string cnpj)
         {
             try
             {
@@ -1430,12 +1460,12 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Formato o CEP em 00.000-000
-        /// </summary>
-        /// <param name="cep">Sequencia numérica de 8 dígitos. Exemplo: 00000000</param>
-        /// <returns>CEP formatado</returns>
-        public static string FormataCEP(this string cep)
+		/// <summary>
+		/// Formato o CEP em 00.000-000
+		/// </summary>
+		/// <param name="cep">Sequencia numérica de 8 dígitos. Exemplo: 00000000</param>
+		/// <returns>CEP formatado</returns>
+		public static string FormataCEP(this string cep)
         {
             try
             {
@@ -1447,15 +1477,15 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Formata agência e conta
-        /// </summary>
-        /// <param name="agencia">Código da agência</param>
-        /// <param name="digitoAgencia">Dígito verificador da agência. Pode ser vazio.</param>
-        /// <param name="conta">Código da conta</param>
-        /// <param name="digitoConta">dígito verificador da conta. Pode ser vazio.</param>
-        /// <returns>Agência e conta formatadas</returns>
-        public static string FormataAgenciaConta(this string agencia, string digitoAgencia, string conta, string digitoConta)
+		/// <summary>
+		/// Formata agência e conta
+		/// </summary>
+		/// <param name="agencia">Código da agência</param>
+		/// <param name="digitoAgencia">Dígito verificador da agência. Pode ser vazio.</param>
+		/// <param name="conta">Código da conta</param>
+		/// <param name="digitoConta">dígito verificador da conta. Pode ser vazio.</param>
+		/// <returns>Agência e conta formatadas</returns>
+		public static string FormataAgenciaConta(this string agencia, string digitoAgencia, string conta, string digitoConta)
         {
             try
             {
@@ -1475,13 +1505,13 @@ namespace ACBr.Net.Core.Extensions
             }
         }
 
-        /// <summary>
-        /// Get substring of specified number of characters on the right.
-        /// </summary>
-        /// <param name="value">The text.</param>
-        /// <param name="length">The length.</param>
-        /// <returns>System.String.</returns>
-        public static string Right(this string value, int length)
+		/// <summary>
+		/// Get substring of specified number of characters on the right.
+		/// </summary>
+		/// <param name="value">The text.</param>
+		/// <param name="length">The length.</param>
+		/// <returns>System.String.</returns>
+		public static string Right(this string value, int length)
         {
             if (length > value.Length)
                 length = value.Length;
@@ -1489,11 +1519,11 @@ namespace ACBr.Net.Core.Extensions
             return value.Substring(value.Length - length);
         }
 
-        /// <summary>
-        /// Froms the julian date.
-        /// </summary>
-        /// <param name="julianDate">The julian date.</param>
-        /// <returns>DateTime.</returns>
+		/// <summary>
+		/// Froms the julian date.
+		/// </summary>
+		/// <param name="julianDate">The julian date.</param>
+		/// <returns>DateTime.</returns>
 		public static DateTime FromJulianDate(this string julianDate)
 		{
 			if(julianDate.Length < 1 || julianDate.Length > 5)
@@ -1504,71 +1534,71 @@ namespace ACBr.Net.Core.Extensions
 			return new DateTime(ano, 1, 1).AddDays(dias);
 		}
 
-        /// <summary>
-        /// Safes the replace.
-        /// </summary>
-        /// <param name="original">The original.</param>
-        /// <param name="wordToFind">The word to find.</param>
-        /// <param name="replacement">The replacement.</param>
-        /// <param name="ignorecase">if set to <c>true</c> [ignorecase].</param>
-        /// <returns>System.String.</returns>
-        public static string SafeReplace(this string original, string wordToFind, string replacement, bool ignorecase = false)
+		/// <summary>
+		/// Safes the replace.
+		/// </summary>
+		/// <param name="original">The original.</param>
+		/// <param name="wordToFind">The word to find.</param>
+		/// <param name="replacement">The replacement.</param>
+		/// <param name="ignorecase">if set to <c>true</c> [ignorecase].</param>
+		/// <returns>System.String.</returns>
+		public static string SafeReplace(this string original, string wordToFind, string replacement, bool ignorecase = false)
         {
-            var pattern = string.Format(@"\b{0}\b", wordToFind);
+            var pattern = $@"\b{wordToFind}\b";
             var opt = ignorecase ? RegexOptions.IgnoreCase : RegexOptions.None;
             return Regex.Replace(original, pattern, replacement, opt);
         }
 
-        /// <summary>
-        /// To the title case.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <returns>System.String.</returns>
-        public static string ToTitleCase(this string text)
+		/// <summary>
+		/// To the title case.
+		/// </summary>
+		/// <param name="text">The text.</param>
+		/// <returns>System.String.</returns>
+		public static string ToTitleCase(this string text)
 	    {
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(text);
 	    }
 
-        /// <summary>
-        /// Determines whether the specified value is null or empty or whitespace.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns><c>true</c> if the specified value is empty; otherwise, <c>false</c>.</returns>
-        public static bool IsEmpty(this string value)
+		/// <summary>
+		/// Determines whether the specified value is null or empty or whitespace.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <returns><c>true</c> if the specified value is empty; otherwise, <c>false</c>.</returns>
+		public static bool IsEmpty(this string value)
         {
             return string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value);
         }
 
-        /// <summary>
-        /// Befores the specified end.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="end">The end.</param>
-        /// <returns>System.String.</returns>
-        public static string Before(this string value, int end)
+		/// <summary>
+		/// Befores the specified end.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <param name="end">The end.</param>
+		/// <returns>System.String.</returns>
+		public static string Before(this string value, int end)
         {
             return end == 0 ? string.Empty : value.Between(0, end - 1);
         }
 
-        /// <summary>
-        /// Afters the specified start.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="start">The start.</param>
-        /// <returns>System.String.</returns>
-        public static string After(this string value, int start)
+		/// <summary>
+		/// Afters the specified start.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <param name="start">The start.</param>
+		/// <returns>System.String.</returns>
+		public static string After(this string value, int start)
         {
             return value.Between(start + 1, int.MaxValue);
         }
 
-        /// <summary>
-        /// Betweens the specified start.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="start">The start.</param>
-        /// <param name="end">The end.</param>
-        /// <returns>System.String.</returns>
-        public static string Between(this string value, int start, int end)
+		/// <summary>
+		/// Betweens the specified start.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <param name="start">The start.</param>
+		/// <param name="end">The end.</param>
+		/// <returns>System.String.</returns>
+		public static string Between(this string value, int start, int end)
         {
             if (value == null)
                 return string.Empty;
@@ -1584,13 +1614,13 @@ namespace ACBr.Net.Core.Extensions
             return value.Substring(start, end - start + 1);
         }
 
-        /// <summary>
-        /// Substitutes the specified arguments.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="args">The arguments.</param>
-        /// <returns>System.String.</returns>
-        public static string Substitute(this string format, params object[] args)
+		/// <summary>
+		/// Substitutes the specified arguments.
+		/// </summary>
+		/// <param name="format">The format.</param>
+		/// <param name="args">The arguments.</param>
+		/// <returns>System.String.</returns>
+		public static string Substitute(this string format, params object[] args)
         {
             var value = string.Empty;
             if (string.IsNullOrEmpty(format)) return value;

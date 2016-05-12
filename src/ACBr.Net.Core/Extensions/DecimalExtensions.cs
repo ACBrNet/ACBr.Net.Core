@@ -7,21 +7,24 @@
 // Last Modified On : 01-30-2015
 // ***********************************************************************
 // <copyright file="DecimalExtensions.cs" company="ACBr.Net">
-// Esta biblioteca é software livre; você pode redistribuí-la e/ou modificá-la
-// sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela
-// Free Software Foundation; tanto a versão 2.1 da Licença, ou (a seu critério)
-// qualquer versão posterior.
+//		        		   The MIT License (MIT)
+//	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
-// Esta biblioteca é distribuída na expectativa de que seja útil, porém, SEM
-// NENHUMA GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU
-// ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor
-// do GNU para mais detalhes. (Arquivo LICENÇA.TXT ou LICENSE.TXT)
-//
-// Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto
-// com esta biblioteca; se não, escreva para a Free Software Foundation, Inc.,
-// no endereço 59 Temple Street, Suite 330, Boston, MA 02111-1307 USA.
-// Você também pode obter uma copia da licença em:
-// http://www.opensource.org/licenses/lgpl-license.php
+//	 Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation 
+// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+//	 The above copyright notice and this permission notice shall be 
+// included in all copies or substantial portions of the Software.
+//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+// DEALINGS IN THE SOFTWARE.
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
@@ -204,28 +207,28 @@ namespace ACBr.Net.Core.Extensions
 
                 if (b == 1)
                 {
-                    if (c == 0) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 10];
-                    else if (c == 1) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 11];
-                    else if (c == 2) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 12];
-                    else if (c == 3) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 13];
-                    else if (c == 4) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 14];
-                    else if (c == 5) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 15];
-                    else if (c == 6) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 16];
-                    else if (c == 7) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 17];
-                    else if (c == 8) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 18];
-                    else if (c == 9) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[0, 19];
+                    if (c == 0) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 10];
+                    else if (c == 1) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 11];
+                    else if (c == 2) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 12];
+                    else if (c == 3) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 13];
+                    else if (c == 4) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 14];
+                    else if (c == 5) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 15];
+                    else if (c == 6) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 16];
+                    else if (c == 7) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 17];
+                    else if (c == 8) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 18];
+                    else if (c == 9) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[0, 19];
                 }
-                else if (b == 2) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[1, 0];
-                else if (b == 3) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[1, 1];
-                else if (b == 4) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[1, 2];
-                else if (b == 5) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[1, 3];
-                else if (b == 6) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[1, 4];
-                else if (b == 7) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[1, 5];
-                else if (b == 8) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[1, 6];
-                else if (b == 9) montagem += (a > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty) + Numeros[1, 7];
+                else if (b == 2) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[1, 0];
+                else if (b == 3) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[1, 1];
+                else if (b == 4) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[1, 2];
+                else if (b == 5) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[1, 3];
+                else if (b == 6) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[1, 4];
+                else if (b == 7) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[1, 5];
+                else if (b == 8) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[1, 6];
+                else if (b == 9) montagem += (a > 0 ? $" {Qualificadores[2, 0]} " : string.Empty) + Numeros[1, 7];
 
                 if (strValor1.Substring(1, 1) != "1" & c != 0 & montagem != string.Empty)
-                    montagem += string.Format(" {0} ", Qualificadores[2, 0]);
+                    montagem += $" {Qualificadores[2, 0]} ";
 
                 if (strValor1.Substring(1, 1) != "1")
                     if (c == 1) montagem += Numeros[0, 1];
@@ -252,57 +255,64 @@ namespace ACBr.Net.Core.Extensions
                 if (i == 0 & valorPorExtenso != string.Empty)
                 {
                     if (Convert.ToInt32(strValor.Substring(0, 3)) == 1)
-                        valorPorExtenso += string.Format(" {0} {1}", Qualificadores[6, 0], Convert.ToDecimal(strValor.Substring(3, 12)) > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty);
+                        valorPorExtenso +=
+	                        $" {Qualificadores[6, 0]} {(Convert.ToDecimal(strValor.Substring(3, 12)) > 0 ? $" {Qualificadores[2, 0]} " : string.Empty)}";
                     else if (Convert.ToInt32(strValor.Substring(0, 3)) > 1)
-                        valorPorExtenso += string.Format(" {0} {1}", Qualificadores[6, 1], Convert.ToDecimal(strValor.Substring(3, 12)) > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty);
+                        valorPorExtenso +=
+	                        $" {Qualificadores[6, 1]} {(Convert.ToDecimal(strValor.Substring(3, 12)) > 0 ? $" {Qualificadores[2, 0]} " : string.Empty)}";
                 }
                 else if (i == 3 & valorPorExtenso != string.Empty)
                 {
                     if (Convert.ToInt32(strValor.Substring(3, 3)) == 1)
-                        valorPorExtenso += string.Format(" {0} {1}", Qualificadores[5, 0], Convert.ToDecimal(strValor.Substring(6, 9)) > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty);
+                        valorPorExtenso +=
+	                        $" {Qualificadores[5, 0]} {(Convert.ToDecimal(strValor.Substring(6, 9)) > 0 ? $" {Qualificadores[2, 0]} " : string.Empty)}";
                     else if (Convert.ToInt32(strValor.Substring(3, 3)) > 1)
-                        valorPorExtenso += string.Format(" {0} {1}", Qualificadores[5, 1], Convert.ToDecimal(strValor.Substring(6, 9)) > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty);
+                        valorPorExtenso +=
+	                        $" {Qualificadores[5, 1]} {(Convert.ToDecimal(strValor.Substring(6, 9)) > 0 ? $" {Qualificadores[2, 0]} " : string.Empty)}";
                 }
                 else if (i == 6 & valorPorExtenso != string.Empty)
                 {
                     if (Convert.ToInt32(strValor.Substring(6, 3)) == 1)
-                        valorPorExtenso += string.Format(" {0} {1}", Qualificadores[4, 0], Convert.ToDecimal(strValor.Substring(9, 6)) > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty);
+                        valorPorExtenso +=
+	                        $" {Qualificadores[4, 0]} {(Convert.ToDecimal(strValor.Substring(9, 6)) > 0 ? $" {Qualificadores[2, 0]} " : string.Empty)}";
                     else if (Convert.ToInt32(strValor.Substring(6, 3)) > 1)
-                        valorPorExtenso += string.Format(" {0} {1}", Qualificadores[4, 1], Convert.ToDecimal(strValor.Substring(9, 6)) > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty);
+                        valorPorExtenso +=
+	                        $" {Qualificadores[4, 1]} {(Convert.ToDecimal(strValor.Substring(9, 6)) > 0 ? $" {Qualificadores[2, 0]} " : string.Empty)}";
                 }
                 else if (i == 9 & valorPorExtenso != string.Empty)
                     if (Convert.ToInt32(strValor.Substring(9, 3)) > 0)
-                        valorPorExtenso += string.Format(" {0} {1}", Qualificadores[3, 0], Convert.ToDecimal(strValor.Substring(6, 9)) > 0 ? string.Format(" {0} ", Qualificadores[2, 0]) : string.Empty);
+                        valorPorExtenso +=
+	                        $" {Qualificadores[3, 0]} {(Convert.ToDecimal(strValor.Substring(6, 9)) > 0 ? $" {Qualificadores[2, 0]} " : string.Empty)}";
 
                 if (i == 12)
                 {
                     if (valorPorExtenso.Length > 8)
                         if (valorPorExtenso.Substring(valorPorExtenso.Length - 6, 6) == Qualificadores[4, 1] |
                             valorPorExtenso.Substring(valorPorExtenso.Length - 6, 6) == Qualificadores[5, 1])
-                            valorPorExtenso += string.Format(" {0}", Qualificadores[2, 1]);
+                            valorPorExtenso += $" {Qualificadores[2, 1]}";
                         else
                             if (valorPorExtenso.Substring(valorPorExtenso.Length - 7, 7) == Qualificadores[4, 1] |
                                 valorPorExtenso.Substring(valorPorExtenso.Length - 7, 7) == Qualificadores[5, 1] |
                                 valorPorExtenso.Substring(valorPorExtenso.Length - 8, 7) == Qualificadores[6, 1])
-                                valorPorExtenso += string.Format(" {0}", Qualificadores[2, 1]);
+                                valorPorExtenso += $" {Qualificadores[2, 1]}";
                             else
                                 if (valorPorExtenso.Substring(valorPorExtenso.Length - 8, 8) == Qualificadores[6, 1])
-                                    valorPorExtenso += string.Format(" {0}", Qualificadores[2, 1]);
+                                    valorPorExtenso += $" {Qualificadores[2, 1]}";
 
                     if (Convert.ToInt64(strValor.Substring(0, 15)) == 1)
-                        valorPorExtenso += string.Format(" {0}", Qualificadores[1, 0]);
+                        valorPorExtenso += $" {Qualificadores[1, 0]}";
                     else if (Convert.ToInt64(strValor.Substring(0, 15)) > 1)
-                        valorPorExtenso += string.Format(" {0}", Qualificadores[1, 1]);
+                        valorPorExtenso += $" {Qualificadores[1, 1]}";
 
                     if (Convert.ToInt32(strValor.Substring(16, 2)) > 0 && valorPorExtenso != string.Empty)
-                        valorPorExtenso += string.Format(" {0} ", Qualificadores[2, 0]);
+                        valorPorExtenso += $" {Qualificadores[2, 0]} ";
                 }
 
                 if (i == 15)
                     if (Convert.ToInt32(strValor.Substring(16, 2)) == 1)
-                        valorPorExtenso += string.Format(" {0}", Qualificadores[0, 0]);
+                        valorPorExtenso += $" {Qualificadores[0, 0]}";
                     else if (Convert.ToInt32(strValor.Substring(16, 2)) > 1)
-                        valorPorExtenso += string.Format(" {0}", Qualificadores[0, 1]);
+                        valorPorExtenso += $" {Qualificadores[0, 1]}";
             }
 
             return valorPorExtenso;

@@ -70,7 +70,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CalcDigito.cs" />
-    <Compile Include="ACBrExpandableObjectConverter.cs" />
     <Compile Include="Enum\CalcDigFormula.cs" />
     <Compile Include="Extensions\AssemblyExtenssions.cs" />
     <Compile Include="Extensions\ByteExtensions.cs" />
@@ -89,9 +88,6 @@
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Generics\GenericClone.cs" />
     <Compile Include="Generics\GenericCollection.cs" />
-    <Compile Include="ACBrComponent.cs">
-      <SubType>ACBr.Net</SubType>
-    </Compile>
     <Compile Include="Generics\GenericEditable.cs" />
     <Compile Include="Logging\IInternalLogger.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />

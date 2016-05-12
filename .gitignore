@@ -179,3 +179,4 @@ FakesAssemblies/
 
 /Demos/ACBrBoleto/*.tss
 /src/ACBr.Net.Core.sln.GhostDoc.xml
+*.scgdat
