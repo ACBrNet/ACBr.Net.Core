@@ -69,6 +69,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ACBrComponent.cs">
+      <SubType>ACBr.Net</SubType>
+    </Compile>
+    <Compile Include="ACBrExpandableObjectConverter.cs" />
     <Compile Include="CalcDigito.cs" />
     <Compile Include="Enum\CalcDigFormula.cs" />
     <Compile Include="Extensions\AssemblyExtenssions.cs" />
