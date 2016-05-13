@@ -72,6 +72,7 @@
     <Compile Include="ACBrComponent.cs">
       <SubType>ACBr.Net</SubType>
     </Compile>
+    <Compile Include="ACBrException.cs" />
     <Compile Include="ACBrExpandableObjectConverter.cs" />
     <Compile Include="CalcDigito.cs" />
     <Compile Include="Enum\CalcDigFormula.cs" />
