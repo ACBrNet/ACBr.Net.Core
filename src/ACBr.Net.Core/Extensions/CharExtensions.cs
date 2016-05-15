@@ -56,7 +56,7 @@ namespace ACBr.Net.Core.Extensions
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao converter string", ex);
+                throw new ACBrException("Erro ao converter string", ex);
             }
         }
 

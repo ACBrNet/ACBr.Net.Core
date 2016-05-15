@@ -57,16 +57,15 @@ namespace ACBr.Net.Core.Extensions
 				"The type parameter T must be an enum type.");
 
 			// If the value isn't defined throw an exception.
-			Guard.Against<InvalidOperationException>(!System.Enum.IsDefined(type, value),
+			Guard.Against<InvalidOperationException>(!Enum.IsDefined(type, value),
 				$"{type} Value {Convert.ToInt32(value)}");
 
 			// Get the static field for the value.
-			var fi = type.GetField(value.ToString(),
-				BindingFlags.Static | BindingFlags.Public);
-
+			var fi = type.GetField(value.ToString(), BindingFlags.Static | BindingFlags.Public);
 			Guard.Against<ArgumentNullException>(fi == null, "O Valor é nulo");
 
 			// Get the description attribute, if there is one.
+			// ReSharper disable once PossibleNullReferenceException
 			var ret = fi.GetCustomAttributes(typeof(DescriptionAttribute), true).
 				Cast<DescriptionAttribute>().SingleOrDefault();
 

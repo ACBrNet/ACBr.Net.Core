@@ -49,11 +49,11 @@ namespace ACBr.Net.Core.Logging
         /// <summary>
         /// The logger factory
         /// </summary>
-		private readonly ILoggerFactory LoggerFactory;
+		private readonly ILoggerFactory loggerFactory;
         /// <summary>
         /// The _instance
         /// </summary>
-		private static LoggerProvider _instance;
+		private static LoggerProvider instance;
 
         #endregion Fields
 
@@ -145,7 +145,7 @@ namespace ACBr.Net.Core.Logging
         /// <param name="loggerFactory">The logger factory.</param>
 		public static void SetLoggersFactory(ILoggerFactory loggerFactory)
 		{
-			_instance = new LoggerProvider(loggerFactory);
+			instance = new LoggerProvider(loggerFactory);
 		}
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace ACBr.Net.Core.Logging
         /// <param name="loggerFactory">The logger factory.</param>
 		private LoggerProvider(ILoggerFactory loggerFactory)
 		{
-			LoggerFactory = loggerFactory;
+			this.loggerFactory = loggerFactory;
 		}
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace ACBr.Net.Core.Logging
         /// <returns>IInternalLogger.</returns>
 		public static IInternalLogger LoggerFor(string keyName)
 		{
-			return _instance.LoggerFactory.LoggerFor(keyName);
+			return instance.loggerFactory.LoggerFor(keyName);
 		}
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace ACBr.Net.Core.Logging
         /// <returns>IInternalLogger.</returns>
 		public static IInternalLogger LoggerFor(Type type)
 		{
-			return _instance.LoggerFactory.LoggerFor(type);
+			return instance.loggerFactory.LoggerFor(type);
         }
 
         #endregion Methods

@@ -30,7 +30,6 @@
 // ***********************************************************************
 
 using System;
-using ACBr.Net.Core.Enum;
 using ACBr.Net.Core.Extensions;
 
 namespace ACBr.Net.Core

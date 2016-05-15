@@ -4,7 +4,7 @@
 // Created          : 01-31-2016
 //
 // Last Modified By : RFTD
-// Last Modified On : 05-12-2016
+// Last Modified On : 05-15-2016
 // ***********************************************************************
 // <copyright file="StringExtensions.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
@@ -30,6 +30,7 @@
 // ***********************************************************************
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -42,69 +43,150 @@ namespace ACBr.Net.Core.Extensions
 	/// Class StringExtensions.
 	/// </summary>
 	public static class StringExtensions
-    {
+	{
+		#region Methods
+
 		/// <summary>
 		/// Encrypts the specified data.
 		/// </summary>
 		/// <param name="data">The data.</param>
-		/// <param name="key">The key.</param>
+		/// <param name="password">The password.</param>
 		/// <returns>System.String.</returns>
 		/// <exception cref="System.Exception">Erro ao criptografar a string</exception>
 		/// <exception cref="Exception">Erro ao criptografar a string</exception>
-		public static string Encrypt(this string data, string key)
-        {
-            try
-            {
-                var des = new TripleDESCryptoServiceProvider()
-                {
-                    Mode = CipherMode.ECB,
-                    Key = Encoding.ASCII.GetBytes(key),
-                    Padding = PaddingMode.PKCS7
-                };
-
-                using (var desEncrypt = des.CreateEncryptor())
-                {
-                    var buffer = Encoding.ASCII.GetBytes(data);
-                    return Convert.ToBase64String(desEncrypt.TransformFinalBlock(buffer, 0, buffer.Length));
-                }
-            }
-            catch(Exception ex)
-            {
-                throw new Exception("Erro ao criptografar a string", ex);
-            }
-        }
+		public static string Encrypt(this string data, string password)
+		{
+			return Encrypt<TripleDESCryptoServiceProvider>(data, password);
+		}
 
 		/// <summary>
 		/// Decrypts the specified data.
 		/// </summary>
 		/// <param name="data">The data.</param>
-		/// <param name="key">The key.</param>
+		/// <param name="password">The password.</param>
 		/// <returns>System.String.</returns>
 		/// <exception cref="System.Exception">Erro ao descriptografar string</exception>
 		/// <exception cref="Exception">Erro ao descriptografar string</exception>
-		public static string Decrypt(this string data, string key)
-        {
-            try
-            {
-                var des = new TripleDESCryptoServiceProvider()
-                {
-                    Mode = CipherMode.ECB,
-                    Key = Encoding.ASCII.GetBytes(key),
-                    Padding = PaddingMode.PKCS7
-                };
+		public static string Decrypt(this string data, string password)
+		{
+			return Decrypt<TripleDESCryptoServiceProvider>(data, password);
+		}
 
-                using (var desEncrypt = des.CreateDecryptor())
-                {
-                    var buffer = Convert.FromBase64String(data.Replace(" ", "+"));
-                    return Encoding.UTF8.GetString(desEncrypt.TransformFinalBlock(buffer, 0, buffer.Length));
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao descriptografar string", ex);
-            }
-        }
+		/// <summary>
+		/// Encrypts the specified password.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="value">The value.</param>
+		/// <param name="password">The password.</param>
+		/// <param name="salt">The salt.</param>
+		/// <param name="vector">The vector.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="ACBrException">Erro ao criptografar a string</exception>
+		public static string Encrypt<T>(this string value, string password,
+			string salt = "aselrias38490a32", string vector = "8947az34awl34kjq")
+			where T : SymmetricAlgorithm, new()
+		{
+			try
+			{
+				var vectorBytes = Encoding.ASCII.GetBytes(vector);
+				var saltBytes = Encoding.ASCII.GetBytes(salt);
+				var valueBytes = Encoding.UTF8.GetBytes(value);
 
+				var keysize = 256;
+				byte[] encrypted;
+				using (var cipher = new T())
+				{
+					if (cipher is DESCryptoServiceProvider)
+						keysize = 64;
+					if (cipher is TripleDESCryptoServiceProvider || cipher is RC2CryptoServiceProvider)
+						keysize = 128;
+
+					var passwordBytes = new Rfc2898DeriveBytes(password, saltBytes, 2);
+					var keyBytes = passwordBytes.GetBytes(keysize/8);
+
+					cipher.Mode = CipherMode.CBC;
+
+					using (var encryptor = cipher.CreateEncryptor(keyBytes, vectorBytes))
+					{
+						using (var to = new MemoryStream())
+						{
+							using (var writer = new CryptoStream(to, encryptor, CryptoStreamMode.Write))
+							{
+								writer.Write(valueBytes, 0, valueBytes.Length);
+								writer.FlushFinalBlock();
+								encrypted = to.ToArray();
+							}
+						}
+					}
+					cipher.Clear();
+				}
+
+				return Convert.ToBase64String(encrypted);
+
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao criptografar a string", ex);
+			}
+		}
+
+		/// <summary>
+		/// Decrypts the specified password.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="value">The value.</param>
+		/// <param name="password">The password.</param>
+		/// <param name="salt">The salt.</param>
+		/// <param name="vector">The vector.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="ACBrException">Erro ao descriptografar string</exception>
+		public static string Decrypt<T>(this string value, string password, 
+			string salt = "aselrias38490a32", string vector = "8947az34awl34kjq") where T : SymmetricAlgorithm, new()
+		{
+			try
+			{
+				var vectorBytes = Encoding.ASCII.GetBytes(vector);
+				var saltBytes = Encoding.ASCII.GetBytes(salt);
+				var valueBytes = Convert.FromBase64String(value);
+
+				var keysize = 256;
+				byte[] decrypted;
+				int decryptedByteCount;
+
+				using (var cipher = new T())
+				{
+					if (cipher is DESCryptoServiceProvider)
+						keysize = 64;
+					if (cipher is TripleDESCryptoServiceProvider || cipher is RC2CryptoServiceProvider)
+						keysize = 128;
+
+					var passwordBytes = new Rfc2898DeriveBytes(password, saltBytes, 2);
+					var keyBytes = passwordBytes.GetBytes(keysize / 8);
+
+					cipher.Mode = CipherMode.CBC;
+					using (var decryptor = cipher.CreateDecryptor(keyBytes, vectorBytes))
+					{
+						using (var from = new MemoryStream(valueBytes))
+						{
+							using (var reader = new CryptoStream(from, decryptor, CryptoStreamMode.Read))
+							{
+								decrypted = new byte[valueBytes.Length];
+								decryptedByteCount = reader.Read(decrypted, 0, decrypted.Length);
+							}
+						}
+					}
+
+					cipher.Clear();
+				}
+
+				return Encoding.UTF8.GetString(decrypted, 0, decryptedByteCount);
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao descriptografar string", ex);
+			}
+		}
+		
 		/// <summary>
 		/// To the m d5 hash.
 		/// </summary>
@@ -113,27 +195,27 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao gerar hash MD5</exception>
 		/// <exception cref="Exception">Erro ao gerar hash MD5</exception>
 		public static string ToMd5Hash(this string input)
-        {
-            try
-            {
-                // Primeiro passo, calcular o MD5 hash a partir da string
-                var md5 = MD5.Create();
-                var inputBytes = Encoding.ASCII.GetBytes(input);
-                var hash = md5.ComputeHash(inputBytes);
+		{
+			try
+			{
+				// Primeiro passo, calcular o MD5 hash a partir da string
+				var md5 = MD5.Create();
+				var inputBytes = Encoding.ASCII.GetBytes(input);
+				var hash = md5.ComputeHash(inputBytes);
 
-                // Segundo passo, converter o array de bytes em uma string hexadecimal
-                var sb = new StringBuilder();
-                foreach (byte t in hash)
-                {
-	                sb.Append(t.ToString("x2"));
-                }
-	            return sb.ToString();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao gerar hash MD5", ex);
-            }
-        }
+				// Segundo passo, converter o array de bytes em uma string hexadecimal
+				var sb = new StringBuilder();
+				foreach (var t in hash)
+				{
+					sb.Append(t.ToString("x2"));
+				}
+				return sb.ToString();
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao gerar hash MD5", ex);
+			}
+		}
 
 		/// <summary>
 		/// To the sh a1 hash.
@@ -143,25 +225,25 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao gerar SHA1 hash</exception>
 		/// <exception cref="Exception">Erro ao gerar SHA1 hash</exception>
 		public static string ToSha1Hash(this string input)
-        {
-            try
-            {
-                SHA1 sha = new SHA1CryptoServiceProvider();
-                var data = Encoding.ASCII.GetBytes(input);
-                var hash = sha.ComputeHash(data);
+		{
+			try
+			{
+				SHA1 sha = new SHA1CryptoServiceProvider();
+				var data = Encoding.ASCII.GetBytes(input);
+				var hash = sha.ComputeHash(data);
 
-                var sb = new StringBuilder();
-                foreach (byte t in hash)
-                {
-	                sb.Append(t.ToString("X2"));
-                }
-	            return sb.ToString();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao gerar SHA1 hash", ex);
-            }
-        }
+				var sb = new StringBuilder();
+				foreach (var t in hash)
+				{
+					sb.Append(t.ToString("X2"));
+				}
+				return sb.ToString();
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao gerar SHA1 hash", ex);
+			}
+		}
 
 		/// <summary>
 		/// Strings the reverse.
@@ -171,20 +253,20 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao reverter string</exception>
 		/// <exception cref="Exception">Erro ao reverter string</exception>
 		public static string StringReverse(this string toReverse)
-        {
-            try
-            {
-                Array arr = toReverse.ToCharArray();
-                Array.Reverse(arr);// reverse the string
-                var c = (char[])arr;
-                var b = Encoding.Default.GetBytes(c);
-                return Encoding.Default.GetString(b);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao reverter string", ex);
-            }
-        }
+		{
+			try
+			{
+				Array arr = toReverse.ToCharArray();
+				Array.Reverse(arr); // reverse the string
+				var c = (char[]) arr;
+				var b = Encoding.Default.GetBytes(c);
+				return Encoding.Default.GetString(b);
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao reverter string", ex);
+			}
+		}
 
 		/// <summary>
 		/// Formatars the specified valor.
@@ -195,9 +277,9 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao formatar string</exception>
 		/// <exception cref="Exception">Erro ao formatar string</exception>
 		public static string Formatar(this string input, string mascara)
-        {
-            try
-            {
+		{
+			try
+			{
 				if (input.IsEmpty())
 					return input;
 
@@ -219,11 +301,11 @@ namespace ACBr.Net.Core.Extensions
 
 				return output;
 			}
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao formatar string", ex);
-            }
-        }
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao formatar string", ex);
+			}
+		}
 
 		/// <summary>
 		/// To the double.
@@ -231,25 +313,46 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="dados">The dados.</param>
 		/// <param name="def">The definition.</param>
 		/// <returns>System.Double.</returns>
+		public static double ToDouble(this string dados, double def = -1)
+		{
+			return ToDouble(dados, def, CultureInfo.CurrentCulture);
+		}
+
+		/// <summary>
+		/// To the double.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="format">The format.</param>
+		/// <returns>System.Double.</returns>
+		public static double ToDouble(this string dados, IFormatProvider format)
+		{
+			return ToDouble(dados, -1, format);
+		}
+
+		/// <summary>
+		/// To the double.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="def">The definition.</param>
+		/// <param name="format">The format.</param>
+		/// <returns>System.Double.</returns>
 		/// <exception cref="System.Exception">Erro ao converter string</exception>
 		/// <exception cref="Exception">Erro ao converter string</exception>
-		public static double ToDouble(this string dados, double def = -1)
-        {
-            try
-            {
-                double converted;
-                if (!double.TryParse(dados, NumberStyles.Any,
-                                             CultureInfo.CurrentCulture, 
-                                             out converted))
-                    converted = def;
+		public static double ToDouble(this string dados, double def, IFormatProvider format)
+		{
+			try
+			{
+				double converted;
+				if (!double.TryParse(dados, NumberStyles.Any, format, out converted))
+					converted = def;
 
-                return converted;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao converter string", ex);
-            }
-        }
+				return converted;
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao converter string", ex);
+			}
+		}
 
 		/// <summary>
 		/// To the decimal.
@@ -260,22 +363,44 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao converter string</exception>
 		/// <exception cref="Exception">Erro ao converter string</exception>
 		public static decimal ToDecimal(this string dados, decimal def = -1)
-        {
-            try
-            {
-                decimal converted;
-                if (!decimal.TryParse(dados, NumberStyles.Any,
-                                             CultureInfo.CurrentCulture,
-                                             out converted))
-                    converted = def;
+		{
+			return ToDecimal(dados, def, CultureInfo.CurrentCulture);
+		}
 
-                return converted;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao converter string", ex);
-            }
-        }
+		/// <summary>
+		/// To the decimal.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="format">The format.</param>
+		/// <returns>System.Decimal.</returns>
+		public static decimal ToDecimal(this string dados, IFormatProvider format)
+		{
+			return ToDecimal(dados, -1, format);
+		}
+
+		/// <summary>
+		/// To the decimal.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="def">The definition.</param>
+		/// <param name="format">The format.</param>
+		/// <returns>System.Decimal.</returns>
+		/// <exception cref="System.Exception">Erro ao converter string</exception>
+		public static decimal ToDecimal(this string dados, decimal def, IFormatProvider format)
+		{
+			try
+			{
+				decimal converted;
+				if (!decimal.TryParse(dados, NumberStyles.Any, format, out converted))
+					converted = def;
+
+				return converted;
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao converter string", ex);
+			}
+		}
 
 		/// <summary>
 		/// To the int32.
@@ -286,48 +411,91 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao converter string</exception>
 		/// <exception cref="Exception">Erro ao converter string</exception>
 		public static int ToInt32(this string dados, int def = -1)
-        {
-            try
-            {
-                int converted;
-                if (!int.TryParse(dados, NumberStyles.Any,
-                                         CultureInfo.CurrentCulture, 
-                                         out converted))
-                    converted = def;
+		{
+			return ToInt32(dados, def, CultureInfo.CurrentCulture);
+		}
 
-                return converted;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao converter string", ex);
-            }
-        }
+		/// <summary>
+		/// To the int32.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="format">The format.</param>
+		/// <returns>System.Int32.</returns>
+		public static int ToInt32(this string dados, IFormatProvider format)
+		{
+			return ToInt32(dados, -1, format);
+		}
+
+		/// <summary>
+		/// To the int32.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="def">The definition.</param>
+		/// <param name="format">The format.</param>
+		/// <returns>System.Int32.</returns>
+		/// <exception cref="System.Exception">Erro ao converter string</exception>
+		public static int ToInt32(this string dados, int def, IFormatProvider format)
+		{
+			try
+			{
+				int converted;
+				if (!int.TryParse(dados, NumberStyles.Any, format, out converted))
+					converted = def;
+
+				return converted;
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao converter string", ex);
+			}
+		}
 
 		/// <summary>
 		/// To the int64.
 		/// </summary>
 		/// <param name="dados">The dados.</param>
 		/// <param name="def">The definition.</param>
+		/// <returns>System.Int64.</returns>
+		public static long ToInt64(this string dados, long def = -1)
+		{
+			return ToInt64(dados, def, CultureInfo.CurrentCulture);
+		}
+
+		/// <summary>
+		/// To the int64.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="format">The format.</param>
+		/// <returns>System.Int64.</returns>
+		public static long ToInt64(this string dados, IFormatProvider format)
+		{
+			return ToInt64(dados, -1, format);
+		}
+
+		/// <summary>
+		/// To the int64.
+		/// </summary>
+		/// <param name="dados">The dados.</param>
+		/// <param name="def">The definition.</param>
+		/// <param name="format">The format.</param>
 		/// <returns>Int64.</returns>
 		/// <exception cref="System.Exception">Erro ao converter string</exception>
 		/// <exception cref="Exception">Erro ao converter string</exception>
-		public static long ToInt64(this string dados, long def = -1)
-        {
-            try
-            {
-                long converted;
-                if (!long.TryParse(dados, NumberStyles.Any,
-                                         CultureInfo.CurrentCulture,
-                                         out converted))
-                    converted = def;
+		public static long ToInt64(this string dados, long def, IFormatProvider format)
+		{
+			try
+			{
+				long converted;
+				if (!long.TryParse(dados, NumberStyles.Any, format, out converted))
+					converted = def;
 
-                return converted;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao converter string", ex);
-            }
-        }
+				return converted;
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao converter string", ex);
+			}
+		}
 
 		/// <summary>
 		/// To the data.
@@ -337,20 +505,20 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao converter string</exception>
 		/// <exception cref="Exception">Erro ao converter string</exception>
 		public static DateTime ToData(this string dados)
-        {
-            try
-            {
-                DateTime converted;
-                if (!DateTime.TryParse(dados, out converted))
-                    converted = default(DateTime);
+		{
+			try
+			{
+				DateTime converted;
+				if (!DateTime.TryParse(dados, out converted))
+					converted = default(DateTime);
 
-                return converted;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao converter string", ex);
-            }
-        }
+				return converted;
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao converter string", ex);
+			}
+		}
 
 		/// <summary>
 		/// Retorna apenas os numeros da string.
@@ -360,20 +528,20 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao processar a string</exception>
 		/// <exception cref="Exception">Erro ao processar a string</exception>
 		public static string OnlyNumbers(this string toNormalize)
-        {
-            try
-            {
-                if (toNormalize == null)
-                    return string.Empty;
+		{
+			try
+			{
+				if (toNormalize == null)
+					return string.Empty;
 
-                var toReturn = Regex.Replace(toNormalize, "[^0-9]", string.Empty);
-                return toReturn;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao processar a string", ex);
-            }
-        }
+				var toReturn = Regex.Replace(toNormalize, "[^0-9]", string.Empty);
+				return toReturn;
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao processar a string", ex);
+			}
+		}
 
 		/// <summary>
 		/// Determines whether the specified cep is cep.
@@ -383,21 +551,21 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao validar CEP</exception>
 		/// <exception cref="Exception">Erro ao validar CEP</exception>
 		public static bool IsCep(this string cep)
-        {
-            try
-            {
-                cep = cep.OnlyNumbers();
+		{
+			try
+			{
+				cep = cep.OnlyNumbers();
 
-                if (cep.Length == 8)
-                    cep = $"{cep.Substring(0, 5)}-{cep.Substring(5, 3)}";
+				if (cep.Length == 8)
+					cep = $"{cep.Substring(0, 5)}-{cep.Substring(5, 3)}";
 
-                return Regex.IsMatch(cep, "[0-9]{5}-[0-9]{3}");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao validar CEP", ex);
-            }
-        }
+				return Regex.IsMatch(cep, "[0-9]{5}-[0-9]{3}");
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao validar CEP", ex);
+			}
+		}
 
 		/// <summary>
 		/// Checar se a string È um [CPF ou CNPJ] v·lido.
@@ -406,20 +574,20 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns><c>true</c> se o [CPF ou CNPJ] È v·lido; sen„o, <c>false</c>.</returns>
 		// ReSharper disable once InconsistentNaming
 		public static bool IsCPFOrCNPJ(this string cpfcnpj)
-        {
-	        var value = cpfcnpj.OnlyNumbers();
-	        switch (value.Length)
-	        {
-		        case 11:
-			        return value.IsCPF();
+		{
+			var value = cpfcnpj.OnlyNumbers();
+			switch (value.Length)
+			{
+				case 11:
+					return value.IsCPF();
 
-		        case 14:
-			        return value.IsCNPJ();
+				case 14:
+					return value.IsCNPJ();
 
-		        default:
-			        return false;
-	        }
-        }
+				default:
+					return false;
+			}
+		}
 
 		/// <summary>
 		/// Checa se a string È um CPF v·lido.
@@ -430,15 +598,15 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao validar CPF</exception>
 		/// <exception cref="Exception">Erro ao validar CPF</exception>
 		public static bool IsCPF(this string vrCPF, bool ajustarTamanho = false)
-        {
-            try
-            {
-                var cpf = vrCPF.OnlyNumbers();
-	            if (ajustarTamanho)
-		            cpf = cpf.ZeroFill(11);
+		{
+			try
+			{
+				var cpf = vrCPF.OnlyNumbers();
+				if (ajustarTamanho)
+					cpf = cpf.ZeroFill(11);
 
-                if (cpf.Length != 11)
-                    return false;
+				if (cpf.Length != 11)
+					return false;
 
 				//if (new string(cpf[0], cpf.Length) == cpf || 
 				//    cpf == "12345678909")
@@ -448,42 +616,42 @@ namespace ACBr.Net.Core.Extensions
 					return false;
 
 				var numeros = new int[11];
-                for (var i = 0; i < 11; i++)
-                    numeros[i] = int.Parse(cpf[i].ToString());
+				for (var i = 0; i < 11; i++)
+					numeros[i] = int.Parse(cpf[i].ToString());
 
-                var soma = 0;
-                for (var i = 0; i < 9; i++)
-                    soma += (10 - i) * numeros[i];
+				var soma = 0;
+				for (var i = 0; i < 9; i++)
+					soma += (10 - i)*numeros[i];
 
-                var resultado = soma % 11;
-                if (resultado == 1 || resultado == 0)
-                {
-                    if (numeros[9] != 0)
-                        return false;
-                }
-                else if (numeros[9] != 11 - resultado)
-                    return false;
+				var resultado = soma%11;
+				if (resultado == 1 || resultado == 0)
+				{
+					if (numeros[9] != 0)
+						return false;
+				}
+				else if (numeros[9] != 11 - resultado)
+					return false;
 
-                soma = 0;
-                for (var i = 0; i < 10; i++)
-                    soma += (11 - i) * numeros[i];
+				soma = 0;
+				for (var i = 0; i < 10; i++)
+					soma += (11 - i)*numeros[i];
 
-                resultado = soma % 11;
-                if (resultado == 1 || resultado == 0)
-                {
-                    if (numeros[10] != 0)
-                        return false;
-                }
-                else if (numeros[10] != 11 - resultado)
-                    return false;
+				resultado = soma%11;
+				if (resultado == 1 || resultado == 0)
+				{
+					if (numeros[10] != 0)
+						return false;
+				}
+				else if (numeros[10] != 11 - resultado)
+					return false;
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao validar CPF", ex);
-            }
-        }
+				return true;
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao validar CPF", ex);
+			}
+		}
 
 		/// <summary>
 		/// Checa se a string È um CNPJ v·lido.
@@ -494,57 +662,57 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao validar CNPJ</exception>
 		/// <exception cref="Exception">Erro ao validar CNPJ</exception>
 		public static bool IsCNPJ(this string vrCNPJ, bool ajustarTamanho = false)
-        {
-            try
-            {
-                var cnpj = vrCNPJ.OnlyNumbers();
-	            if (ajustarTamanho)
-		            cnpj = cnpj.ZeroFill(14);
+		{
+			try
+			{
+				var cnpj = vrCNPJ.OnlyNumbers();
+				if (ajustarTamanho)
+					cnpj = cnpj.ZeroFill(14);
 
-                if (cnpj.Length != 14)
-                    return false;
+				if (cnpj.Length != 14)
+					return false;
 
-                if (new string(cnpj[0], cnpj.Length) == cnpj) 
-                    return false;
+				if (new string(cnpj[0], cnpj.Length) == cnpj)
+					return false;
 
-                var resultado = new int[2];
-                int nrDig;
-                const string ftmt = "6543298765432";
-                var cnpjOk = new bool[2];
-                var digitos = new int[14];
-                var soma = new int[2];
-                soma[0] = 0;
-                soma[1] = 0;
-                resultado[0] = 0;
-                resultado[1] = 0;
-                cnpjOk[0] = false;
-                cnpjOk[1] = false;
+				var resultado = new int[2];
+				int nrDig;
+				const string ftmt = "6543298765432";
+				var cnpjOk = new bool[2];
+				var digitos = new int[14];
+				var soma = new int[2];
+				soma[0] = 0;
+				soma[1] = 0;
+				resultado[0] = 0;
+				resultado[1] = 0;
+				cnpjOk[0] = false;
+				cnpjOk[1] = false;
 
-                for (nrDig = 0; nrDig < 14; nrDig++)
-                {
-                    digitos[nrDig] = int.Parse(cnpj.Substring(nrDig, 1));
-                    if (nrDig <= 11)
-                        soma[0] += digitos[nrDig] * int.Parse(ftmt.Substring(nrDig + 1, 1));
-                    if (nrDig <= 12)
-                        soma[1] += digitos[nrDig] * int.Parse(ftmt.Substring(nrDig, 1));
-                }
+				for (nrDig = 0; nrDig < 14; nrDig++)
+				{
+					digitos[nrDig] = int.Parse(cnpj.Substring(nrDig, 1));
+					if (nrDig <= 11)
+						soma[0] += digitos[nrDig]*int.Parse(ftmt.Substring(nrDig + 1, 1));
+					if (nrDig <= 12)
+						soma[1] += digitos[nrDig]*int.Parse(ftmt.Substring(nrDig, 1));
+				}
 
-                for (nrDig = 0; nrDig < 2; nrDig++)
-                {
-                    resultado[nrDig] = soma[nrDig] % 11;
-                    if ((resultado[nrDig] == 0) || (resultado[nrDig] == 1))
-                        cnpjOk[nrDig] = digitos[12 + nrDig] == 0;
-                    else
-                        cnpjOk[nrDig] = digitos[12 + nrDig] == 11 - resultado[nrDig];
-                }
+				for (nrDig = 0; nrDig < 2; nrDig++)
+				{
+					resultado[nrDig] = soma[nrDig]%11;
+					if ((resultado[nrDig] == 0) || (resultado[nrDig] == 1))
+						cnpjOk[nrDig] = digitos[12 + nrDig] == 0;
+					else
+						cnpjOk[nrDig] = digitos[12 + nrDig] == 11 - resultado[nrDig];
+				}
 
-                return cnpjOk[0] && cnpjOk[1];
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao validar CNPJ", ex);
-            }
-        }
+				return cnpjOk[0] && cnpjOk[1];
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao validar CNPJ", ex);
+			}
+		}
 
 		/// <summary>
 		/// Determines whether the specified p inscr is ie.
@@ -555,9 +723,9 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao IE</exception>
 		/// <exception cref="Exception">Erro ao IE</exception>
 		public static bool IsIE(this string pInscr, string pUf)
-        {
-	        try
-	        {
+		{
+			try
+			{
 				if (pInscr.IsEmpty())
 					return false;
 
@@ -568,28 +736,31 @@ namespace ACBr.Net.Core.Extensions
 					return false;
 
 				const string c09 = "0-9";
-		        int[,] cPesos = {{0 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,2 ,3 ,4 ,5 ,6 },
-								 {0 ,0 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,2 ,3 ,4 ,5 },
-								 {2 ,0 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,2 ,3 ,4 ,5 ,6 },
-								 {0 ,2 ,3 ,4 ,5 ,6 ,0 ,0 ,0 ,0 ,0 ,0 ,0 ,0 },
-								 {0 ,8 ,7 ,6 ,5 ,4 ,3 ,2 ,1 ,0 ,0 ,0 ,0 ,0 },
-								 {0 ,2 ,3 ,4 ,5 ,6 ,7 ,0 ,0 ,8 ,9 ,0 ,0 ,0 },
-								 {0 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,1 ,2 ,3 ,4 ,5 },
-								 {0 ,2 ,3 ,4 ,5 ,6 ,7 ,2 ,3 ,4 ,5 ,6 ,7 ,8 },
-								 {0 ,0 ,2 ,3 ,4 ,5 ,6 ,7 ,2 ,3 ,4 ,5 ,6 ,7 },
-								 {0 ,0 ,2 ,1 ,2 ,1 ,2 ,1 ,2 ,1 ,1 ,2 ,1 ,0 },
-								 {0 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,10,11,2 ,3 ,0 },
-								 {0 ,0 ,0 ,0 ,10,8 ,7 ,6 ,5 ,4 ,3 ,1 ,0 ,0 },
-								 {0 ,2 ,3 ,4 ,5 ,6 ,7 ,8 ,9 ,10,2 ,3 ,0, 0 } };
+				int[,] cPesos =
+				{
+					{0, 2, 3, 4, 5, 6, 7, 8, 9, 2, 3, 4, 5, 6},
+					{0, 0, 2, 3, 4, 5, 6, 7, 8, 9, 2, 3, 4, 5},
+					{2, 0, 3, 4, 5, 6, 7, 8, 9, 2, 3, 4, 5, 6},
+					{0, 2, 3, 4, 5, 6, 0, 0, 0, 0, 0, 0, 0, 0},
+					{0, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0},
+					{0, 2, 3, 4, 5, 6, 7, 0, 0, 8, 9, 0, 0, 0},
+					{0, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5},
+					{0, 2, 3, 4, 5, 6, 7, 2, 3, 4, 5, 6, 7, 8},
+					{0, 0, 2, 3, 4, 5, 6, 7, 2, 3, 4, 5, 6, 7},
+					{0, 0, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1, 0},
+					{0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 3, 0},
+					{0, 0, 0, 0, 10, 8, 7, 6, 5, 4, 3, 1, 0, 0},
+					{0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 0, 0}
+				};
 
-		        string[] vDigitos = { "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
-		        var fsDocto = "";
-		        char d;
-                for (var i = 1; i <= pInscr.Trim().Length; i++)
-                {
-                    if ("0123456789P".IndexOf(pInscr.Substring(i - 1, 1), 0, StringComparison.OrdinalIgnoreCase) + 1 > 0)
+				string[] vDigitos = {"", "", "", "", "", "", "", "", "", "", "", "", "", ""};
+				var fsDocto = "";
+				char d;
+				for (var i = 1; i <= pInscr.Trim().Length; i++)
+				{
+					if ("0123456789P".IndexOf(pInscr.Substring(i - 1, 1), 0, StringComparison.OrdinalIgnoreCase) + 1 > 0)
 						fsDocto += pInscr.Substring(i - 1, 1);
-                }
+				}
 
 				var tamanho = 0;
 				var xRot = "E";
@@ -603,31 +774,31 @@ namespace ACBr.Net.Core.Extensions
 
 				// ReSharper disable once SwitchStatementMissingSomeCases
 				switch (pUf.ToUpper())
-                {
-                    case "AC":
-		                // ReSharper disable once SwitchStatementMissingSomeCases
-		                switch (fsDocto.Length)
-		                {
-			                case 9:
-				                tamanho = 9;
-				                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "1", "0", "", "", "", "", ""};
-				                break;
+				{
+					case "AC":
+						// ReSharper disable once SwitchStatementMissingSomeCases
+						switch (fsDocto.Length)
+						{
+							case 9:
+								tamanho = 9;
+								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "1", "0", "", "", "", "", ""};
+								break;
 
-			                case 13:
-				                tamanho = 13;
-				                xTp = 2;
-				                yRot = "E";
-				                yMd = 11;
-				                yTp = 1;
-				                vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "1", "0", ""};
-				                break;
-		                }
-                        break;
+							case 13:
+								tamanho = 13;
+								xTp = 2;
+								yRot = "E";
+								yMd = 11;
+								yTp = 1;
+								vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "1", "0", ""};
+								break;
+						}
+						break;
 
-                    case "AL":
-		                tamanho = 9;
-		                xRot = "BD";
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "4", "2", "", "", "", "", ""};
+					case "AL":
+						tamanho = 9;
+						xRot = "BD";
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "4", "2", "", "", "", "", ""};
 						break;
 
 					case "AP":
@@ -635,7 +806,7 @@ namespace ACBr.Net.Core.Extensions
 						{
 							tamanho = 9;
 							xRot = "CE";
-							vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "3", "0", "", "", "", "", "" };
+							vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "3", "0", "", "", "", "", ""};
 
 							if (fsDocto.ToInt64().Between(30170010, 30190229))
 								fatorF = 1;
@@ -645,234 +816,234 @@ namespace ACBr.Net.Core.Extensions
 						break;
 
 					case "AM":
-		                tamanho = 9;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+						tamanho = 9;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
 						break;
 
-                    case "BA":
-		                if (fsDocto.Length < 9)
-			                fsDocto = fsDocto.ZeroFill(9);
+					case "BA":
+						if (fsDocto.Length < 9)
+							fsDocto = fsDocto.ZeroFill(9);
 
-		                tamanho = 9;
+						tamanho = 9;
 						xTp = 2;
 						yTp = 3;
 						yRot = "E";
 						vDigitos = new[] {"DVX", "DVY", c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
-		                if (fsDocto[1].IsIn('0', '1', '2', '3', '4', '5', '8'))
-		                {
-			                xMd = 10;
-			                yMd = 10;
-		                }
-		                else
-		                {
+						if (fsDocto[1].IsIn('0', '1', '2', '3', '4', '5', '8'))
+						{
+							xMd = 10;
+							yMd = 10;
+						}
+						else
+						{
 							xMd = 11;
 							yMd = 11;
 						}
 						break;
 
-                    case "CE":
+					case "CE":
 						tamanho = 9;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, "0", "", "", "", "", ""};
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, "0", "", "", "", "", ""};
 						break;
 
-                    case "DF":
-		                tamanho = 13;
-		                xTp = 2;
-		                yRot = "E";
-		                yMd = 11;
-		                yTp = 1;
-		                vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "7", "0", ""};
+					case "DF":
+						tamanho = 13;
+						xTp = 2;
+						yRot = "E";
+						yMd = 11;
+						yTp = 1;
+						vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "7", "0", ""};
 						break;
 
-                    case "ES":
-		                tamanho = 9;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+					case "ES":
+						tamanho = 9;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
 						break;
 
-                    case "GO":
-		                if (fsDocto.Length == 9)
-		                {
-			                tamanho = 9;
-			                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "0,1,5", "1", "", "", "", "", ""};
+					case "GO":
+						if (fsDocto.Length == 9)
+						{
+							tamanho = 9;
+							vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "0,1,5", "1", "", "", "", "", ""};
 
 							if (fsDocto.ToInt64().Between(101031050, 101199979))
 								fatorG = 1;
 						}
-                        break;
-
-                    case "MA":
-		                tamanho = 9;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "2", "1", "", "", "", "", ""};
 						break;
 
-                    case "MT":
-		                if (fsDocto.Length == 9)
-			                fsDocto = fsDocto.ZeroFill(11);
-
-		                tamanho = 11;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, "", "", ""};
+					case "MA":
+						tamanho = 9;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "2", "1", "", "", "", "", ""};
 						break;
 
-                    case "MS":
-		                tamanho = 9;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "8", "2", "", "", "", "", ""};
+					case "MT":
+						if (fsDocto.Length == 9)
+							fsDocto = fsDocto.ZeroFill(11);
+
+						tamanho = 11;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, "", "", ""};
 						break;
 
-                    case "MG":
-		                tamanho = 13;
-		                xRot = "AE";
-		                xMd = 10;
-		                xTp = 10;
-		                yRot = "E";
-		                yMd = 11;
-		                yTp = 11;
-		                vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, ""};
+					case "MS":
+						tamanho = 9;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "8", "2", "", "", "", "", ""};
 						break;
 
-                    case "PA":
-		                tamanho = 9;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "5", "1", "", "", "", "", ""};
+					case "MG":
+						tamanho = 13;
+						xRot = "AE";
+						xMd = 10;
+						xTp = 10;
+						yRot = "E";
+						yMd = 11;
+						yTp = 11;
+						vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, ""};
 						break;
 
-                    case "PB":
+					case "PA":
+						tamanho = 9;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "5", "1", "", "", "", "", ""};
+						break;
+
+					case "PB":
 						tamanho = 9;
 						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "6", "1", "", "", "", "", ""};
 						break;
 
 					case "PR":
 						tamanho = 10;
-		                xTp = 9;
-		                yRot = "E";
-		                yMd = 11;
-		                yTp = 8;
-		                vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", ""};
+						xTp = 9;
+						yRot = "E";
+						yMd = 11;
+						yTp = 8;
+						vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", ""};
 						break;
 
 					case "PE":
-		                // ReSharper disable once SwitchStatementMissingSomeCases
-		                switch (fsDocto.Length)
-		                {
+						// ReSharper disable once SwitchStatementMissingSomeCases
+						switch (fsDocto.Length)
+						{
 							case 14:
-				                tamanho = 14;
-				                xTp = 7;
-				                fatorF = 1;
-				                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, "1-9", "8", "1"};
+								tamanho = 14;
+								xTp = 7;
+								fatorF = 1;
+								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, "1-9", "8", "1"};
 								break;
 
 							case 9:
-				                tamanho = 9;
-				                xTp = 9;
-				                xMd = 11;
-				                yRot = "E";
-				                yMd = 11;
-				                yTp = 7;
-				                vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+								tamanho = 9;
+								xTp = 9;
+								xMd = 11;
+								yRot = "E";
+								yMd = 11;
+								yTp = 7;
+								vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
 								break;
-		                }
-                        break;
-
-                    case "PI":
-		                tamanho = 9;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "9", "1", "", "", "", "", ""};
+						}
 						break;
 
-                    case "RJ":
-		                tamanho = 8;
-		                xTp = 8;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "1,7,8,9", "", "", "", "", "", ""};
+					case "PI":
+						tamanho = 9;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "9", "1", "", "", "", "", ""};
 						break;
 
-                    case "RN":
+					case "RJ":
+						tamanho = 8;
+						xTp = 8;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "1,7,8,9", "", "", "", "", "", ""};
+						break;
+
+					case "RN":
 						xRot = "BD";
 						switch (fsDocto.Length)
-		                {
+						{
 							case 9:
-				                tamanho = 9;
-				                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "0", "2", "", "", "", "", ""};
+								tamanho = 9;
+								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "0", "2", "", "", "", "", ""};
 								break;
 
 							case 10:
 								tamanho = 10;
-				                xTp = 11;
-				                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, "0", "2", "", "", "", ""};
+								xTp = 11;
+								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, "0", "2", "", "", "", ""};
 								break;
-		                }
-                        break;
+						}
+						break;
 
 					case "RS":
-		                tamanho = 10;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "0-4", "", "", "", ""};
+						tamanho = 10;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "0-4", "", "", "", ""};
 						break;
 
 					case "RO":
-		                fatorF = 1;
-		                switch (fsDocto.Length)
-		                {
+						fatorF = 1;
+						switch (fsDocto.Length)
+						{
 							case 9:
-				                tamanho = 9;
-				                xTp = 4;
-				                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, "1-9", "", "", "", "", ""};
+								tamanho = 9;
+								xTp = 4;
+								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, "1-9", "", "", "", "", ""};
 								break;
 
 							case 14:
-				                tamanho = 14;
-				                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09};
+								tamanho = 14;
+								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09};
 								break;
-		                }
-		                break;
-
-                    case "RR":
-		                tamanho = 9;
-		                xRot = "D";
-		                xMd = 9;
-		                xTp = 5;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "4", "2", "", "", "", "", ""};
+						}
 						break;
 
-                    case "SC":
-                    case "SE":
-		                tamanho = 9;
-		                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+					case "RR":
+						tamanho = 9;
+						xRot = "D";
+						xMd = 9;
+						xTp = 5;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "4", "2", "", "", "", "", ""};
 						break;
 
-                    case "SP":
-		                xRot = "D";
-		                xTp = 12;
-		                if (fsDocto.ToUpper()[0] == 'P')
-		                {
-			                tamanho = 13;
-			                vDigitos = new[] {c09, c09, c09, "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "P", ""};
-		                }
-		                else
-		                {
-			                tamanho = 12;
-			                yRot = "D";
-			                yMd = 11;
-			                yTp = 13;
-			                vDigitos = new[] {"DVY", c09, c09, "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", ""};
-		                }
+					case "SC":
+					case "SE":
+						tamanho = 9;
+						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
 						break;
 
-                    case "TO":
-		                if (fsDocto.Length == 11)
-		                {
-			                tamanho = 11;
-			                xTp = 6;
-							vDigitos = new[] {"DVX",c09,c09,c09,c09,c09,c09,"1,2,3,9","0,9","9","2","","",""};
-		                }
-		                else
-		                {
-			                tamanho = 9;
-			                vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+					case "SP":
+						xRot = "D";
+						xTp = 12;
+						if (fsDocto.ToUpper()[0] == 'P')
+						{
+							tamanho = 13;
+							vDigitos = new[] {c09, c09, c09, "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "P", ""};
+						}
+						else
+						{
+							tamanho = 12;
+							yRot = "D";
+							yMd = 11;
+							yTp = 13;
+							vDigitos = new[] {"DVY", c09, c09, "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", ""};
+						}
+						break;
 
-		                }
-                        break;
+					case "TO":
+						if (fsDocto.Length == 11)
+						{
+							tamanho = 11;
+							xTp = 6;
+							vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "1,2,3,9", "0,9", "9", "2", "", "", ""};
+						}
+						else
+						{
+							tamanho = 9;
+							vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
 
-                }
+						}
+						break;
+
+				}
 
 				var ok = (tamanho > 0) && (fsDocto.Length == tamanho);
-		        if (!ok)
-			        return false;
+				if (!ok)
+					return false;
 
 				fsDocto = fsDocto.FillRight(14);
 				var dvx = 0;
@@ -881,76 +1052,76 @@ namespace ACBr.Net.Core.Extensions
 
 				//Verificando os digitos nas posicoes s„o permitidos 
 				while (I >= 0)
-		        {
-			        d = fsDocto[13 - I];
+				{
+					d = fsDocto[13 - I];
 
-			        switch (vDigitos[I])
-			        {
-				        case "":
-					        ok = d == ' ';
-					        break;
+					switch (vDigitos[I])
+					{
+						case "":
+							ok = d == ' ';
+							break;
 
-				        case "DVX":
-				        case "DVY":
-				        case c09:
-					        ok = char.IsNumber(d);
-					        // ReSharper disable once SwitchStatementMissingSomeCases
-					        switch (vDigitos[I])
-					        {
-						        case "DVX":
-							        dvx = d.ToInt32(0);
-							        break;
+						case "DVX":
+						case "DVY":
+						case c09:
+							ok = char.IsNumber(d);
+							// ReSharper disable once SwitchStatementMissingSomeCases
+							switch (vDigitos[I])
+							{
+								case "DVX":
+									dvx = d.ToInt32(0);
+									break;
 
-						        case "DVY":
-							        dvy = d.ToInt32(0);
-							        break;
-					        }
-					        break;
+								case "DVY":
+									dvy = d.ToInt32(0);
+									break;
+							}
+							break;
 
-				        default:
-					        if (vDigitos[I].Contains(','))
-					        {
-						        ok = vDigitos[I].Contains(d);
-					        }
-					        else if (vDigitos[I].Contains('-'))
-					        {
-						        ok = d.ToInt32().Between(vDigitos[I].Substring(0, 1).ToInt32(), vDigitos[I].Substring(2, 1).ToInt32());
-					        }
-					        else
-					        {
-						        ok = d == vDigitos[I][0];
-					        }
-					        break;
-			        }
+						default:
+							if (vDigitos[I].Contains(','))
+							{
+								ok = vDigitos[I].Contains(d);
+							}
+							else if (vDigitos[I].Contains('-'))
+							{
+								ok = d.ToInt32().Between(vDigitos[I].Substring(0, 1).ToInt32(), vDigitos[I].Substring(2, 1).ToInt32());
+							}
+							else
+							{
+								ok = d == vDigitos[I][0];
+							}
+							break;
+					}
 
-			        if (!ok)
-				        return false;
+					if (!ok)
+						return false;
 
 					I--;
-		        }
+				}
 
-		        var passo = 'X';
-		        while (xTp > 0)
-		        {
+				var passo = 'X';
+				while (xTp > 0)
+				{
 					var soma = 0;
 					var somAq = 0;
 					I = 14;
 
-			        while (I > 0)
-			        {
-				        d = fsDocto[14 - I];
-				        if (char.IsNumber(d))
-				        {
-					        var nD = d.ToInt32(0);
-					        var m = nD*cPesos[xTp-1, I-1];
-					        soma += m;
+					while (I > 0)
+					{
+						d = fsDocto[14 - I];
+						if (char.IsNumber(d))
+						{
+							var nD = d.ToInt32(0);
+							var m = nD*cPesos[xTp - 1, I - 1];
+							soma += m;
 
-					        if (xRot.Contains('A'))
-								somAq = somAq + (int)Math.Truncate((decimal)m/10);
-				        }
+							if (xRot.Contains('A'))
+								somAq = somAq + (int) Math.Truncate((decimal) m/10);
+						}
 
-				        I--;
-			        }
+						I--;
+					}
 
 					if (xRot.Contains('A'))
 						soma += somAq;
@@ -960,24 +1131,24 @@ namespace ACBr.Net.Core.Extensions
 						soma += 5 + (4*fatorF);
 
 					//Calculando digito verificador
-					var dv = (int)Math.Truncate((decimal)soma % xMd);
+					var dv = (int) Math.Truncate((decimal) soma%xMd);
 					if (xRot.Contains('E'))
-						dv = (int)Math.Truncate((decimal)xMd-dv);
+						dv = (int) Math.Truncate((decimal) xMd - dv);
 
 					//Apenas GO modifica o FatorG para diferente de 0
-			        switch (dv)
-			        {
-				        case 10:
-					        dv = fatorG;
-					        break;
+					switch (dv)
+					{
+						case 10:
+							dv = fatorG;
+							break;
 
-				        case 11:
-					        dv = fatorF;
-					        break;
-			        }
+						case 11:
+							dv = fatorF;
+							break;
+					}
 
-			        if (passo == 'X')
-				        ok = dvx == dv;
+					if (passo == 'X')
+						ok = dvx == dv;
 					else
 						ok = dvy == dv;
 
@@ -985,23 +1156,23 @@ namespace ACBr.Net.Core.Extensions
 						return false;
 
 					if (passo == 'X')
-			        {
+					{
 						passo = 'Y';
-				        xRot = yRot;
-				        xMd = yMd;
-				        xTp = yTp;
-			        }
+						xRot = yRot;
+						xMd = yMd;
+						xTp = yTp;
+					}
 					else
 						break;
 				}
 
 				return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao validar IE", ex);
-            }
-        }
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao validar IE", ex);
+			}
+		}
 
 		/// <summary>
 		/// Formatars the ie.
@@ -1029,7 +1200,7 @@ namespace ACBr.Net.Core.Extensions
 			if (pUf == "PA") mascara = "##-######-#";
 			if (pUf == "PB") mascara = "########-#";
 			if (pUf == "PR") mascara = "###.#####-##";
-			if (pUf == "PE") mascara =  pInscr.Length > 9 ? "##.#.###.#######-#" : "#######-##";
+			if (pUf == "PE") mascara = pInscr.Length > 9 ? "##.#.###.#######-#" : "#######-##";
 			if (pUf == "PI") mascara = "#########";
 			if (pUf == "RJ") mascara = "##.###.##-#";
 			if (pUf == "RN") mascara = pInscr.Length > 9 ? "##.#.###.###-#" : "##.###.###-#";
@@ -1048,9 +1219,9 @@ namespace ACBr.Net.Core.Extensions
 					fsDocto += pInscr.Substring(i - 1, 1);
 			}
 
-			return fsDocto.Length < mascara.Count(x => x == '#') ?
-							fsDocto.ZeroFill(mascara.Count(x => x == '#')).Formatar(mascara) :
-							fsDocto.Formatar(mascara);
+			return fsDocto.Length < mascara.Count(x => x == '#')
+				? fsDocto.ZeroFill(mascara.Count(x => x == '#')).Formatar(mascara)
+				: fsDocto.Formatar(mascara);
 		}
 
 		/// <summary>
@@ -1059,16 +1230,19 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="uf">The uf.</param>
 		/// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
 		public static bool ValidarUF(this string uf)
-	    {
-			if(uf.IsEmpty())
+		{
+			if (uf.IsEmpty())
 				return false;
 
-		    string[] cUFsValidas = { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS",
-									 "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC",
-									 "SP", "SE", "TO", "EX" };
+			string[] cUFsValidas =
+			{
+				"AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS",
+				"MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC",
+				"SP", "SE", "TO", "EX"
+			};
 
-		    return cUFsValidas.Contains(uf.Trim().ToUpper());
-	    }
+			return cUFsValidas.Contains(uf.Trim().ToUpper());
+		}
 
 		/// <summary>
 		/// Determines whether the specified pis is pis.
@@ -1078,35 +1252,34 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao validar PIS</exception>
 		/// <exception cref="Exception">Erro ao validar PIS</exception>
 		public static bool IsPIS(this string pis)
-        {
-            try
-            {
-                var multiplicador = new int[10] { 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
-                var soma = 0;
-                int resto;
+		{
+			try
+			{
+				var multiplicador = new int[10] {3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+				var soma = 0;
 
-                if (pis.Trim().Length == 0)
-                    return false;
+				if (pis.Trim().Length == 0)
+					return false;
 
-                pis = pis.Trim();
-                pis = pis.Replace("-", string.Empty).Replace(".", string.Empty).PadLeft(11, '0');
-                for (var i = 0; i < 10; i++)
-                    soma += int.Parse(pis[i].ToString()) * multiplicador[i];
+				pis = pis.Trim();
+				pis = pis.Replace("-", string.Empty).Replace(".", string.Empty).PadLeft(11, '0');
+				for (var i = 0; i < 10; i++)
+					soma += int.Parse(pis[i].ToString())*multiplicador[i];
 
-                resto = soma % 11;
+				var resto = soma%11;
 
-                if (resto < 2)
-                    resto = 0;
-                else
-                    resto = 11 - resto;
+				if (resto < 2)
+					resto = 0;
+				else
+					resto = 11 - resto;
 
-                return pis.EndsWith(resto.ToString());
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao validar PIS", ex);
-            }
-        }
+				return pis.EndsWith(resto.ToString());
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao validar PIS", ex);
+			}
+		}
 
 		/// <summary>
 		/// Determines whether the specified email is email.
@@ -1116,28 +1289,28 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao validar Email</exception>
 		/// <exception cref="Exception">Erro ao validar Email</exception>
 		public static bool IsEmail(this string email)
-        {
-            try
-            {
-                var emailRegex = @"^(([^<>()[\]\\.,;·‡„‚‰ÈËÍÎÌÏÓÔÛÚıÙˆ˙˘˚¸Á:\s@\""]+"
-                                  + @"(\.[^<>()[\]\\.,;·‡„‚‰ÈËÍÎÌÏÓÔÛÚıÙˆ˙˘˚¸Á:\s@\""]+)*)|(\"".+\""))@"
-                                  + @"((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|"
-                                  + @"(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$";
+		{
+			try
+			{
+				var emailRegex = @"^(([^<>()[\]\\.,;·‡„‚‰ÈËÍÎÌÏÓÔÛÚıÙˆ˙˘˚¸Á:\s@\""]+"
+				                 + @"(\.[^<>()[\]\\.,;·‡„‚‰ÈËÍÎÌÏÓÔÛÚıÙˆ˙˘˚¸Á:\s@\""]+)*)|(\"".+\""))@"
+				                 + @"((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|"
+				                 + @"(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$";
 
-                // Inst‚ncia da classe Regex, passando como
-                // argumento sua Express„o Regular
-                var rx = new Regex(emailRegex);
+				// Inst‚ncia da classe Regex, passando como
+				// argumento sua Express„o Regular
+				var rx = new Regex(emailRegex);
 
-                // MÈtodo IsMatch da classe Regex que retorna
-                // verdadeiro caso o e-mail passado estiver
-                // dentro das regras da sua regex.
-                return rx.IsMatch(email);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao validar Email", ex);
-            }
-        }
+				// MÈtodo IsMatch da classe Regex que retorna
+				// verdadeiro caso o e-mail passado estiver
+				// dentro das regras da sua regex.
+				return rx.IsMatch(email);
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao validar Email", ex);
+			}
+		}
 
 		/// <summary>
 		/// Determines whether the specified site is site.
@@ -1147,20 +1320,20 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao validar endereÁo web</exception>
 		/// <exception cref="Exception">Erro ao validar endereÁo web</exception>
 		public static bool IsSite(this string site)
-        {
-            try
-            {
-                //string siteRegex = @"/^http:\/\/www\.[a-z]+\.(com)|(edu)|(net)$/";
-                const string siteRegex = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
+		{
+			try
+			{
+				//string siteRegex = @"/^http:\/\/www\.[a-z]+\.(com)|(edu)|(net)$/";
+				const string siteRegex = @"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
 
-                var rx = new Regex(siteRegex);
-                return rx.IsMatch(site);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao validar endereÁo web", ex);
-            }
-        }
+				var rx = new Regex(siteRegex);
+				return rx.IsMatch(site);
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao validar endereÁo web", ex);
+			}
+		}
 
 		/// <summary>
 		/// Verifica se a string È numerica.
@@ -1170,17 +1343,17 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao validar string</exception>
 		/// <exception cref="Exception">Erro ao validar string</exception>
 		public static bool IsNumeric(this string strNum)
-        {
-            try
-            {
-                var reNum = new Regex(@"^\d+$");
-                return reNum.IsMatch(strNum);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao validar string", ex);
-            }
-        }
+		{
+			try
+			{
+				var reNum = new Regex(@"^\d+$");
+				return reNum.IsMatch(strNum);
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao validar string", ex);
+			}
+		}
 
 		/// <summary>
 		/// Converte a string para UTF8.
@@ -1191,19 +1364,19 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="Exception">Erro ao codificar string</exception>
 		public static string ToUtf8(this string value)
 		{
-		    if (value == null)
-		        return string.Empty;
+			if (value == null)
+				return string.Empty;
 
-            try
-            {
-                var bytes = Encoding.Default.GetBytes(value);
-                return Encoding.UTF8.GetString(bytes);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao codificar string", ex);
-            }
-        }
+			try
+			{
+				var bytes = Encoding.Default.GetBytes(value);
+				return Encoding.UTF8.GetString(bytes);
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao codificar string", ex);
+			}
+		}
 
 		/// <summary>
 		/// To the XML string.
@@ -1212,28 +1385,26 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>System.String.</returns>
 		/// <exception cref="System.Exception">Erro ao codificar string</exception>
 		public static string ToXmlString(this string value)
-	    {
-            try
-            {
-                if (string.IsNullOrEmpty(value))
-                    return string.Empty; 
+		{
+			try
+			{
+				if (string.IsNullOrEmpty(value))
+					return string.Empty;
 
-                var bytes = Encoding.Default.GetBytes(value);
-                var text = RemoveCe(Encoding.UTF8.GetString(bytes));
+				var bytes = Encoding.Default.GetBytes(value);
+				var text = RemoveCe(Encoding.UTF8.GetString(bytes));
 
-                var textOut = new StringBuilder();
-                foreach (var current in text.Where(XmlConvert.IsXmlChar))
-                {
-                    textOut.Append(current);
-                }
-                
-                return textOut.ToString(); 
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao codificar string", ex);
-            }
-	    }
+				var textOut = new StringBuilder();
+				foreach (var current in text.Where(XmlConvert.IsXmlChar))
+					textOut.Append(current);
+
+				return textOut.ToString();
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao codificar string", ex);
+			}
+		}
 
 		/// <summary>
 		/// Transforma um array de string em uma unica string.
@@ -1243,16 +1414,16 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.Exception">Erro ao converter array</exception>
 		/// <exception cref="Exception">Erro ao converter array</exception>
 		public static string AsString(this string[] array)
-        {
-            try
-            {
+		{
+			try
+			{
 				return string.Join(Environment.NewLine, array);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao converter array", ex);
-            }
-        }
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao converter array", ex);
+			}
+		}
 
 		/// <summary>
 		/// Alinha a string a direita/esquerda e preenche com caractere informado ate ficar do tamanho especificado.
@@ -1263,26 +1434,26 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="esquerda">DireÁ„o do preenchimento</param>
 		/// <returns>String do tamanho especificado e se menor complementada com o caractere informado a direita/esquerda</returns>
 		public static string StringFill(this string text, int length, char with = ' ', bool esquerda = true)
-        {
-            if (text == null)
-                text = string.Empty;
+		{
+			if (text == null)
+				text = string.Empty;
 
-            if (text.Length > length)
-            {
-                text = text.Remove(length);
-            }
-            else
-            {
-                length -= text.Length;
+			if (text.Length > length)
+			{
+				text = text.Remove(length);
+			}
+			else
+			{
+				length -= text.Length;
 
-                if (esquerda)
-                    text = new string(with, length) + text;
-                else
-                    text += new string(with, length);
-            }
+				if (esquerda)
+					text = new string(with, length) + text;
+				else
+					text += new string(with, length);
+			}
 
-            return text;
-        }
+			return text;
+		}
 
 		/// <summary>
 		/// Alinha a string a direita e preenche a esquerda com o caracter informado atÈ ficar do tamanho especificado.
@@ -1293,12 +1464,12 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="with">Caractere para preencher</param>
 		/// <returns>String do tamanho especificado e se menor complementada com o caractere informado a esquerda</returns>
 		public static string FillRight(this string text, int length, char with = ' ')
-        {
-            if (text == null)
-                text = string.Empty;
+		{
+			if (text == null)
+				text = string.Empty;
 
-            return text.StringFill(length, with);
-        }
+			return text.StringFill(length, with);
+		}
 
 		/// <summary>
 		/// Alinha a string a esquerda e preenche a direita com o caracter informado atÈ ficar do tamanho especificado.
@@ -1309,12 +1480,12 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="with">Caractere para preencher</param>
 		/// <returns>String do tamanho especificado e se menor complementada com o caractere informado a direita</returns>
 		public static string FillLeft(this string text, int length, char with = ' ')
-        {
-            if (text == null)
-                text = string.Empty;
+		{
+			if (text == null)
+				text = string.Empty;
 
-            return text.StringFill(length, with, false);
-        }
+			return text.StringFill(length, with, false);
+		}
 
 		/// <summary>
 		/// Preenche uma string com zero a direita ate ficar do tamanho especificado.
@@ -1323,12 +1494,12 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="length">Tamanho final desejado</param>
 		/// <returns>String do tamanho especificado e se menor complementada com zero a direita/esquerda</returns>
 		public static string ZeroFill(this string text, int length)
-        {
-            if (text == null)
-                text = string.Empty;
+		{
+			if (text == null)
+				text = string.Empty;
 
-            return text.OnlyNumbers().StringFill(length, '0');
-        }
+			return text.OnlyNumbers().StringFill(length, '0');
+		}
 
 		/// <summary>
 		/// Normalize e substitui os caracteres especiais de uma string.
@@ -1337,17 +1508,17 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>String sem carateres especiais e normalizada</returns>
 		public static string RemoveCe(this string value)
 		{
-		    if (value == null)
-		        return string.Empty;
+			if (value == null)
+				return string.Empty;
 
-            var stFormD = new string(value.Normalize(NormalizationForm.FormD)
-                    .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray());
+			var stFormD = new string(value.Normalize(NormalizationForm.FormD)
+				.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray());
 
-            var retorno = new string(stFormD.Normalize(NormalizationForm.FormC)
-                .Where(c => char.IsLetter(c) || char.IsSeparator(c) || char.IsNumber(c) || c.Equals('|')).ToArray());
+			var retorno = new string(stFormD.Normalize(NormalizationForm.FormC)
+				.Where(c => char.IsLetter(c) || char.IsSeparator(c) || char.IsNumber(c) || c.Equals('|')).ToArray());
 
-            return retorno.SubstituiCe();
-        }
+			return retorno.SubstituiCe();
+		}
 
 		/// <summary>
 		/// Substitue os caracteres especiais de uma string.
@@ -1355,56 +1526,55 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="text">The text.</param>
 		/// <returns>String sem carateres especiais</returns>
 		public static string SubstituiCe(this string text)
-        {
-            try
-            {
-                if (text == null)
-                    return string.Empty;
+		{
+			try
+			{
+				if (text == null)
+					return string.Empty;
 
-                var retorno = string.Empty;
-                const string caracterComAcento = "·‡„‚‰ÈËÍÎÌÏÓÔÛÚıÙˆ˙˘˚¸Á¡¿√¬ƒ…» ÀÕÃŒœ”“’÷‘⁄Ÿ€‹«";
-                const string caracterSemAcento = "aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC";
+				var retorno = string.Empty;
+				const string caracterComAcento = "·‡„‚‰ÈËÍÎÌÏÓÔÛÚıÙˆ˙˘˚¸Á¡¿√¬ƒ…» ÀÕÃŒœ”“’÷‘⁄Ÿ€‹«";
+				const string caracterSemAcento = "aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC";
 
-                if (!string.IsNullOrEmpty(text))
-                {
-                    for (var i = 0; i < text.Length; i++)
-                    {
-                        if (caracterComAcento.IndexOf(Convert.ToChar(text.Substring(i, 1))) >= 0)
-                        {
-                            var car = caracterComAcento.IndexOf(Convert.ToChar(text.Substring(i, 1)));
-                            retorno += caracterSemAcento.Substring(car, 1);
-                        }
-                        else
-                        {
-                            retorno += text.Substring(i, 1);
-                        }
-                    }
+				if (!string.IsNullOrEmpty(text))
+				{
+					for (var i = 0; i < text.Length; i++)
+					{
+						if (caracterComAcento.IndexOf(Convert.ToChar(text.Substring(i, 1))) >= 0)
+						{
+							var car = caracterComAcento.IndexOf(Convert.ToChar(text.Substring(i, 1)));
+							retorno += caracterSemAcento.Substring(car, 1);
+						}
+						else
+						{
+							retorno += text.Substring(i, 1);
+						}
+					}
 
-                    string[] cEspeciais = { "#39", "---", "--", "-", "'", "#", Environment.NewLine, 
-                                            "\n", "\r", ",", ".", "?", "&", ":", "/", "!", ";", "∫",
-                                            "™", "%", "ë", "í", "(", ")", "\\", "î", "ì", "+", "É", "á" };
+					string[] cEspeciais =
+					{
+						"#39", "---", "--", "-", "'", "#", Environment.NewLine,
+						"\n", "\r", ",", ".", "?", "&", ":", "/", "!", ";", "∫",
+						"™", "%", "ë", "í", "(", ")", "\\", "î", "ì", "+", "É", "á"
+					};
 
-                    for (var q = 0; q < cEspeciais.Length; q++)
-                    {
-                        retorno = retorno.Replace(cEspeciais[q], string.Empty);
-                    }
+					retorno = cEspeciais.Aggregate(retorno, (current, t) => current.Replace(t, string.Empty));
+					for (var x = cEspeciais.Length - 1; x > -1; x--)
+					{
+						retorno = retorno.Replace(cEspeciais[x], string.Empty);
+					}
 
-                    for (var x = cEspeciais.Length - 1; x > -1; x--)
-                    {
-                        retorno = retorno.Replace(cEspeciais[x], string.Empty);
-                    }
+					retorno = retorno.Trim();
+				}
 
-                    retorno = retorno.Trim();
-                }
-
-                return retorno;
-            }
-            catch (Exception ex)
-            {
-                var tmpEx = new Exception("Erro ao formatar string.", ex);
-                throw tmpEx;
-            }
-        }
+				return retorno;
+			}
+			catch (Exception ex)
+			{
+				var tmpEx = new ACBrException("Erro ao formatar string.", ex);
+				throw tmpEx;
+			}
+		}
 
 		/// <summary>
 		/// Formata o CPF ou CNPJ no formato: 000.000.000-00, 00.000.000/0001-00 respectivamente.
@@ -1413,17 +1583,17 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>CPF/CNPJ Formatado</returns>
 		public static string FormataCPFCNPJ(this string value)
 		{
-		    value = value.OnlyNumbers();
-		    switch (value.Trim().Length)
-		    {
-		        case 11:
-		            return FormataCPF(value);
-		        case 14:
-		            return FormataCNPJ(value);
+			value = value.OnlyNumbers();
+			switch (value.Trim().Length)
+			{
+				case 11:
+					return FormataCPF(value);
+				case 14:
+					return FormataCNPJ(value);
 
-		        default:
-		            return value;
-		    }
+				default:
+					return value;
+			}
 		}
 
 		/// <summary>
@@ -1432,16 +1602,16 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="cpf">Sequencia numÈrica de 11 dÌgitos. Exemplo: 00000000000</param>
 		/// <returns>CPF formatado</returns>
 		public static string FormataCPF(this string cpf)
-        {
-            try
-            {
-	            return cpf.ZeroFill(11).Formatar("###.###.###-##");
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
+		{
+			try
+			{
+				return cpf.ZeroFill(11).Formatar("###.###.###-##");
+			}
+			catch
+			{
+				return string.Empty;
+			}
+		}
 
 		/// <summary>
 		/// Formata o CNPJ. Exemplo 00.316.449/0001-63
@@ -1449,16 +1619,16 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="cnpj">Sequencia numÈrica de 14 dÌgitos. Exemplo: 00000000000000</param>
 		/// <returns>CNPJ formatado</returns>
 		public static string FormataCNPJ(this string cnpj)
-        {
-            try
-            {
-                return cnpj.ZeroFill(14).Formatar("##.###.###/####-##");
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
+		{
+			try
+			{
+				return cnpj.ZeroFill(14).Formatar("##.###.###/####-##");
+			}
+			catch
+			{
+				return string.Empty;
+			}
+		}
 
 		/// <summary>
 		/// Formato o CEP em 00.000-000
@@ -1466,16 +1636,16 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="cep">Sequencia numÈrica de 8 dÌgitos. Exemplo: 00000000</param>
 		/// <returns>CEP formatado</returns>
 		public static string FormataCEP(this string cep)
-        {
-            try
-            {
-                return cep.OnlyNumbers().Formatar("##.###-###");
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
+		{
+			try
+			{
+				return cep.OnlyNumbers().Formatar("##.###-###");
+			}
+			catch
+			{
+				return string.Empty;
+			}
+		}
 
 		/// <summary>
 		/// Formata agÍncia e conta
@@ -1486,24 +1656,24 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="digitoConta">dÌgito verificador da conta. Pode ser vazio.</param>
 		/// <returns>AgÍncia e conta formatadas</returns>
 		public static string FormataAgenciaConta(this string agencia, string digitoAgencia, string conta, string digitoConta)
-        {
-            try
-            {
-                var agenciaConta = agencia;
-                if (digitoAgencia != string.Empty)
-                    agenciaConta += "-" + digitoAgencia;
+		{
+			try
+			{
+				var agenciaConta = agencia;
+				if (digitoAgencia != string.Empty)
+					agenciaConta += "-" + digitoAgencia;
 
-                agenciaConta += "/" + conta;
-                if (digitoConta != string.Empty)
-                    agenciaConta += "-" + digitoConta;
+				agenciaConta += "/" + conta;
+				if (digitoConta != string.Empty)
+					agenciaConta += "-" + digitoConta;
 
-                return agenciaConta;
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
+				return agenciaConta;
+			}
+			catch
+			{
+				return string.Empty;
+			}
+		}
 
 		/// <summary>
 		/// Get substring of specified number of characters on the right.
@@ -1512,12 +1682,12 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="length">The length.</param>
 		/// <returns>System.String.</returns>
 		public static string Right(this string value, int length)
-        {
-            if (length > value.Length)
-                length = value.Length;
+		{
+			if (length > value.Length)
+				length = value.Length;
 
-            return value.Substring(value.Length - length);
-        }
+			return value.Substring(value.Length - length);
+		}
 
 		/// <summary>
 		/// Froms the julian date.
@@ -1526,7 +1696,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>DateTime.</returns>
 		public static DateTime FromJulianDate(this string julianDate)
 		{
-			if(julianDate.Length < 1 || julianDate.Length > 5)
+			if (julianDate.Length < 1 || julianDate.Length > 5)
 				return default(DateTime);
 
 			var ano = 2000 + int.Parse(julianDate.Substring(0, 2));
@@ -1543,11 +1713,11 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="ignorecase">if set to <c>true</c> [ignorecase].</param>
 		/// <returns>System.String.</returns>
 		public static string SafeReplace(this string original, string wordToFind, string replacement, bool ignorecase = false)
-        {
-            var pattern = $@"\b{wordToFind}\b";
-            var opt = ignorecase ? RegexOptions.IgnoreCase : RegexOptions.None;
-            return Regex.Replace(original, pattern, replacement, opt);
-        }
+		{
+			var pattern = $@"\b{wordToFind}\b";
+			var opt = ignorecase ? RegexOptions.IgnoreCase : RegexOptions.None;
+			return Regex.Replace(original, pattern, replacement, opt);
+		}
 
 		/// <summary>
 		/// To the title case.
@@ -1555,9 +1725,9 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="text">The text.</param>
 		/// <returns>System.String.</returns>
 		public static string ToTitleCase(this string text)
-	    {
-            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(text);
-	    }
+		{
+			return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(text);
+		}
 
 		/// <summary>
 		/// Determines whether the specified value is null or empty or whitespace.
@@ -1565,9 +1735,9 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="value">The value.</param>
 		/// <returns><c>true</c> if the specified value is empty; otherwise, <c>false</c>.</returns>
 		public static bool IsEmpty(this string value)
-        {
-            return string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value);
-        }
+		{
+			return string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value);
+		}
 
 		/// <summary>
 		/// Befores the specified end.
@@ -1576,9 +1746,9 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="end">The end.</param>
 		/// <returns>System.String.</returns>
 		public static string Before(this string value, int end)
-        {
-            return end == 0 ? string.Empty : value.Between(0, end - 1);
-        }
+		{
+			return end == 0 ? string.Empty : value.Between(0, end - 1);
+		}
 
 		/// <summary>
 		/// Afters the specified start.
@@ -1587,9 +1757,9 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="start">The start.</param>
 		/// <returns>System.String.</returns>
 		public static string After(this string value, int start)
-        {
-            return value.Between(start + 1, int.MaxValue);
-        }
+		{
+			return value.Between(start + 1, int.MaxValue);
+		}
 
 		/// <summary>
 		/// Betweens the specified start.
@@ -1599,20 +1769,20 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="end">The end.</param>
 		/// <returns>System.String.</returns>
 		public static string Between(this string value, int start, int end)
-        {
-            if (value == null)
-                return string.Empty;
+		{
+			if (value == null)
+				return string.Empty;
 
-            var len = value.Length;
-            if (start < 0) start += len;
-            if (end < 0) end += len;
-            if (len == 0 || start > len - 1 || end < start)
-                return string.Empty;
+			var len = value.Length;
+			if (start < 0) start += len;
+			if (end < 0) end += len;
+			if (len == 0 || start > len - 1 || end < start)
+				return string.Empty;
 
-            if (start < 0) start = 0;
-            if (end >= len) end = len - 1;
-            return value.Substring(start, end - start + 1);
-        }
+			if (start < 0) start = 0;
+			if (end >= len) end = len - 1;
+			return value.Substring(start, end - start + 1);
+		}
 
 		/// <summary>
 		/// Substitutes the specified arguments.
@@ -1621,23 +1791,27 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="args">The arguments.</param>
 		/// <returns>System.String.</returns>
 		public static string Substitute(this string format, params object[] args)
-        {
-            var value = string.Empty;
-            if (string.IsNullOrEmpty(format)) return value;
-            if (args.Length == 0) return format;
-            try
-            {
-                return string.Format(format, args);
-            }
-            catch (FormatException)
-            {
-                return format;
-            }
-            catch
-            {
-                return "***";
-            }
-        }
+		{
+			var value = string.Empty;
+			if (format.IsEmpty())
+				return value;
+
+			if (args.Length == 0)
+				return format;
+
+			try
+			{
+				return string.Format(format, args);
+			}
+			catch (FormatException)
+			{
+				return format;
+			}
+			catch
+			{
+				return string.Empty;
+			}
+		}
 
 		/// <summary>
 		/// Base64s the encode.
@@ -1660,5 +1834,7 @@ namespace ACBr.Net.Core.Extensions
 			var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
 			return Encoding.UTF8.GetString(base64EncodedBytes);
 		}
+
+		#endregion Methods
 	}
 }

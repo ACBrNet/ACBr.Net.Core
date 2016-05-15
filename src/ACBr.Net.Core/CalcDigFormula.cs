@@ -29,7 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
-namespace ACBr.Net.Core.Enum
+namespace ACBr.Net.Core
 {
     /// <summary>
     /// Enum CalcDigFormula
