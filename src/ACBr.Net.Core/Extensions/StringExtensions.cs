@@ -29,6 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -88,8 +89,8 @@ namespace ACBr.Net.Core.Extensions
 		{
 			try
 			{
-				var vectorBytes = Encoding.ASCII.GetBytes(vector);
-				var saltBytes = Encoding.ASCII.GetBytes(salt);
+				var vectorBytes = Encoding.UTF8.GetBytes(vector);
+				var saltBytes = Encoding.UTF8.GetBytes(salt);
 				var valueBytes = Encoding.UTF8.GetBytes(value);
 
 				var keysize = 256;
@@ -145,8 +146,8 @@ namespace ACBr.Net.Core.Extensions
 		{
 			try
 			{
-				var vectorBytes = Encoding.ASCII.GetBytes(vector);
-				var saltBytes = Encoding.ASCII.GetBytes(salt);
+				var vectorBytes = Encoding.UTF8.GetBytes(vector);
+				var saltBytes = Encoding.UTF8.GetBytes(salt);
 				var valueBytes = Convert.FromBase64String(value);
 
 				var keysize = 256;
@@ -199,17 +200,19 @@ namespace ACBr.Net.Core.Extensions
 			try
 			{
 				// Primeiro passo, calcular o MD5 hash a partir da string
-				var md5 = MD5.Create();
-				var inputBytes = Encoding.ASCII.GetBytes(input);
-				var hash = md5.ComputeHash(inputBytes);
-
-				// Segundo passo, converter o array de bytes em uma string hexadecimal
-				var sb = new StringBuilder();
-				foreach (var t in hash)
+				using (var md5 = MD5.Create())
 				{
-					sb.Append(t.ToString("x2"));
+					var inputBytes = Encoding.UTF8.GetBytes(input);
+					var hash = md5.ComputeHash(inputBytes);
+
+					// Segundo passo, converter o array de bytes em uma string hexadecimal
+					var sb = new StringBuilder();
+					foreach (var t in hash)
+					{
+						sb.Append(t.ToString("x2"));
+					}
+					return sb.ToString();
 				}
-				return sb.ToString();
 			}
 			catch (Exception ex)
 			{
@@ -228,16 +231,18 @@ namespace ACBr.Net.Core.Extensions
 		{
 			try
 			{
-				SHA1 sha = new SHA1CryptoServiceProvider();
-				var data = Encoding.ASCII.GetBytes(input);
-				var hash = sha.ComputeHash(data);
-
-				var sb = new StringBuilder();
-				foreach (var t in hash)
+				using (var sha = SHA1.Create())
 				{
-					sb.Append(t.ToString("X2"));
+					var data = Encoding.UTF8.GetBytes(input);
+					var hash = sha.ComputeHash(data);
+
+					var sb = new StringBuilder();
+					foreach (var t in hash)
+					{
+						sb.Append(t.ToString("X2"));
+					}
+					return sb.ToString();
 				}
-				return sb.ToString();
 			}
 			catch (Exception ex)
 			{
@@ -1255,7 +1260,7 @@ namespace ACBr.Net.Core.Extensions
 		{
 			try
 			{
-				var multiplicador = new int[10] {3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+				var multiplicador = new[] {3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
 				var soma = 0;
 
 				if (pis.Trim().Length == 0)
@@ -1392,7 +1397,7 @@ namespace ACBr.Net.Core.Extensions
 					return string.Empty;
 
 				var bytes = Encoding.Default.GetBytes(value);
-				var text = RemoveCe(Encoding.UTF8.GetString(bytes));
+				var text = RemoveAccent(Encoding.UTF8.GetString(bytes));
 
 				var textOut = new StringBuilder();
 				foreach (var current in text.Where(XmlConvert.IsXmlChar))
@@ -1502,11 +1507,11 @@ namespace ACBr.Net.Core.Extensions
 		}
 
 		/// <summary>
-		/// Normalize e substitui os caracteres especiais de uma string.
+		/// Normalize e substitui os caracteres acentuados de uma string.
 		/// </summary>
 		/// <param name="value">The text.</param>
 		/// <returns>String sem carateres especiais e normalizada</returns>
-		public static string RemoveCe(this string value)
+		public static string RemoveAccent(this string value)
 		{
 			if (value == null)
 				return string.Empty;
@@ -1517,63 +1522,91 @@ namespace ACBr.Net.Core.Extensions
 			var retorno = new string(stFormD.Normalize(NormalizationForm.FormC)
 				.Where(c => char.IsLetter(c) || char.IsSeparator(c) || char.IsNumber(c) || c.Equals('|')).ToArray());
 
-			return retorno.SubstituiCe();
+			retorno = retorno.ReplaceAny(new[] { 'á', 'à', 'â', 'ã', 'ª' }, 'a');
+			retorno = retorno.ReplaceAny(new[] { 'Á', 'À', 'Â', 'Ã', 'Ä' }, 'A');
+			retorno = retorno.ReplaceAny(new[] { 'é', 'è', 'ê', 'ë' }, 'e');
+			retorno = retorno.ReplaceAny(new[] { 'É', 'È', 'Ê', 'Ë' }, 'E');
+			retorno = retorno.ReplaceAny(new[] { 'í', 'ì', 'î' }, 'i');
+			retorno = retorno.ReplaceAny(new[] { 'Í', 'Ì', 'Î' }, 'I');
+			retorno = retorno.ReplaceAny(new[] { 'ó', 'ò', 'ô', 'õ', 'ö', 'º' }, 'o');
+			retorno = retorno.ReplaceAny(new[] { 'Ó', 'Ò', 'Ô', 'Õ', 'Ö' }, 'O');
+			retorno = retorno.ReplaceAny(new[] { 'ú', 'ù', 'û', 'ü' }, 'u');
+			retorno = retorno.ReplaceAny(new[] { 'Ú', 'Ù', 'Û', 'Ü' }, 'U');
+			retorno = retorno.ReplaceAny(new[] { 'Ç' }, 'C');
+			retorno = retorno.ReplaceAny(new[] { 'ç' }, 'c');
+			return retorno;
 		}
 
 		/// <summary>
-		/// Substitue os caracteres especiais de uma string.
+		/// Limpa os caracteres especiais de uma string.
 		/// </summary>
 		/// <param name="text">The text.</param>
 		/// <returns>String sem carateres especiais</returns>
-		public static string SubstituiCe(this string text)
+		public static string CleanCe(this string text)
 		{
 			try
 			{
-				if (text == null)
-					return string.Empty;
-
 				var retorno = string.Empty;
-				const string caracterComAcento = "áàãâäéèêëíìîïóòõôöúùûüçÁÀÃÂÄÉÈÊËÍÌÎÏÓÒÕÖÔÚÙÛÜÇ";
-				const string caracterSemAcento = "aaaaaeeeeiiiiooooouuuucAAAAAEEEEIIIIOOOOOUUUUC";
+				if (text.IsEmpty())
+					return retorno;
 
-				if (!string.IsNullOrEmpty(text))
-				{
-					for (var i = 0; i < text.Length; i++)
-					{
-						if (caracterComAcento.IndexOf(Convert.ToChar(text.Substring(i, 1))) >= 0)
-						{
-							var car = caracterComAcento.IndexOf(Convert.ToChar(text.Substring(i, 1)));
-							retorno += caracterSemAcento.Substring(car, 1);
-						}
-						else
-						{
-							retorno += text.Substring(i, 1);
-						}
-					}
+				retorno = text.ReplaceAny(new[] { 'á', 'à', 'â', 'ã', 'ª' }, 'a');
+				retorno = retorno.ReplaceAny(new[] { 'Á', 'À', 'Â', 'Ã', 'Ä' }, 'A');
+				retorno = retorno.ReplaceAny(new[] { 'é', 'è', 'ê', 'ë' }, 'e');
+				retorno = retorno.ReplaceAny(new[] { 'É', 'È', 'Ê', 'Ë' }, 'E');
+				retorno = retorno.ReplaceAny(new[] { 'í', 'ì', 'î' }, 'i');
+				retorno = retorno.ReplaceAny(new[] { 'Í', 'Ì', 'Î' }, 'I');
+				retorno = retorno.ReplaceAny(new[] { 'ó', 'ò', 'ô', 'õ', 'ö', 'º' }, 'o');
+				retorno = retorno.ReplaceAny(new[] { 'Ó', 'Ò', 'Ô', 'Õ', 'Ö' }, 'O');
+				retorno = retorno.ReplaceAny(new[] { 'ú', 'ù', 'û', 'ü' }, 'u');
+				retorno = retorno.ReplaceAny(new[] { 'Ú', 'Ù', 'Û', 'Ü' }, 'U');
+				retorno = retorno.ReplaceAny(new[] { 'Ç' }, 'C');
+				retorno = retorno.ReplaceAny(new[] { 'ç' }, 'c');
+				var cEspeciais = new [] { "#39", "---", "--", "-", "'", "#", Environment.NewLine,
+										  "\n", "\r", ",", ".", "?", "&", ":", "/", "!", ";", "º",
+										  "ª", "%", "‘", "’", "(", ")", "\\", "”", "“", "+", "ƒ", "‡" };
 
-					string[] cEspeciais =
-					{
-						"#39", "---", "--", "-", "'", "#", Environment.NewLine,
-						"\n", "\r", ",", ".", "?", "&", ":", "/", "!", ";", "º",
-						"ª", "%", "‘", "’", "(", ")", "\\", "”", "“", "+", "ƒ", "‡"
-					};
-
-					retorno = cEspeciais.Aggregate(retorno, (current, t) => current.Replace(t, string.Empty));
-					for (var x = cEspeciais.Length - 1; x > -1; x--)
-					{
-						retorno = retorno.Replace(cEspeciais[x], string.Empty);
-					}
-
-					retorno = retorno.Trim();
-				}
-
-				return retorno;
+				retorno = retorno.ReplaceAny(cEspeciais, string.Empty);
+				return retorno.Trim();
 			}
 			catch (Exception ex)
 			{
-				var tmpEx = new ACBrException("Erro ao formatar string.", ex);
-				throw tmpEx;
+				throw new ACBrException("Erro ao limpar string.", ex);
 			}
+		}
+
+		/// <summary>
+		/// Subistitui todos os caracteres passado no array pelo novo caracter e retorna a nova string.
+		/// </summary>
+		/// <param name="text">The text.</param>
+		/// <param name="oldChars">The old chars.</param>
+		/// <param name="newChar">The new character.</param>
+		/// <returns>System.String.</returns>
+		private static string ReplaceAny(this string text, IEnumerable<char> oldChars, char newChar)
+		{
+			var builder = new StringBuilder(text);
+
+			foreach (var oldChar in oldChars)
+				builder.Replace(oldChar, newChar);
+
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Subistitui todos os caracteres passado no array pelo novo caracter e retorna a nova string.
+		/// </summary>
+		/// <param name="text">The text.</param>
+		/// <param name="oldChars">The old chars.</param>
+		/// <param name="newChar">The new character.</param>
+		/// <returns>System.String.</returns>
+		private static string ReplaceAny(this string text, IEnumerable<string> oldChars, string newChar)
+		{
+			var builder = new StringBuilder(text);
+
+			foreach (var oldChar in oldChars)
+				builder.Replace(oldChar, newChar);
+
+			return builder.ToString();
 		}
 
 		/// <summary>
