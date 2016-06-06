@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+    <metadata>
+        <id>ACBr.Net.Core</id>
+        <version>0.9.3.0-rc1</version>
+        <title>ACBr.Net.Core</title>
+        <authors>Grupo ACBr.Net</authors>
+        <owners>Grupo ACBr.Net</owners>
+        <projectUrl>https://acbrnet.github.io</projectUrl>
+        <iconUrl>https://avatars2.githubusercontent.com/u/7342977?v=3&amp;s=200</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Biblioteca com as principais funções usadas pelos componentes ACBr.Net</description>
+        <language>pt-BR</language>
+        <tags>ACBr ACBr.Net Automação Comercial</tags>
+    </metadata>
+    <files>
+        <file src="..\bin\Release\ACBr.Net.Core.dll" target="lib\net40\ACBr.Net.Core.dll" />
+        <file src="..\bin\Release\ACBr.Net.Core.XML" target="lib\net40\ACBr.Net.Core.XML" />
+    </files>
+</package>
