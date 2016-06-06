@@ -40,13 +40,13 @@ namespace ACBr.Net.Core.Logging
         /// <summary>
         /// The nologging
         /// </summary>
-		private static readonly IInternalLogger Nologging = new NoLoggingInternalLogger();
+		private static readonly IACBrLogger Nologging = new NoLoggingLogger();
         /// <summary>
         /// Loggers for.
         /// </summary>
         /// <param name="keyName">Name of the key.</param>
-        /// <returns>IInternalLogger.</returns>
-		public IInternalLogger LoggerFor(string keyName)
+        /// <returns>IACBrLogger.</returns>
+		public IACBrLogger LoggerFor(string keyName)
 		{
 			return Nologging;
 		}
@@ -55,8 +55,8 @@ namespace ACBr.Net.Core.Logging
         /// Loggers for.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>IInternalLogger.</returns>
-		public IInternalLogger LoggerFor(Type type)
+        /// <returns>IACBrLogger.</returns>
+		public IACBrLogger LoggerFor(Type type)
 		{
 			return Nologging;
 		}

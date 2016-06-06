@@ -36,7 +36,7 @@ namespace ACBr.Net.Core.Logging
     /// <summary>
     /// Classe Log4NetLogger.
     /// </summary>
-	public class Log4NetLogger : IInternalLogger
+	public class Log4NetLogger : IACBrLogger
 	{
         /// <summary>
         /// The i log type

@@ -1,12 +1,12 @@
 // ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 03-21-2014
+// Created          : 06-06-2016
 //
 // Last Modified By : RFTD
-// Last Modified On : 01-30-2015
+// Last Modified On : 06-06-2016
 // ***********************************************************************
-// <copyright file="ILoggerFactory.cs" company="ACBr.Net">
+// <copyright file="ILoggerExtensions.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
@@ -28,27 +28,25 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 using System;
 
 namespace ACBr.Net.Core.Logging
 {
-    /// <summary>
-    /// Interface ILoggerFactory
-    /// </summary>
-	public interface ILoggerFactory
+	public static class ILoggerExtensions
 	{
-        /// <summary>
-        /// Loggers for.
-        /// </summary>
-        /// <param name="keyName">Name of the key.</param>
-        /// <returns>IACBrLogger.</returns>
-		IACBrLogger LoggerFor(string keyName);
+		public static IACBrLogger GetLogger<T>(this ILoggerFactory This)
+		{
+			return This.LoggerFor(typeof(T));
+		}
 
-        /// <summary>
-        /// Loggers for.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>IACBrLogger.</returns>
-		IACBrLogger LoggerFor(Type type);
+		/// <summary>
+		/// Call this method to write log entries on behalf of the current 
+		/// class.
+		/// </summary>
+		public static IACBrLogger Log<T>(this T This) where T : IACBrLog
+		{
+			return LoggerProvider.LoggerFor(typeof(T));
+		}
 	}
 }

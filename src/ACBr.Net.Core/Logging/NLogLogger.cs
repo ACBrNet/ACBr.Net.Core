@@ -37,7 +37,7 @@ namespace ACBr.Net.Core.Logging
     /// <summary>
     /// Classe NLogLogger.
     /// </summary>
-    public class NLogLogger : IInternalLogger
+    public class NLogLogger : IACBrLogger
     {
         /// <summary>
         /// The logger type
@@ -145,7 +145,7 @@ namespace ACBr.Net.Core.Logging
             Log = log;
         }
 
-        #region IInternalLogger Members
+        #region IACBrLogger Members
 
         #region Properties
 
@@ -211,7 +211,7 @@ namespace ACBr.Net.Core.Logging
 
         #endregion
 
-        #region IInternalLogger Methods
+        #region IACBrLogger Methods
 
         /// <summary>
         /// Debugs the specified message.

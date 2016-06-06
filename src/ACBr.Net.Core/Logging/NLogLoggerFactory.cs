@@ -62,8 +62,8 @@ namespace ACBr.Net.Core.Logging
         /// Loggers for.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>IInternalLogger.</returns>
-        public IInternalLogger LoggerFor(Type type)
+        /// <returns>IACBrLogger.</returns>
+        public IACBrLogger LoggerFor(Type type)
         {
             return new NLogLogger(CreateLoggerInstanceFunc(type.Name));
         }
@@ -72,8 +72,8 @@ namespace ACBr.Net.Core.Logging
         /// Loggers for.
         /// </summary>
         /// <param name="keyName">Name of the key.</param>
-        /// <returns>IInternalLogger.</returns>
-        public IInternalLogger LoggerFor(string keyName)
+        /// <returns>IACBrLogger.</returns>
+        public IACBrLogger LoggerFor(string keyName)
         {
             return new NLogLogger(CreateLoggerInstanceFunc(keyName));
         }

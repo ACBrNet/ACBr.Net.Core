@@ -4,9 +4,9 @@
 // Created          : 03-21-2014
 //
 // Last Modified By : RFTD
-// Last Modified On : 01-30-2015
+// Last Modified On : 11-08-2013
 // ***********************************************************************
-// <copyright file="NoLoggingInternalLogger.cs" company="ACBr.Net">
+// <copyright file="IACBrLogger.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
@@ -28,179 +28,129 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 using System;
+using JetBrains.Annotations;
 
 namespace ACBr.Net.Core.Logging
 {
     /// <summary>
-    /// Classe NoLoggingInternalLogger.
+    /// Interface IACBrLogger
     /// </summary>
-	public class NoLoggingInternalLogger : IInternalLogger
+	public interface IACBrLogger
 	{
         /// <summary>
         /// Gets a value indicating whether this instance is error enabled.
         /// </summary>
         /// <value><c>true</c> if this instance is error enabled; otherwise, <c>false</c>.</value>
-		public bool IsErrorEnabled
-		{
-			get { return false; }
-		}
-
+		bool IsErrorEnabled { get; }
         /// <summary>
         /// Gets a value indicating whether this instance is fatal enabled.
         /// </summary>
         /// <value><c>true</c> if this instance is fatal enabled; otherwise, <c>false</c>.</value>
-		public bool IsFatalEnabled
-		{
-			get { return false; }
-		}
-
+		bool IsFatalEnabled { get; }
         /// <summary>
         /// Gets a value indicating whether this instance is debug enabled.
         /// </summary>
         /// <value><c>true</c> if this instance is debug enabled; otherwise, <c>false</c>.</value>
-		public bool IsDebugEnabled
-		{
-			get { return false; }
-		}
-
+		bool IsDebugEnabled { get; }
         /// <summary>
         /// Gets a value indicating whether this instance is information enabled.
         /// </summary>
         /// <value><c>true</c> if this instance is information enabled; otherwise, <c>false</c>.</value>
-		public bool IsInfoEnabled
-		{
-			get { return false; }
-		}
-
+		bool IsInfoEnabled { get; }
         /// <summary>
         /// Gets a value indicating whether this instance is warn enabled.
         /// </summary>
         /// <value><c>true</c> if this instance is warn enabled; otherwise, <c>false</c>.</value>
-		public bool IsWarnEnabled
-		{
-			get { return false; }
-		}
+		bool IsWarnEnabled { get; }
 
         /// <summary>
         /// Errors the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-		public void Error(object message)
-		{
-		}
-
+		void Error(object message);
         /// <summary>
         /// Errors the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
-		public void Error(object message, Exception exception)
-		{
-		}
-
+		void Error(object message, Exception exception);
         /// <summary>
         /// Errors the format.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="args">The arguments.</param>
-		public void ErrorFormat(string format, params object[] args)
-		{
-		}
+        [StringFormatMethod("format")]
+		void ErrorFormat(string format, params object[] args);
 
         /// <summary>
         /// Fatals the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-		public void Fatal(object message)
-		{
-		}
-
+		void Fatal(object message);
         /// <summary>
         /// Fatals the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
-		public void Fatal(object message, Exception exception)
-		{
-		}
+		void Fatal(object message, Exception exception);
 
         /// <summary>
         /// Debugs the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-		public void Debug(object message)
-		{
-		}
-
+		void Debug(object message);
         /// <summary>
         /// Debugs the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
-		public void Debug(object message, Exception exception)
-		{
-		}
-
+		void Debug(object message, Exception exception);
         /// <summary>
         /// Debugs the format.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="args">The arguments.</param>
-		public void DebugFormat(string format, params object[] args)
-		{
-		}
+        [StringFormatMethod("format")]
+        void DebugFormat(string format, params object[] args);
 
         /// <summary>
         /// Informations the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-		public void Info(object message)
-		{
-		}
-
+		void Info(object message);
         /// <summary>
         /// Informations the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
-		public void Info(object message, Exception exception)
-		{
-		}
-
+		void Info(object message, Exception exception);
         /// <summary>
         /// Informations the format.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="args">The arguments.</param>
-		public void InfoFormat(string format, params object[] args)
-		{
-		}
+        [StringFormatMethod("format")]
+        void InfoFormat(string format, params object[] args);
 
         /// <summary>
         /// Warns the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-		public void Warn(object message)
-		{
-		}
-
+		void Warn(object message);
         /// <summary>
         /// Warns the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
-		public void Warn(object message, Exception exception)
-		{
-		}
-
+		void Warn(object message, Exception exception);
         /// <summary>
         /// Warns the format.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="args">The arguments.</param>
-		public void WarnFormat(string format, params object[] args)
-		{
-		}
+        [StringFormatMethod("format")]
+        void WarnFormat(string format, params object[] args);
 	}
 }

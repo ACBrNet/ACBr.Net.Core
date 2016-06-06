@@ -1,12 +1,12 @@
 // ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 03-21-2014
+// Created          : 06-06-2016
 //
 // Last Modified By : RFTD
-// Last Modified On : 01-30-2015
+// Last Modified On : 06-06-2016
 // ***********************************************************************
-// <copyright file="ILoggerFactory.cs" company="ACBr.Net">
+// <copyright file="IACBrLogger.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
@@ -28,27 +28,11 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using System;
 
 namespace ACBr.Net.Core.Logging
 {
-    /// <summary>
-    /// Interface ILoggerFactory
-    /// </summary>
-	public interface ILoggerFactory
+	public interface IACBrLog
 	{
-        /// <summary>
-        /// Loggers for.
-        /// </summary>
-        /// <param name="keyName">Name of the key.</param>
-        /// <returns>IACBrLogger.</returns>
-		IACBrLogger LoggerFor(string keyName);
-
-        /// <summary>
-        /// Loggers for.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>IACBrLogger.</returns>
-		IACBrLogger LoggerFor(Type type);
+		
 	}
 }

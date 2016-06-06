@@ -1,12 +1,12 @@
 // ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 03-21-2014
+// Created          : 06-06-2016
 //
 // Last Modified By : RFTD
-// Last Modified On : 01-30-2015
+// Last Modified On : 06-06-2016
 // ***********************************************************************
-// <copyright file="ILoggerFactory.cs" company="ACBr.Net">
+// <copyright file="FuncLogManager.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
@@ -28,27 +28,50 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 using System;
 
 namespace ACBr.Net.Core.Logging
 {
-    /// <summary>
-    /// Interface ILoggerFactory
-    /// </summary>
-	public interface ILoggerFactory
+	public class FuncLoggerFactory : ILoggerFactory
 	{
-        /// <summary>
-        /// Loggers for.
-        /// </summary>
-        /// <param name="keyName">Name of the key.</param>
-        /// <returns>IACBrLogger.</returns>
-		IACBrLogger LoggerFor(string keyName);
+		#region Fields
 
-        /// <summary>
-        /// Loggers for.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>IACBrLogger.</returns>
-		IACBrLogger LoggerFor(Type type);
+		private readonly Func<Type, IACBrLogger> innerType;
+		private readonly Func<string, IACBrLogger> innerKey;
+
+		#endregion Fields
+
+		#region Constructors
+
+		public FuncLoggerFactory(Func<Type, IACBrLogger> getLoggerType, Func<string, IACBrLogger> getLoggerKey)
+		{
+			innerType = getLoggerType;
+			innerKey = getLoggerKey;
+		}
+
+		public FuncLoggerFactory(Func<Type, IACBrLogger> getLogger):this(getLogger, null)
+		{
+		}
+
+		public FuncLoggerFactory(Func<string, IACBrLogger> getLogger) : this(null, getLogger)
+		{
+		}
+
+		#endregion Constructors
+
+		#region Methods
+
+		public IACBrLogger LoggerFor(string keyName)
+		{
+			return innerKey?.Invoke(keyName);
+		}
+
+		public IACBrLogger LoggerFor(Type type)
+		{
+			return innerType?.Invoke(type);
+		}
+
+		#endregion Methods
 	}
 }

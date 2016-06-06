@@ -32,13 +32,14 @@ using System;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using ACBr.Net.Core.Extensions;
 
 namespace ACBr.Net.Core.Logging
 {
     /// <summary>
     /// Classe LoggerProvider.
     /// </summary>
-	public class LoggerProvider
+	public static class LoggerProvider
     {
         #region Fields
 
@@ -49,11 +50,7 @@ namespace ACBr.Net.Core.Logging
         /// <summary>
         /// The logger factory
         /// </summary>
-		private readonly ILoggerFactory loggerFactory;
-        /// <summary>
-        /// The _instance
-        /// </summary>
-		private static LoggerProvider instance;
+		private static ILoggerFactory loggerFactory;
 
         #endregion Fields
 
@@ -65,8 +62,8 @@ namespace ACBr.Net.Core.Logging
         static LoggerProvider()
 		{
 			var loggerClass = GetLoggerClass();
-			var loggerFactory = string.IsNullOrEmpty(loggerClass) ? new NoLoggingLoggerFactory() : GetLoggerFactory(loggerClass);
-			SetLoggersFactory(loggerFactory);
+			var factory = string.IsNullOrEmpty(loggerClass) ? new NoLoggingLoggerFactory() : GetLoggerFactory(loggerClass);
+			SetLoggerFactory(factory);
 		}
 
         #endregion Constructor
@@ -86,11 +83,11 @@ namespace ACBr.Net.Core.Logging
         /// </exception>
         private static ILoggerFactory GetLoggerFactory(string loggerClass)
 		{
-			ILoggerFactory loggerFactory;
+			ILoggerFactory factory;
 			var loggerFactoryType = Type.GetType(loggerClass);
 			try
 			{
-			    loggerFactory = (ILoggerFactory)Activator.CreateInstance(loggerFactoryType);
+			    factory = (ILoggerFactory)Activator.CreateInstance(loggerFactoryType);
 			}
 			catch (MissingMethodException ex)
 			{
@@ -104,7 +101,8 @@ namespace ACBr.Net.Core.Logging
 			{
 				throw new ApplicationException("Unable to instantiate: " + loggerFactoryType, ex);
 			}
-			return loggerFactory;
+
+			return factory;
 		}
 
         /// <summary>
@@ -115,7 +113,7 @@ namespace ACBr.Net.Core.Logging
 		{
 			var logger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => LoggerConfKey.Equals(k.ToLowerInvariant()));
 			string loggerClass = null;
-			if (string.IsNullOrEmpty(logger))
+			if (logger.IsEmpty())
 			{
 				var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 				var relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
@@ -139,44 +137,55 @@ namespace ACBr.Net.Core.Logging
 			return loggerClass;
 		}
 
-        /// <summary>
-        /// Sets the loggers factory.
-        /// </summary>
-        /// <param name="loggerFactory">The logger factory.</param>
-		public static void SetLoggersFactory(ILoggerFactory loggerFactory)
+		/// <summary>
+		/// Sets the logger factory.
+		/// </summary>
+		/// <param name="factory">The factory.</param>
+		public static void SetLoggerFactory(ILoggerFactory factory)
 		{
-			instance = new LoggerProvider(loggerFactory);
+			loggerFactory = factory;
 		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoggerProvider"/> class.
-        /// </summary>
-        /// <param name="loggerFactory">The logger factory.</param>
-		private LoggerProvider(ILoggerFactory loggerFactory)
-		{
-			this.loggerFactory = loggerFactory;
-		}
+		/// <summary>
+		/// Sets the logger factory.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		public static void SetLoggerFactory<T>() where T : ILoggerFactory
+	    {
+		    loggerFactory = Activator.CreateInstance<T>();
+	    }
 
         /// <summary>
         /// Loggers for.
         /// </summary>
         /// <param name="keyName">Name of the key.</param>
-        /// <returns>IInternalLogger.</returns>
-		public static IInternalLogger LoggerFor(string keyName)
+        /// <returns>IACBrLogger.</returns>
+		public static IACBrLogger LoggerFor(string keyName)
 		{
-			return instance.loggerFactory.LoggerFor(keyName);
+			var ret = loggerFactory.LoggerFor(keyName) ?? new NoLoggingLogger();
+	        return ret;
 		}
 
         /// <summary>
         /// Loggers for.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>IInternalLogger.</returns>
-		public static IInternalLogger LoggerFor(Type type)
+        /// <returns>IACBrLogger.</returns>
+		public static IACBrLogger LoggerFor(Type type)
 		{
-			return instance.loggerFactory.LoggerFor(type);
-        }
+			return loggerFactory.LoggerFor(type) ?? new NoLoggingLogger();
+		}
 
-        #endregion Methods
-    }
+		/// <summary>
+		/// Loggers for.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <returns>IACBrLogger.</returns>
+		public static IACBrLogger LoggerFor<T>()
+		{
+			return loggerFactory.GetLogger<T>() ?? new NoLoggingLogger();
+		}
+
+		#endregion Methods
+	}
 }
