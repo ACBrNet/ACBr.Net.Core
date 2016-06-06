@@ -1507,22 +1507,16 @@ namespace ACBr.Net.Core.Extensions
 		}
 
 		/// <summary>
-		/// Normalize e substitui os caracteres acentuados de uma string.
+		/// Substitui os caracteres acentuados de uma string.
 		/// </summary>
 		/// <param name="value">The text.</param>
 		/// <returns>String sem carateres especiais e normalizada</returns>
 		public static string RemoveAccent(this string value)
 		{
-			if (value == null)
+			if (value.IsEmpty())
 				return string.Empty;
 
-			var stFormD = new string(value.Normalize(NormalizationForm.FormD)
-				.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).ToArray());
-
-			var retorno = new string(stFormD.Normalize(NormalizationForm.FormC)
-				.Where(c => char.IsLetter(c) || char.IsSeparator(c) || char.IsNumber(c) || c.Equals('|')).ToArray());
-
-			retorno = retorno.ReplaceAny(new[] { 'á', 'à', 'â', 'ã', 'ª' }, 'a');
+			var retorno = value.ReplaceAny(new[] { 'á', 'à', 'â', 'ã', 'ª' }, 'a');
 			retorno = retorno.ReplaceAny(new[] { 'Á', 'À', 'Â', 'Ã', 'Ä' }, 'A');
 			retorno = retorno.ReplaceAny(new[] { 'é', 'è', 'ê', 'ë' }, 'e');
 			retorno = retorno.ReplaceAny(new[] { 'É', 'È', 'Ê', 'Ë' }, 'E');
@@ -1546,25 +1540,13 @@ namespace ACBr.Net.Core.Extensions
 		{
 			try
 			{
-				var retorno = string.Empty;
 				if (text.IsEmpty())
-					return retorno;
+					return string.Empty;
 
-				retorno = text.ReplaceAny(new[] { 'á', 'à', 'â', 'ã', 'ª' }, 'a');
-				retorno = retorno.ReplaceAny(new[] { 'Á', 'À', 'Â', 'Ã', 'Ä' }, 'A');
-				retorno = retorno.ReplaceAny(new[] { 'é', 'è', 'ê', 'ë' }, 'e');
-				retorno = retorno.ReplaceAny(new[] { 'É', 'È', 'Ê', 'Ë' }, 'E');
-				retorno = retorno.ReplaceAny(new[] { 'í', 'ì', 'î' }, 'i');
-				retorno = retorno.ReplaceAny(new[] { 'Í', 'Ì', 'Î' }, 'I');
-				retorno = retorno.ReplaceAny(new[] { 'ó', 'ò', 'ô', 'õ', 'ö', 'º' }, 'o');
-				retorno = retorno.ReplaceAny(new[] { 'Ó', 'Ò', 'Ô', 'Õ', 'Ö' }, 'O');
-				retorno = retorno.ReplaceAny(new[] { 'ú', 'ù', 'û', 'ü' }, 'u');
-				retorno = retorno.ReplaceAny(new[] { 'Ú', 'Ù', 'Û', 'Ü' }, 'U');
-				retorno = retorno.ReplaceAny(new[] { 'Ç' }, 'C');
-				retorno = retorno.ReplaceAny(new[] { 'ç' }, 'c');
+				var retorno = text.RemoveAccent();
 				var cEspeciais = new [] { "#39", "---", "--", "-", "'", "#", Environment.NewLine,
-										  "\n", "\r", ",", ".", "?", "&", ":", "/", "!", ";", "º",
-										  "ª", "%", "‘", "’", "(", ")", "\\", "”", "“", "+", "ƒ", "‡" };
+										  "\n", "\r", ",", ".", "?", "&", ":", "/", "!", ";",
+										  "%", "‘", "’", "(", ")", "\\", "”", "“", "+", "ƒ", "‡" };
 
 				retorno = retorno.ReplaceAny(cEspeciais, string.Empty);
 				return retorno.Trim();
