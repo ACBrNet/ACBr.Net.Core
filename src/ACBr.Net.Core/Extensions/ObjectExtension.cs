@@ -10,35 +10,35 @@
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
-//	 Permission is hereby granted, free of charge, to any person obtaining 
-// a copy of this software and associated documentation files (the "Software"), 
-// to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom the 
+//	 Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
-//	 The above copyright notice and this permission notice shall be 
+//	 The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using ACBr.Net.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ACBr.Net.Core.Exceptions;
 
 namespace ACBr.Net.Core.Extensions
 {
-    /// <summary>
-    /// Classe ObjectExtension.
-    /// </summary>
+	/// <summary>
+	/// Classe ObjectExtension.
+	/// </summary>
 	public static class ObjectExtension
 	{
 		/// <summary>
@@ -80,13 +80,12 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="classe">Classe</param>
 		/// <param name="evento">Nome do evento</param>
 		/// <returns><c>true</c> se o evento foi setado, <c>false</c> Senão.</returns>
-		public static bool EventAssigned<T>(this T classe, string evento) where T : class 
+		public static bool EventAssigned<T>(this T classe, string evento) where T : class
 		{
 			var fieldInfo = typeof(T).GetField(evento, BindingFlags.NonPublic | BindingFlags.Instance);
 
 			var handler = fieldInfo?.GetValue(classe) as Delegate;
-			if (handler == null)
-				return false;
+			if (handler == null) return false;
 
 			var subscribers = handler.GetInvocationList();
 			return subscribers.Length != 0;
@@ -101,20 +100,20 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="System.ArgumentNullException"></exception>
 		public static void ThrowIfNull<T>(this T data, string name) where T : IComparable<T>
 		{
-            Guard.Against<ArgumentNullException>(data == null, name);
+			Guard.Against<ArgumentNullException>(data == null, name);
 		}
-        
-        /// <summary>
-        /// Throws an ArgumentNullException if the given data item is null.
-        /// No parameter name is specified.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data">The item to check for nullity.</param>
-        /// <exception cref="System.ArgumentNullException"></exception>
+
+		/// <summary>
+		/// Throws an ArgumentNullException if the given data item is null.
+		/// No parameter name is specified.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="data">The item to check for nullity.</param>
+		/// <exception cref="System.ArgumentNullException"></exception>
 		public static void ThrowIfNull<T>(this T data) where T : IComparable<T>
 		{
-            Guard.Against<ArgumentNullException>(data == null);
-        }
+			Guard.Against<ArgumentNullException>(data == null);
+		}
 
 		/// <summary>
 		/// Determines whether the specified value is null.
@@ -122,7 +121,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <typeparam name="T"></typeparam>
 		/// <param name="value">The value.</param>
 		/// <returns><c>true</c> if the specified value is null; otherwise, <c>false</c>.</returns>
-		public static bool IsNull<T>(this T value) where T : class 
+		public static bool IsNull<T>(this T value) where T : class
 		{
 			return Equals(value, null);
 		}

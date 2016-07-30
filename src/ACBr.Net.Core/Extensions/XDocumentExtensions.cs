@@ -1,12 +1,12 @@
 // ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 06-04-2014
+// Created          : 07-30-2016
 //
 // Last Modified By : RFTD
-// Last Modified On : 01-30-2015
+// Last Modified On : 07-30-2016
 // ***********************************************************************
-// <copyright file="IListExtension.cs" company="ACBr.Net">
+// <copyright file="XDocumentExtensions.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
@@ -30,38 +30,54 @@
 // ***********************************************************************
 
 using System;
-using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace ACBr.Net.Core.Extensions
 {
-	/// <summary>
-	/// Class IListExtension.
-	/// </summary>
-	public static class ListExtension
+	public static class XDocumentExtensions
 	{
-		/// <summary>
-		/// Adiciona uma string com quebra de linha na lista como se fosse uma ou mais linhas
-		/// </summary>
-		/// <param name="list">A lista.</param>
-		/// <param name="texto">O texto.</param>
-		public static void AddText(this IList<string> list, string texto)
+		public static string AsString(this XDocument xmlDoc, bool identado = false, bool showDeclaration = true)
 		{
-			var textos = texto.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
-			list.AddRange(textos);
+			return xmlDoc.AsString(identado, showDeclaration, Encoding.UTF8);
 		}
 
-		/// <summary>
-		/// Adds the range.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="list">The list.</param>
-		/// <param name="itens">The itens.</param>
-		public static void AddRange<T>(this IList<T> list, IEnumerable<T> itens)
+		public static string AsString(this XDocument xmlDoc, bool identado, bool showDeclaration, Encoding encode)
 		{
-			foreach (var item in itens)
+			using (var stringWriter = new StringWriter())
 			{
-				list.Add(item);
+				var settings = new XmlWriterSettings
+				{
+					Indent = identado,
+					Encoding = encode,
+					OmitXmlDeclaration = !showDeclaration
+				};
+				using (var xmlTextWriter = XmlWriter.Create(stringWriter, settings))
+				{
+					xmlDoc.WriteTo(xmlTextWriter);
+					xmlTextWriter.Flush();
+					return stringWriter.GetStringBuilder().ToString();
+				}
 			}
+		}
+
+		public static T GetValue<T>(this XElement element) where T : IConvertible
+		{
+			if (element == null) return default(T);
+
+			T ret;
+			try
+			{
+				ret = (T)Convert.ChangeType(element.Value, typeof(T));
+			}
+			catch (Exception)
+			{
+				ret = default(T);
+			}
+
+			return ret;
 		}
 	}
 }

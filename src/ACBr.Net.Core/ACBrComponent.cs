@@ -10,26 +10,27 @@
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
-//	 Permission is hereby granted, free of charge, to any person obtaining 
-// a copy of this software and associated documentation files (the "Software"), 
-// to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom the 
+//	 Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
-//	 The above copyright notice and this permission notice shall be 
+//	 The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
 using System;
 using System.ComponentModel;
+
 #if COM_INTEROP
 
 using System.Runtime.InteropServices;
@@ -44,48 +45,49 @@ namespace ACBr.Net.Core
 	[Guid("9FA0F390-307D-44AE-972F-6E63BB77509F")]
 	[ClassInterface(ClassInterfaceType.AutoDual)]
 #endif
+
 	[DesignerCategory("ACBr.Net")]
 	[DesignTimeVisible(true)]
-    [TypeConverter(typeof(ACBrExpandableObjectConverter))]
+	[TypeConverter(typeof(ACBrExpandableObjectConverter))]
 	public abstract class ACBrComponent : IComponent
 	{
 		#region Fields
 
 		private ISite site;
-        private EventHandler disposed;
+		private EventHandler disposed;
 
 		#endregion Fields
 
-        #region Events
+		#region Events
 
-        public event EventHandler Disposed
-        {
+		public event EventHandler Disposed
+		{
 #if COM_INTEROP
 			[ComVisible(false)]
 #endif
-            add
-            {
-                disposed += value;
-            }
+			add
+			{
+				disposed += value;
+			}
 #if COM_INTEROP
 			[ComVisible(false)]
 #endif
-            remove
-            {
-                disposed -= value;
-            }
-        }
+			remove
+			{
+				disposed -= value;
+			}
+		}
 
-        #endregion Events
+		#endregion Events
 
 		#region Constructor
 
 		protected ACBrComponent()
 		{
-            OnInitialize();
+			OnInitialize();
 		}
 
-        ~ACBrComponent()
+		~ACBrComponent()
 		{
 			Dispose(false);
 		}
@@ -124,33 +126,33 @@ namespace ACBr.Net.Core
 
 		#endregion IComponent
 
-        #region Abstract Methods
+		#region Abstract Methods
 
-        protected abstract void OnInitialize();
+		protected abstract void OnInitialize();
 
-        protected abstract void OnDisposing();
+		protected abstract void OnDisposing();
 
-        #endregion Abstract Methods
+		#endregion Abstract Methods
 
-        #region Dispose Methods
+		#region Dispose Methods
 
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                GC.SuppressFinalize(this);
-            }
+		private void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				GC.SuppressFinalize(this);
+			}
 
-            OnDisposing();
+			OnDisposing();
 
-            if (disposed != null) disposed(this, EventArgs.Empty);
-        }
+			disposed?.Invoke(this, EventArgs.Empty);
+		}
 
-        public void Dispose()
-        {
-            Dispose(true);
-        }
+		public void Dispose()
+		{
+			Dispose(true);
+		}
 
-        #endregion Dispose Methods
+		#endregion Dispose Methods
 	}
 }

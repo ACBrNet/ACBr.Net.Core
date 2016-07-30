@@ -10,29 +10,29 @@
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
-//	 Permission is hereby granted, free of charge, to any person obtaining 
-// a copy of this software and associated documentation files (the "Software"), 
-// to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom the 
+//	 Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
-//	 The above copyright notice and this permission notice shall be 
+//	 The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+using ACBr.Net.Core.Exceptions;
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using ACBr.Net.Core.Exceptions;
 
 namespace ACBr.Net.Core.Extensions
 {
@@ -53,12 +53,10 @@ namespace ACBr.Net.Core.Extensions
 			var type = typeof(T);
 
 			// If T is not an enum, get out.
-			Guard.Against<InvalidOperationException>(!type.IsEnum,
-				"The type parameter T must be an enum type.");
+			Guard.Against<InvalidOperationException>(!type.IsEnum, "The type parameter T must be an enum type.");
 
 			// If the value isn't defined throw an exception.
-			Guard.Against<InvalidOperationException>(!Enum.IsDefined(type, value),
-				$"{type} Value {Convert.ToInt32(value)}");
+			Guard.Against<InvalidOperationException>(!Enum.IsDefined(type, value), $"{type} Value {value}");
 
 			// Get the static field for the value.
 			var fi = type.GetField(value.ToString(), BindingFlags.Static | BindingFlags.Public);
@@ -67,9 +65,29 @@ namespace ACBr.Net.Core.Extensions
 			// Get the description attribute, if there is one.
 			// ReSharper disable once PossibleNullReferenceException
 			var ret = fi.GetCustomAttributes(typeof(DescriptionAttribute), true).
-				Cast<DescriptionAttribute>().SingleOrDefault();
+			Cast<DescriptionAttribute>().SingleOrDefault();
 
 			return ret != null ? ret.Description : String.Empty;
+		}
+
+		public static string GetStr<T>(this T valor, T[] valores, string[] retornos) where T : struct
+		{
+			var type = typeof(T);
+
+			// If T is not an enum, get out.
+			Guard.Against<InvalidOperationException>(!type.IsEnum, "The type parameter T must be an enum type.");
+
+			Guard.Against<ACBrException>(valores.Length != retornos.Length, "O quantidade de valores e retornos são diferentes");
+
+			var idx = Array.IndexOf(valores, valor);
+			return idx < 0 ? string.Empty : retornos[idx];
+		}
+
+		public static T ToEnum<T>(this string valor, string[] valores, T[] retornos) where T : struct
+		{
+			Guard.Against<ACBrException>(valores.Length != retornos.Length, "O quantidade de valores e retornos são diferentes");
+			var idx = Array.IndexOf(valores, valor);
+			return idx < 0 ? default(T) : retornos[idx];
 		}
 	}
 }

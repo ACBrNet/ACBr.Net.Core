@@ -69,9 +69,9 @@ namespace ACBr.Net.Core.Extensions
 
 			var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
 			if (synchronizeInvoke == null)
-				eventHandler.DynamicInvoke(e);
+				eventHandler.DynamicInvoke(null, e);
 			else
-				synchronizeInvoke.Invoke(eventHandler, new object[] { e });
+				synchronizeInvoke.Invoke(eventHandler, new object[] { null, e });
 		}
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace ACBr.Net.Core.Extensions
 
 			var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
 			if (synchronizeInvoke == null)
-				eventHandler.DynamicInvoke(e);
+				eventHandler.DynamicInvoke(null, e);
 			else
-				synchronizeInvoke.Invoke(eventHandler, new object[] { e });
+				synchronizeInvoke.Invoke(eventHandler, new object[] { null, e });
 		}
 
 		/// <summary>
