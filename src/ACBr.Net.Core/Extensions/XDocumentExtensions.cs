@@ -30,7 +30,9 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -78,6 +80,42 @@ namespace ACBr.Net.Core.Extensions
 			}
 
 			return ret;
+		}
+
+		public static void RemoveEmptyNamespace(this XDocument doc)
+		{
+			if (doc.Root == null) return;
+
+			foreach (var node in doc.Root.Descendants())
+			{
+				if (node.Name.NamespaceName != "")
+					continue;
+
+				node.Attributes("xmlns").Remove();
+				if (node.Parent != null)
+					node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
+			}
+		}
+
+		public static void AddChild(this XElement parent, params XElement[] childrens)
+		{
+			if (childrens == null || parent == null) return;
+			if (childrens.Length < 1) return;
+
+			parent.Add(childrens);
+		}
+
+		public static void AddAttribute(this XElement parent, params XAttribute[] attributes)
+		{
+			if (attributes == null || parent == null) return;
+			if (attributes.Length < 1) return;
+
+			parent.Add(attributes);
+		}
+
+		public static IEnumerable<XElement> ElementsAnyNs(this XElement source, string name)
+		{
+			return source.Elements().Where(e => e.Name.LocalName == name);
 		}
 	}
 }
