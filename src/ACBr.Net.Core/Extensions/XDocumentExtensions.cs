@@ -30,7 +30,6 @@
 // ***********************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,27 +40,26 @@ namespace ACBr.Net.Core.Extensions
 {
 	public static class XDocumentExtensions
 	{
-		public static string AsString(this XDocument xmlDoc, bool identado = false, bool showDeclaration = true)
+		public static string AsString(this XDocument document, bool identado = false, bool showDeclaration = true)
 		{
-			return xmlDoc.AsString(identado, showDeclaration, Encoding.UTF8);
+			return document.AsString(identado, showDeclaration, Encoding.UTF8);
 		}
 
-		public static string AsString(this XDocument xmlDoc, bool identado, bool showDeclaration, Encoding encode)
+		public static string AsString(this XDocument document, bool identado, bool showDeclaration, Encoding encode)
 		{
-			using (var stringWriter = new StringWriter())
+			var settings = new XmlWriterSettings
 			{
-				var settings = new XmlWriterSettings
-				{
-					Indent = identado,
-					Encoding = encode,
-					OmitXmlDeclaration = !showDeclaration
-				};
-				using (var xmlTextWriter = XmlWriter.Create(stringWriter, settings))
-				{
-					xmlDoc.WriteTo(xmlTextWriter);
-					xmlTextWriter.Flush();
-					return stringWriter.GetStringBuilder().ToString();
-				}
+				Indent = identado,
+				Encoding = encode,
+				OmitXmlDeclaration = !showDeclaration
+			};
+
+			using (var stringWriter = new StringWriter())
+			using (var xmlTextWriter = XmlWriter.Create(stringWriter, settings))
+			{
+				document.WriteTo(xmlTextWriter);
+				xmlTextWriter.Flush();
+				return stringWriter.GetStringBuilder().ToString();
 			}
 		}
 
@@ -82,7 +80,7 @@ namespace ACBr.Net.Core.Extensions
 			return ret;
 		}
 
-		public static void RemoveEmptyNamespace(this XDocument doc)
+		public static void RemoveEmptyNs(this XDocument doc)
 		{
 			if (doc.Root == null) return;
 
@@ -113,9 +111,28 @@ namespace ACBr.Net.Core.Extensions
 			parent.Add(attributes);
 		}
 
-		public static IEnumerable<XElement> ElementsAnyNs(this XElement source, string name)
+		public static XElement[] ElementsAnyNs(this XElement source, string name)
 		{
-			return source.Elements().Where(e => e.Name.LocalName == name);
+			return source.Elements().Where(e => e.Name.LocalName == name).ToArray();
+		}
+
+		public static XElement ElementAnyNs(this XElement source, string name)
+		{
+			return source.Elements().SingleOrDefault(e => e.Name.LocalName == name);
+		}
+
+		public static string OuterXml(this XElement source)
+		{
+			var xReader = source.CreateReader();
+			xReader.MoveToContent();
+			return xReader.ReadOuterXml();
+		}
+
+		public static string InnerXml(this XElement source)
+		{
+			var xReader = source.CreateReader();
+			xReader.MoveToContent();
+			return xReader.ReadInnerXml();
 		}
 	}
 }
