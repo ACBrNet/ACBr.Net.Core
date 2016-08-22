@@ -111,12 +111,12 @@ namespace ACBr.Net.Core.Extensions
 			parent.Add(attributes);
 		}
 
-		public static XElement[] ElementsAnyNs(this XElement source, string name)
+		public static XElement[] ElementsAnyNs(this XContainer source, string name)
 		{
 			return source.Elements().Where(e => e.Name.LocalName == name).ToArray();
 		}
 
-		public static XElement ElementAnyNs(this XElement source, string name)
+		public static XElement ElementAnyNs(this XContainer source, string name)
 		{
 			return source.Elements().SingleOrDefault(e => e.Name.LocalName == name);
 		}
