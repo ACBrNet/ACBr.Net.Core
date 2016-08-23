@@ -134,5 +134,15 @@ namespace ACBr.Net.Core.Extensions
 			xReader.MoveToContent();
 			return xReader.ReadInnerXml();
 		}
+
+		public static XmlDocument ToXmlDocument(this XDocument document, LoadOptions options)
+		{
+			using (var reader = document.CreateReader())
+			{
+				var xmlDocument = new XmlDocument();
+				xmlDocument.Load(reader);
+				return xmlDocument;
+			}
+		}
 	}
 }

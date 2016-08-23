@@ -29,94 +29,24 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace ACBr.Net.Core.Extensions
 {
-	/// <summary>
-	/// Class XmlNodeExtensions.
-	/// </summary>
-	public static class XmlNodeExtensions
+	public static class XmlDocumentExtensions
 	{
-		/// <summary>
-		/// Retorna a XML como string
-		/// </summary>
-		/// <param name="xmlDoc">The XML document.</param>
-		/// <param name="identado">Se for <c>true</c> o XML sai [identado].</param>
-		/// <param name="showDeclaration">if set to <c>true</c> [show declaration].</param>
-		/// <returns>System.String.</returns>
-		public static string AsString(this XmlNode xmlDoc, bool identado = false, bool showDeclaration = true)
+		public static XDocument ToXDocument(this XmlDocument document)
 		{
-			return xmlDoc.AsString(identado, showDeclaration, Encoding.UTF8);
+			return document.ToXDocument(LoadOptions.None);
 		}
 
-		/// <summary>
-		/// Retorna a XML como string
-		/// </summary>
-		/// <param name="xmlDoc">The XML document.</param>
-		/// <param name="identado">Se for <c>true</c> o XML sai [identado].</param>
-		/// <param name="showDeclaration">if set to <c>true</c> [show declaration].</param>
-		/// <param name="encode">O enconding do XML.</param>
-		/// <returns>System.String.</returns>
-		public static string AsString(this XmlNode xmlDoc, bool identado, bool showDeclaration, Encoding encode)
+		public static XDocument ToXDocument(this XmlDocument document, LoadOptions options)
 		{
-			using (var stringWriter = new StringWriter())
+			using (var reader = new XmlNodeReader(document))
 			{
-				var settings = new XmlWriterSettings
-				{
-					Indent = identado,
-					Encoding = encode,
-					OmitXmlDeclaration = !showDeclaration
-				};
-				using (var xmlTextWriter = XmlWriter.Create(stringWriter, settings))
-				{
-					xmlDoc.WriteTo(xmlTextWriter);
-					xmlTextWriter.Flush();
-					return stringWriter.GetStringBuilder().ToString();
-				}
+				return XDocument.Load(reader, options);
 			}
-		}
-
-		/// <summary>
-		/// Adiciona varias tag ao documento ignorando os elementos nulos.
-		/// </summary>
-		/// <param name="xmlDoc">The XML document.</param>
-		/// <param name="tags">The tags.</param>
-		public static void AddTag(this XmlNode xmlDoc, params XmlNode[] tags)
-		{
-			if (tags.Length < 1) return;
-
-			foreach (var tag in tags.Where(tag => tag != null))
-			{
-				xmlDoc.AppendChild(tag);
-			}
-		}
-
-		/// <summary>
-		/// Gets the value.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="element">The element.</param>
-		/// <returns>T.</returns>
-		public static T GetValue<T>(this XmlNode element)
-		{
-			if (element == null) return default(T);
-
-			T ret;
-			try
-			{
-				ret = (T)Convert.ChangeType(element.InnerText, typeof(T));
-			}
-			catch (Exception)
-			{
-				ret = default(T);
-			}
-
-			return ret;
 		}
 	}
 }

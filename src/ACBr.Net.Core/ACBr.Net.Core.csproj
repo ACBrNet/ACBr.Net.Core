@@ -93,6 +93,7 @@
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\X509Certificate2Extensions.cs" />
     <Compile Include="Extensions\XDocumentExtensions.cs" />
+    <Compile Include="Extensions\XmlNodeExtensions.cs" />
     <Compile Include="Generics\GenericClone.cs" />
     <Compile Include="Generics\GenericCollection.cs" />
     <Compile Include="Generics\GenericEditable.cs" />
