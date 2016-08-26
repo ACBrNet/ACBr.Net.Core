@@ -72,7 +72,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="element">The element.</param>
 		/// <param name="format"></param>
 		/// <returns>T.</returns>
-		public static TType GetValue<TType>(this XmlNode element, IFormatProvider format = null) where TType : IConvertible
+		public static TType GetValue<TType>(this XmlNode element, IFormatProvider format = null)
 		{
 			if (element == null) return default(TType);
 

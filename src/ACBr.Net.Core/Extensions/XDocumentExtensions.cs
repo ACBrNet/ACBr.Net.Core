@@ -64,7 +64,7 @@ namespace ACBr.Net.Core.Extensions
 			}
 		}
 
-		public static TType GetValue<TType>(this XElement element, IFormatProvider format = null) where TType : IConvertible
+		public static TType GetValue<TType>(this XElement element, IFormatProvider format = null)
 		{
 			if (element == null) return default(TType);
 
