@@ -30,6 +30,7 @@
 // ***********************************************************************
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -63,18 +64,20 @@ namespace ACBr.Net.Core.Extensions
 			}
 		}
 
-		public static T GetValue<T>(this XElement element) where T : IConvertible
+		public static TType GetValue<TType>(this XElement element, IFormatProvider format = null) where TType : IConvertible
 		{
-			if (element == null) return default(T);
+			if (element == null) return default(TType);
 
-			T ret;
+			TType ret;
 			try
 			{
-				ret = (T)Convert.ChangeType(element.Value, typeof(T));
+				if (format == null) format = CultureInfo.InvariantCulture;
+
+				ret = (TType)Convert.ChangeType(element.Value, typeof(TType), format);
 			}
 			catch (Exception)
 			{
-				ret = default(T);
+				ret = default(TType);
 			}
 
 			return ret;

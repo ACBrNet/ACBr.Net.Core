@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -67,21 +68,24 @@ namespace ACBr.Net.Core.Extensions
 		/// <summary>
 		/// Gets the value.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="TType"></typeparam>
 		/// <param name="element">The element.</param>
+		/// <param name="format"></param>
 		/// <returns>T.</returns>
-		public static T GetValue<T>(this XmlNode element)
+		public static TType GetValue<TType>(this XmlNode element, IFormatProvider format = null) where TType : IConvertible
 		{
-			if (element == null) return default(T);
+			if (element == null) return default(TType);
 
-			T ret;
+			TType ret;
 			try
 			{
-				ret = (T)Convert.ChangeType(element.InnerText, typeof(T));
+				if (format == null) format = CultureInfo.InvariantCulture;
+
+				ret = (TType)Convert.ChangeType(element.Value, typeof(TType), format);
 			}
 			catch (Exception)
 			{
-				ret = default(T);
+				ret = default(TType);
 			}
 
 			return ret;
