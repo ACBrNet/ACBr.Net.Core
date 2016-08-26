@@ -30,7 +30,6 @@
 // ***********************************************************************
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -51,15 +50,16 @@ namespace ACBr.Net.Core.Extensions
 			{
 				Indent = identado,
 				Encoding = encode,
-				OmitXmlDeclaration = !showDeclaration
+				OmitXmlDeclaration = !showDeclaration,
+				NamespaceHandling = NamespaceHandling.OmitDuplicates
 			};
 
-			using (var stringWriter = new StringWriter())
-			using (var xmlTextWriter = XmlWriter.Create(stringWriter, settings))
+			var xmlString = new StringBuilder();
+			using (var xmlTextWriter = XmlWriter.Create(xmlString, settings))
 			{
 				document.WriteTo(xmlTextWriter);
 				xmlTextWriter.Flush();
-				return stringWriter.GetStringBuilder().ToString();
+				return xmlString.ToString();
 			}
 		}
 

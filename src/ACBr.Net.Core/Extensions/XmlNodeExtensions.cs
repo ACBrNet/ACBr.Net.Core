@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -33,20 +32,20 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>System.String.</returns>
 		public static string AsString(this XmlNode xmlDoc, bool identado, bool showDeclaration, Encoding encode)
 		{
-			using (var stringWriter = new StringWriter())
+			var settings = new XmlWriterSettings
 			{
-				var settings = new XmlWriterSettings
-				{
-					Indent = identado,
-					Encoding = encode,
-					OmitXmlDeclaration = !showDeclaration
-				};
-				using (var xmlTextWriter = XmlWriter.Create(stringWriter, settings))
-				{
-					xmlDoc.WriteTo(xmlTextWriter);
-					xmlTextWriter.Flush();
-					return stringWriter.GetStringBuilder().ToString();
-				}
+				Indent = identado,
+				Encoding = encode,
+				OmitXmlDeclaration = !showDeclaration,
+				NamespaceHandling = NamespaceHandling.OmitDuplicates
+			};
+
+			var xmlString = new StringBuilder();
+			using (var xmlTextWriter = XmlWriter.Create(xmlString, settings))
+			{
+				xmlDoc.WriteTo(xmlTextWriter);
+				xmlTextWriter.Flush();
+				return xmlString.ToString();
 			}
 		}
 
