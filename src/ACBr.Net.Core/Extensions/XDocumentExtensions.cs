@@ -40,12 +40,12 @@ namespace ACBr.Net.Core.Extensions
 {
 	public static class XDocumentExtensions
 	{
-		public static string AsString(this XDocument document, bool identado = false, bool showDeclaration = true)
+		public static string AsString(this XElement document, bool identado = false, bool showDeclaration = true)
 		{
 			return document.AsString(identado, showDeclaration, Encoding.UTF8);
 		}
 
-		public static string AsString(this XDocument document, bool identado, bool showDeclaration, Encoding encode)
+		public static string AsString(this XElement document, bool identado, bool showDeclaration, Encoding encode)
 		{
 			var settings = new XmlWriterSettings
 			{
@@ -83,11 +83,9 @@ namespace ACBr.Net.Core.Extensions
 			return ret;
 		}
 
-		public static void RemoveEmptyNs(this XDocument doc)
+		public static void RemoveEmptyNs(this XElement doc)
 		{
-			if (doc.Root == null) return;
-
-			foreach (var node in doc.Root.Descendants())
+			foreach (var node in doc.Descendants())
 			{
 				if (node.Name.NamespaceName != "")
 					continue;
@@ -122,20 +120,6 @@ namespace ACBr.Net.Core.Extensions
 		public static XElement ElementAnyNs(this XContainer source, string name)
 		{
 			return source.Elements().SingleOrDefault(e => e.Name.LocalName == name);
-		}
-
-		public static string OuterXml(this XElement source)
-		{
-			var xReader = source.CreateReader();
-			xReader.MoveToContent();
-			return xReader.ReadOuterXml();
-		}
-
-		public static string InnerXml(this XElement source)
-		{
-			var xReader = source.CreateReader();
-			xReader.MoveToContent();
-			return xReader.ReadInnerXml();
 		}
 
 		public static XmlDocument ToXmlDocument(this XDocument document, LoadOptions options)

@@ -31,20 +31,28 @@
 using System;
 using System.ComponentModel;
 
+#region COM Interop Attributes
+
 #if COM_INTEROP
 
 using System.Runtime.InteropServices;
 
 #endif
 
+#endregion COM Interop Attributes
+
 namespace ACBr.Net.Core
 {
+	#region COM Interop Attributes
+
 #if COM_INTEROP
 
 	[ComVisible(true)]
-	[Guid("9FA0F390-307D-44AE-972F-6E63BB77509F")]
+	[Guid("2B681388-A01F-4666-8A70-F021691824F0")]
 	[ClassInterface(ClassInterfaceType.AutoDual)]
 #endif
+
+	#endregion COM Interop Attributes
 
 	[DesignerCategory("ACBr.Net")]
 	[DesignTimeVisible(true)]

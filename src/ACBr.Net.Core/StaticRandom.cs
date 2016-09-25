@@ -10,28 +10,49 @@
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
-//	 Permission is hereby granted, free of charge, to any person obtaining 
-// a copy of this software and associated documentation files (the "Software"), 
-// to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom the 
+//	 Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
-//	 The above copyright notice and this permission notice shall be 
+//	 The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
 using System;
 
+#region COM Interop Attributes
+
+#if COM_INTEROP
+
+using System.Runtime.InteropServices;
+
+#endif
+
+#endregion COM Interop Attributes
+
 namespace ACBr.Net.Core
 {
+	#region COM Interop Attributes
+
+#if COM_INTEROP
+
+	[ComVisible(true)]
+	[Guid("902E0118-86BD-48A2-8B9C-E97A3AFFE564")]
+	[ClassInterface(ClassInterfaceType.AutoDual)]
+#endif
+
+	#endregion COM Interop Attributes
+
 	/// <summary>
 	/// Thread-safe equivalent of System.Random, using just static methods.
 	/// If all you want is a source of random numbers, this is an easy class to
@@ -40,14 +61,24 @@ namespace ACBr.Net.Core
 	/// </summary>
 	public static class StaticRandom
 	{
-		/// <summary>
-		/// The random
-		/// </summary>
-		static readonly Random Random = new Random((int)DateTime.Now.TimeOfDay.TotalMilliseconds);
-		/// <summary>
-		/// My lock
-		/// </summary>
-		static readonly object MyLock = new object();
+		#region Fields
+
+		private static readonly Random random;
+		private static readonly object myLock;
+
+		#endregion Fields
+
+		#region Constructors
+
+		static StaticRandom()
+		{
+			random = new Random((int)DateTime.Now.TimeOfDay.TotalMilliseconds);
+			myLock = new object();
+		}
+
+		#endregion Constructors
+
+		#region Methods
 
 		/// <summary>
 		/// Returns a nonnegative random number.
@@ -55,9 +86,9 @@ namespace ACBr.Net.Core
 		/// <returns>A 32-bit signed integer greater than or equal to zero and less than Int32.MaxValue.</returns>
 		public static int Next()
 		{
-			lock (MyLock)
+			lock (myLock)
 			{
-				return Random.Next();
+				return random.Next();
 			}
 		}
 
@@ -70,9 +101,9 @@ namespace ACBr.Net.Core
 		/// <exception cref="ArgumentOutOfRangeException">maxValue is less than zero.</exception>
 		public static int Next(int max)
 		{
-			lock (MyLock)
+			lock (myLock)
 			{
-				return Random.Next(max);
+				return random.Next(max);
 			}
 		}
 
@@ -88,9 +119,9 @@ namespace ACBr.Net.Core
 		/// <exception cref="ArgumentOutOfRangeException">minValue is greater than maxValue.</exception>
 		public static int Next(int min, int max)
 		{
-			lock (MyLock)
+			lock (myLock)
 			{
-				return Random.Next(min, max);
+				return random.Next(min, max);
 			}
 		}
 
@@ -100,9 +131,9 @@ namespace ACBr.Net.Core
 		/// <returns>A double-precision floating point number greater than or equal to 0.0, and less than 1.0.</returns>
 		public static double NextDouble()
 		{
-			lock (MyLock)
+			lock (myLock)
 			{
-				return Random.NextDouble();
+				return random.NextDouble();
 			}
 		}
 
@@ -113,10 +144,12 @@ namespace ACBr.Net.Core
 		/// <exception cref="ArgumentNullException">buffer is a null reference (Nothing in Visual Basic).</exception>
 		public static void NextBytes(byte[] buffer)
 		{
-			lock (MyLock)
+			lock (myLock)
 			{
-				Random.NextBytes(buffer);
+				random.NextBytes(buffer);
 			}
 		}
+
+		#endregion Methods
 	}
 }
