@@ -83,20 +83,21 @@ namespace ACBr.Net.Core.Extensions
 			return ret;
 		}
 
-		public static void RemoveEmptyNs(this XElement doc)
+		public static void RemoveEmptyNs(this XContainer doc)
 		{
 			foreach (var node in doc.Descendants())
 			{
-				if (node.Name.NamespaceName != "")
-					continue;
+				if (!node.Name.NamespaceName.IsEmpty()) continue;
 
 				node.Attributes("xmlns").Remove();
 				if (node.Parent != null)
+				{
 					node.Name = node.Parent.Name.Namespace + node.Name.LocalName;
+				}
 			}
 		}
 
-		public static void AddChild(this XElement parent, params XElement[] childrens)
+		public static void AddChild(this XContainer parent, params XElement[] childrens)
 		{
 			if (childrens == null || parent == null) return;
 			if (childrens.Length < 1) return;
@@ -104,7 +105,7 @@ namespace ACBr.Net.Core.Extensions
 			parent.Add(childrens);
 		}
 
-		public static void AddAttribute(this XElement parent, params XAttribute[] attributes)
+		public static void AddAttribute(this XContainer parent, params XAttribute[] attributes)
 		{
 			if (attributes == null || parent == null) return;
 			if (attributes.Length < 1) return;
@@ -122,7 +123,7 @@ namespace ACBr.Net.Core.Extensions
 			return source.Elements().SingleOrDefault(e => e.Name.LocalName == name);
 		}
 
-		public static XmlDocument ToXmlDocument(this XDocument document, LoadOptions options)
+		public static XmlDocument ToXmlDocument(this XDocument document)
 		{
 			using (var reader = document.CreateReader())
 			{
