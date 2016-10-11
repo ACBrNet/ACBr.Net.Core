@@ -40,12 +40,12 @@ namespace ACBr.Net.Core.Extensions
 {
 	public static class XDocumentExtensions
 	{
-		public static string AsString(this XElement document, bool identado = false, bool showDeclaration = true)
+		public static string AsString(this XContainer document, bool identado = false, bool showDeclaration = true)
 		{
 			return document.AsString(identado, showDeclaration, Encoding.UTF8);
 		}
 
-		public static string AsString(this XElement document, bool identado, bool showDeclaration, Encoding encode)
+		public static string AsString(this XContainer document, bool identado, bool showDeclaration, Encoding encode)
 		{
 			var settings = new XmlWriterSettings
 			{

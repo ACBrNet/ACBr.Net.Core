@@ -28,6 +28,8 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
+using System;
 using System.Drawing;
 using System.IO;
 
@@ -52,6 +54,17 @@ namespace ACBr.Net.Core.Extensions
 				var returnImage = Image.FromStream(ms);
 				return returnImage;
 			}
+		}
+
+		/// <summary>
+		/// To the base64.
+		/// </summary>
+		/// <param name="byteArrayIn">The byte array in.</param>
+		/// <returns>System.String.</returns>
+		public static string ToBase64(this byte[] byteArrayIn)
+		{
+			if (byteArrayIn == null || byteArrayIn.Length < 1) return string.Empty;
+			return Convert.ToBase64String(byteArrayIn);
 		}
 	}
 }

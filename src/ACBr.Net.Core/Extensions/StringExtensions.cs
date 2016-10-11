@@ -10,20 +10,20 @@
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
-//	 Permission is hereby granted, free of charge, to any person obtaining 
-// a copy of this software and associated documentation files (the "Software"), 
-// to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom the 
+//	 Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
-//	 The above copyright notice and this permission notice shall be 
+//	 The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+//	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 // </copyright>
 // <summary></summary>
@@ -98,32 +98,33 @@ namespace ACBr.Net.Core.Extensions
 				using (var cipher = new T())
 				{
 					if (cipher is DESCryptoServiceProvider)
+					{
 						keysize = 64;
+					}
+
 					if (cipher is TripleDESCryptoServiceProvider || cipher is RC2CryptoServiceProvider)
+					{
 						keysize = 128;
+					}
 
 					var passwordBytes = new Rfc2898DeriveBytes(password, saltBytes, 2);
-					var keyBytes = passwordBytes.GetBytes(keysize/8);
+					var keyBytes = passwordBytes.GetBytes(keysize / 8);
 
 					cipher.Mode = CipherMode.CBC;
 
 					using (var encryptor = cipher.CreateEncryptor(keyBytes, vectorBytes))
+					using (var to = new MemoryStream())
+					using (var writer = new CryptoStream(to, encryptor, CryptoStreamMode.Write))
 					{
-						using (var to = new MemoryStream())
-						{
-							using (var writer = new CryptoStream(to, encryptor, CryptoStreamMode.Write))
-							{
-								writer.Write(valueBytes, 0, valueBytes.Length);
-								writer.FlushFinalBlock();
-								encrypted = to.ToArray();
-							}
-						}
+						writer.Write(valueBytes, 0, valueBytes.Length);
+						writer.FlushFinalBlock();
+						encrypted = to.ToArray();
 					}
+
 					cipher.Clear();
 				}
 
-				return Convert.ToBase64String(encrypted);
-
+				return encrypted.ToBase64();
 			}
 			catch (Exception ex)
 			{
@@ -141,7 +142,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="vector">The vector.</param>
 		/// <returns>System.String.</returns>
 		/// <exception cref="ACBrException">Erro ao descriptografar string</exception>
-		public static string Decrypt<T>(this string value, string password, 
+		public static string Decrypt<T>(this string value, string password,
 			string salt = "aselrias38490a32", string vector = "8947az34awl34kjq") where T : SymmetricAlgorithm, new()
 		{
 			try
@@ -157,24 +158,25 @@ namespace ACBr.Net.Core.Extensions
 				using (var cipher = new T())
 				{
 					if (cipher is DESCryptoServiceProvider)
+					{
 						keysize = 64;
+					}
+
 					if (cipher is TripleDESCryptoServiceProvider || cipher is RC2CryptoServiceProvider)
+					{
 						keysize = 128;
+					}
 
 					var passwordBytes = new Rfc2898DeriveBytes(password, saltBytes, 2);
 					var keyBytes = passwordBytes.GetBytes(keysize / 8);
 
 					cipher.Mode = CipherMode.CBC;
 					using (var decryptor = cipher.CreateDecryptor(keyBytes, vectorBytes))
+					using (var from = new MemoryStream(valueBytes))
+					using (var reader = new CryptoStream(from, decryptor, CryptoStreamMode.Read))
 					{
-						using (var from = new MemoryStream(valueBytes))
-						{
-							using (var reader = new CryptoStream(from, decryptor, CryptoStreamMode.Read))
-							{
-								decrypted = new byte[valueBytes.Length];
-								decryptedByteCount = reader.Read(decrypted, 0, decrypted.Length);
-							}
-						}
+						decrypted = new byte[valueBytes.Length];
+						decryptedByteCount = reader.Read(decrypted, 0, decrypted.Length);
 					}
 
 					cipher.Clear();
@@ -187,7 +189,7 @@ namespace ACBr.Net.Core.Extensions
 				throw new ACBrException("Erro ao descriptografar string", ex);
 			}
 		}
-		
+
 		/// <summary>
 		/// To the m d5 hash.
 		/// </summary>
@@ -263,7 +265,7 @@ namespace ACBr.Net.Core.Extensions
 			{
 				Array arr = toReverse.ToCharArray();
 				Array.Reverse(arr); // reverse the string
-				var c = (char[]) arr;
+				var c = (char[])arr;
 				var b = Encoding.Default.GetBytes(c);
 				return Encoding.Default.GetString(b);
 			}
@@ -536,8 +538,7 @@ namespace ACBr.Net.Core.Extensions
 		{
 			try
 			{
-				if (toNormalize == null)
-					return string.Empty;
+				if (toNormalize.IsEmpty()) return string.Empty;
 
 				var toReturn = Regex.Replace(toNormalize, "[^0-9]", string.Empty);
 				return toReturn;
@@ -562,7 +563,9 @@ namespace ACBr.Net.Core.Extensions
 				cep = cep.OnlyNumbers();
 
 				if (cep.Length == 8)
+				{
 					cep = $"{cep.Substring(0, 5)}-{cep.Substring(5, 3)}";
+				}
 
 				return Regex.IsMatch(cep, "[0-9]{5}-[0-9]{3}");
 			}
@@ -613,7 +616,7 @@ namespace ACBr.Net.Core.Extensions
 				if (cpf.Length != 11)
 					return false;
 
-				//if (new string(cpf[0], cpf.Length) == cpf || 
+				//if (new string(cpf[0], cpf.Length) == cpf ||
 				//    cpf == "12345678909")
 				//    return false;
 
@@ -626,9 +629,9 @@ namespace ACBr.Net.Core.Extensions
 
 				var soma = 0;
 				for (var i = 0; i < 9; i++)
-					soma += (10 - i)*numeros[i];
+					soma += (10 - i) * numeros[i];
 
-				var resultado = soma%11;
+				var resultado = soma % 11;
 				if (resultado == 1 || resultado == 0)
 				{
 					if (numeros[9] != 0)
@@ -639,9 +642,9 @@ namespace ACBr.Net.Core.Extensions
 
 				soma = 0;
 				for (var i = 0; i < 10; i++)
-					soma += (11 - i)*numeros[i];
+					soma += (11 - i) * numeros[i];
 
-				resultado = soma%11;
+				resultado = soma % 11;
 				if (resultado == 1 || resultado == 0)
 				{
 					if (numeros[10] != 0)
@@ -697,14 +700,14 @@ namespace ACBr.Net.Core.Extensions
 				{
 					digitos[nrDig] = int.Parse(cnpj.Substring(nrDig, 1));
 					if (nrDig <= 11)
-						soma[0] += digitos[nrDig]*int.Parse(ftmt.Substring(nrDig + 1, 1));
+						soma[0] += digitos[nrDig] * int.Parse(ftmt.Substring(nrDig + 1, 1));
 					if (nrDig <= 12)
-						soma[1] += digitos[nrDig]*int.Parse(ftmt.Substring(nrDig, 1));
+						soma[1] += digitos[nrDig] * int.Parse(ftmt.Substring(nrDig, 1));
 				}
 
 				for (nrDig = 0; nrDig < 2; nrDig++)
 				{
-					resultado[nrDig] = soma[nrDig]%11;
+					resultado[nrDig] = soma[nrDig] % 11;
 					if ((resultado[nrDig] == 0) || (resultado[nrDig] == 1))
 						cnpjOk[nrDig] = digitos[12 + nrDig] == 0;
 					else
@@ -755,10 +758,11 @@ namespace ACBr.Net.Core.Extensions
 					{0, 0, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1, 0},
 					{0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 2, 3, 0},
 					{0, 0, 0, 0, 10, 8, 7, 6, 5, 4, 3, 1, 0, 0},
-					{0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 0, 0}
+					{0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 0, 0},
+					{0, 0, 2, 3, 4, 5, 6, 7, 8, 3, 4, 5, 6, 7}
 				};
 
-				string[] vDigitos = {"", "", "", "", "", "", "", "", "", "", "", "", "", ""};
+				string[] vDigitos = { "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
 				var fsDocto = "";
 				char d;
 				for (var i = 1; i <= pInscr.Trim().Length; i++)
@@ -786,7 +790,7 @@ namespace ACBr.Net.Core.Extensions
 						{
 							case 9:
 								tamanho = 9;
-								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "1", "0", "", "", "", "", ""};
+								vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "1", "0", "", "", "", "", "" };
 								break;
 
 							case 13:
@@ -795,7 +799,7 @@ namespace ACBr.Net.Core.Extensions
 								yRot = "E";
 								yMd = 11;
 								yTp = 1;
-								vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "1", "0", ""};
+								vDigitos = new[] { "DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "1", "0", "" };
 								break;
 						}
 						break;
@@ -803,7 +807,7 @@ namespace ACBr.Net.Core.Extensions
 					case "AL":
 						tamanho = 9;
 						xRot = "BD";
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "4", "2", "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "4", "2", "", "", "", "", "" };
 						break;
 
 					case "AP":
@@ -811,7 +815,7 @@ namespace ACBr.Net.Core.Extensions
 						{
 							tamanho = 9;
 							xRot = "CE";
-							vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "3", "0", "", "", "", "", ""};
+							vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "3", "0", "", "", "", "", "" };
 
 							if (fsDocto.ToInt64().Between(30170010, 30190229))
 								fatorF = 1;
@@ -822,7 +826,7 @@ namespace ACBr.Net.Core.Extensions
 
 					case "AM":
 						tamanho = 9;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", "" };
 						break;
 
 					case "BA":
@@ -833,7 +837,7 @@ namespace ACBr.Net.Core.Extensions
 						xTp = 2;
 						yTp = 3;
 						yRot = "E";
-						vDigitos = new[] {"DVX", "DVY", c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+						vDigitos = new[] { "DVX", "DVY", c09, c09, c09, c09, c09, c09, c09, "", "", "", "", "" };
 						if (fsDocto[1].IsIn('0', '1', '2', '3', '4', '5', '8'))
 						{
 							xMd = 10;
@@ -848,7 +852,7 @@ namespace ACBr.Net.Core.Extensions
 
 					case "CE":
 						tamanho = 9;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, "0", "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, "0", "", "", "", "", "" };
 						break;
 
 					case "DF":
@@ -857,19 +861,19 @@ namespace ACBr.Net.Core.Extensions
 						yRot = "E";
 						yMd = 11;
 						yTp = 1;
-						vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "7", "0", ""};
+						vDigitos = new[] { "DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "7", "0", "" };
 						break;
 
 					case "ES":
 						tamanho = 9;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", "" };
 						break;
 
 					case "GO":
 						if (fsDocto.Length == 9)
 						{
 							tamanho = 9;
-							vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "0,1,5", "1", "", "", "", "", ""};
+							vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "0,1,5", "1", "", "", "", "", "" };
 
 							if (fsDocto.ToInt64().Between(101031050, 101199979))
 								fatorG = 1;
@@ -878,7 +882,7 @@ namespace ACBr.Net.Core.Extensions
 
 					case "MA":
 						tamanho = 9;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "2", "1", "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "2", "1", "", "", "", "", "" };
 						break;
 
 					case "MT":
@@ -886,12 +890,12 @@ namespace ACBr.Net.Core.Extensions
 							fsDocto = fsDocto.ZeroFill(11);
 
 						tamanho = 11;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, "", "", "" };
 						break;
 
 					case "MS":
 						tamanho = 9;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "8", "2", "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "8", "2", "", "", "", "", "" };
 						break;
 
 					case "MG":
@@ -902,17 +906,17 @@ namespace ACBr.Net.Core.Extensions
 						yRot = "E";
 						yMd = 11;
 						yTp = 11;
-						vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, ""};
+						vDigitos = new[] { "DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, "" };
 						break;
 
 					case "PA":
 						tamanho = 9;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "5", "1", "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "5", "1", "", "", "", "", "" };
 						break;
 
 					case "PB":
 						tamanho = 9;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "6", "1", "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "6", "1", "", "", "", "", "" };
 						break;
 
 					case "PR":
@@ -921,7 +925,7 @@ namespace ACBr.Net.Core.Extensions
 						yRot = "E";
 						yMd = 11;
 						yTp = 8;
-						vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", ""};
+						vDigitos = new[] { "DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "" };
 						break;
 
 					case "PE":
@@ -932,30 +936,30 @@ namespace ACBr.Net.Core.Extensions
 								tamanho = 14;
 								xTp = 7;
 								fatorF = 1;
-								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, "1-9", "8", "1"};
+								vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, "1-9", "8", "1" };
 								break;
 
 							case 9:
 								tamanho = 9;
-								xTp = 9;
+								xTp = 14;
 								xMd = 11;
 								yRot = "E";
 								yMd = 11;
 								yTp = 7;
-								vDigitos = new[] {"DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+								vDigitos = new[] { "DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, "", "", "", "", "" };
 								break;
 						}
 						break;
 
 					case "PI":
 						tamanho = 9;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "9", "1", "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "9", "1", "", "", "", "", "" };
 						break;
 
 					case "RJ":
 						tamanho = 8;
 						xTp = 8;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "1,7,8,9", "", "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "1,7,8,9", "", "", "", "", "", "" };
 						break;
 
 					case "RN":
@@ -964,20 +968,20 @@ namespace ACBr.Net.Core.Extensions
 						{
 							case 9:
 								tamanho = 9;
-								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "0", "2", "", "", "", "", ""};
+								vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "0", "2", "", "", "", "", "" };
 								break;
 
 							case 10:
 								tamanho = 10;
 								xTp = 11;
-								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, "0", "2", "", "", "", ""};
+								vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, "0", "2", "", "", "", "" };
 								break;
 						}
 						break;
 
 					case "RS":
 						tamanho = 10;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "0-4", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "0-4", "", "", "", "" };
 						break;
 
 					case "RO":
@@ -987,12 +991,12 @@ namespace ACBr.Net.Core.Extensions
 							case 9:
 								tamanho = 9;
 								xTp = 4;
-								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, "1-9", "", "", "", "", ""};
+								vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, "1-9", "", "", "", "", "" };
 								break;
 
 							case 14:
 								tamanho = 14;
-								vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09};
+								vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09, c09 };
 								break;
 						}
 						break;
@@ -1002,13 +1006,13 @@ namespace ACBr.Net.Core.Extensions
 						xRot = "D";
 						xMd = 9;
 						xTp = 5;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "4", "2", "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "4", "2", "", "", "", "", "" };
 						break;
 
 					case "SC":
 					case "SE":
 						tamanho = 9;
-						vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
+						vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", "" };
 						break;
 
 					case "SP":
@@ -1017,7 +1021,7 @@ namespace ACBr.Net.Core.Extensions
 						if (fsDocto.ToUpper()[0] == 'P')
 						{
 							tamanho = 13;
-							vDigitos = new[] {c09, c09, c09, "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "P", ""};
+							vDigitos = new[] { c09, c09, c09, "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "P", "" };
 						}
 						else
 						{
@@ -1025,7 +1029,7 @@ namespace ACBr.Net.Core.Extensions
 							yRot = "D";
 							yMd = 11;
 							yTp = 13;
-							vDigitos = new[] {"DVY", c09, c09, "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", ""};
+							vDigitos = new[] { "DVY", c09, c09, "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "" };
 						}
 						break;
 
@@ -1034,16 +1038,14 @@ namespace ACBr.Net.Core.Extensions
 						{
 							tamanho = 11;
 							xTp = 6;
-							vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, "1,2,3,9", "0,9", "9", "2", "", "", ""};
+							vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "1,2,3,9", "0,9", "9", "2", "", "", "" };
 						}
 						else
 						{
 							tamanho = 9;
-							vDigitos = new[] {"DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", ""};
-
+							vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "", "" };
 						}
 						break;
-
 				}
 
 				var ok = (tamanho > 0) && (fsDocto.Length == tamanho);
@@ -1055,7 +1057,7 @@ namespace ACBr.Net.Core.Extensions
 				var dvy = 0;
 				var I = 13;
 
-				//Verificando os digitos nas posicoes s„o permitidos 
+				//Verificando os digitos nas posicoes s„o permitidos
 				while (I >= 0)
 				{
 					d = fsDocto[13 - I];
@@ -1118,11 +1120,11 @@ namespace ACBr.Net.Core.Extensions
 						if (char.IsNumber(d))
 						{
 							var nD = d.ToInt32(0);
-							var m = nD*cPesos[xTp - 1, I - 1];
+							var m = nD * cPesos[xTp - 1, I - 1];
 							soma += m;
 
 							if (xRot.Contains('A'))
-								somAq = somAq + (int) Math.Truncate((decimal) m/10);
+								somAq = somAq + (int)Math.Truncate((decimal)m / 10);
 						}
 
 						I--;
@@ -1133,12 +1135,12 @@ namespace ACBr.Net.Core.Extensions
 					else if (xRot.Contains('B'))
 						soma *= 10;
 					else if (xRot.Contains('C'))
-						soma += 5 + (4*fatorF);
+						soma += 5 + (4 * fatorF);
 
 					//Calculando digito verificador
-					var dv = (int) Math.Truncate((decimal) soma%xMd);
+					var dv = (int)Math.Truncate((decimal)soma % xMd);
 					if (xRot.Contains('E'))
-						dv = (int) Math.Truncate((decimal) xMd - dv);
+						dv = (int)Math.Truncate((decimal)xMd - dv);
 
 					//Apenas GO modifica o FatorG para diferente de 0
 					switch (dv)
@@ -1236,8 +1238,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
 		public static bool ValidarUF(this string uf)
 		{
-			if (uf.IsEmpty())
-				return false;
+			if (uf.IsEmpty()) return false;
 
 			string[] cUFsValidas =
 			{
@@ -1260,7 +1261,7 @@ namespace ACBr.Net.Core.Extensions
 		{
 			try
 			{
-				var multiplicador = new[] {3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+				var multiplicador = new[] { 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
 				var soma = 0;
 
 				if (pis.Trim().Length == 0)
@@ -1269,9 +1270,9 @@ namespace ACBr.Net.Core.Extensions
 				pis = pis.Trim();
 				pis = pis.Replace("-", string.Empty).Replace(".", string.Empty).PadLeft(11, '0');
 				for (var i = 0; i < 10; i++)
-					soma += int.Parse(pis[i].ToString())*multiplicador[i];
+					soma += int.Parse(pis[i].ToString()) * multiplicador[i];
 
-				var resto = soma%11;
+				var resto = soma % 11;
 
 				if (resto < 2)
 					resto = 0;
@@ -1298,9 +1299,9 @@ namespace ACBr.Net.Core.Extensions
 			try
 			{
 				var emailRegex = @"^(([^<>()[\]\\.,;·‡„‚‰ÈËÍÎÌÏÓÔÛÚıÙˆ˙˘˚¸Á:\s@\""]+"
-				                 + @"(\.[^<>()[\]\\.,;·‡„‚‰ÈËÍÎÌÏÓÔÛÚıÙˆ˙˘˚¸Á:\s@\""]+)*)|(\"".+\""))@"
-				                 + @"((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|"
-				                 + @"(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$";
+								 + @"(\.[^<>()[\]\\.,;·‡„‚‰ÈËÍÎÌÏÓÔÛÚıÙˆ˙˘˚¸Á:\s@\""]+)*)|(\"".+\""))@"
+								 + @"((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|"
+								 + @"(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$";
 
 				// Inst‚ncia da classe Regex, passando como
 				// argumento sua Express„o Regular
@@ -1369,8 +1370,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <exception cref="Exception">Erro ao codificar string</exception>
 		public static string ToUtf8(this string value)
 		{
-			if (value == null)
-				return string.Empty;
+			if (value.IsEmpty()) return string.Empty;
 
 			try
 			{
@@ -1393,8 +1393,7 @@ namespace ACBr.Net.Core.Extensions
 		{
 			try
 			{
-				if (string.IsNullOrEmpty(value))
-					return string.Empty;
+				if (value.IsEmpty()) return string.Empty;
 
 				var bytes = Encoding.Default.GetBytes(value);
 				var text = RemoveAccent(Encoding.UTF8.GetString(bytes));
@@ -1440,8 +1439,10 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>String do tamanho especificado e se menor complementada com o caractere informado a direita/esquerda</returns>
 		public static string StringFill(this string text, int length, char with = ' ', bool esquerda = true)
 		{
-			if (text == null)
+			if (text.IsEmpty())
+			{
 				text = string.Empty;
+			}
 
 			if (text.Length > length)
 			{
@@ -1470,9 +1471,6 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>String do tamanho especificado e se menor complementada com o caractere informado a esquerda</returns>
 		public static string FillRight(this string text, int length, char with = ' ')
 		{
-			if (text == null)
-				text = string.Empty;
-
 			return text.StringFill(length, with);
 		}
 
@@ -1486,9 +1484,6 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>String do tamanho especificado e se menor complementada com o caractere informado a direita</returns>
 		public static string FillLeft(this string text, int length, char with = ' ')
 		{
-			if (text == null)
-				text = string.Empty;
-
 			return text.StringFill(length, with, false);
 		}
 
@@ -1500,9 +1495,6 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>String do tamanho especificado e se menor complementada com zero a direita/esquerda</returns>
 		public static string ZeroFill(this string text, int length)
 		{
-			if (text == null)
-				text = string.Empty;
-
 			return text.OnlyNumbers().StringFill(length, '0');
 		}
 
@@ -1513,8 +1505,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>String sem carateres especiais e normalizada</returns>
 		public static string RemoveAccent(this string value)
 		{
-			if (value.IsEmpty())
-				return string.Empty;
+			if (value.IsEmpty()) return string.Empty;
 
 			var retorno = value.ReplaceAny(new[] { '·', '‡', '‚', '„', '™' }, 'a');
 			retorno = retorno.ReplaceAny(new[] { '¡', '¿', '¬', '√', 'ƒ' }, 'A');
@@ -1544,7 +1535,7 @@ namespace ACBr.Net.Core.Extensions
 					return string.Empty;
 
 				var retorno = text.RemoveAccent();
-				var cEspeciais = new [] { "#39", "---", "--", "-", "'", "#", Environment.NewLine,
+				var cEspeciais = new[] { "#39", "---", "--", "-", "'", "#", Environment.NewLine,
 										  "\n", "\r", ",", ".", "?", "&", ":", "/", "!", ";",
 										  "%", "ë", "í", "(", ")", "\\", "î", "ì", "+", "É", "á" };
 
@@ -1564,7 +1555,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="oldChars">The old chars.</param>
 		/// <param name="newChar">The new character.</param>
 		/// <returns>System.String.</returns>
-		private static string ReplaceAny(this string text, IEnumerable<char> oldChars, char newChar)
+		public static string ReplaceAny(this string text, IEnumerable<char> oldChars, char newChar)
 		{
 			var builder = new StringBuilder(text);
 
@@ -1581,7 +1572,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="oldChars">The old chars.</param>
 		/// <param name="newChar">The new character.</param>
 		/// <returns>System.String.</returns>
-		private static string ReplaceAny(this string text, IEnumerable<string> oldChars, string newChar)
+		public static string ReplaceAny(this string text, IEnumerable<string> oldChars, string newChar)
 		{
 			var builder = new StringBuilder(text);
 
@@ -1603,6 +1594,7 @@ namespace ACBr.Net.Core.Extensions
 			{
 				case 11:
 					return FormataCPF(value);
+
 				case 14:
 					return FormataCNPJ(value);
 
@@ -1676,11 +1668,15 @@ namespace ACBr.Net.Core.Extensions
 			{
 				var agenciaConta = agencia;
 				if (digitoAgencia != string.Empty)
+				{
 					agenciaConta += "-" + digitoAgencia;
+				}
 
 				agenciaConta += "/" + conta;
 				if (digitoConta != string.Empty)
+				{
 					agenciaConta += "-" + digitoConta;
+				}
 
 				return agenciaConta;
 			}
@@ -1699,7 +1695,9 @@ namespace ACBr.Net.Core.Extensions
 		public static string Right(this string value, int length)
 		{
 			if (length > value.Length)
+			{
 				length = value.Length;
+			}
 
 			return value.Substring(value.Length - length);
 		}
@@ -1711,8 +1709,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>DateTime.</returns>
 		public static DateTime FromJulianDate(this string julianDate)
 		{
-			if (julianDate.Length < 1 || julianDate.Length > 5)
-				return default(DateTime);
+			if (julianDate.Length < 1 || julianDate.Length > 5) return default(DateTime);
 
 			var ano = 2000 + int.Parse(julianDate.Substring(0, 2));
 			var dias = int.Parse(julianDate.Substring(2));
@@ -1785,17 +1782,32 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>System.String.</returns>
 		public static string Between(this string value, int start, int end)
 		{
-			if (value == null)
-				return string.Empty;
+			if (value.IsEmpty()) return string.Empty;
 
 			var len = value.Length;
-			if (start < 0) start += len;
-			if (end < 0) end += len;
-			if (len == 0 || start > len - 1 || end < start)
-				return string.Empty;
 
-			if (start < 0) start = 0;
-			if (end >= len) end = len - 1;
+			if (start < 0)
+			{
+				start += len;
+			}
+
+			if (end < 0)
+			{
+				end += len;
+			}
+
+			if (len == 0 || start > len - 1 || end < start) return string.Empty;
+
+			if (start < 0)
+			{
+				start = 0;
+			}
+
+			if (end >= len)
+			{
+				end = len - 1;
+			}
+
 			return value.Substring(start, end - start + 1);
 		}
 
@@ -1807,12 +1819,8 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>System.String.</returns>
 		public static string Substitute(this string format, params object[] args)
 		{
-			var value = string.Empty;
-			if (format.IsEmpty())
-				return value;
-
-			if (args.Length == 0)
-				return format;
+			if (format.IsEmpty()) return string.Empty;
+			if (args.Length == 0) return format;
 
 			try
 			{

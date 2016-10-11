@@ -64,6 +64,19 @@ namespace ACBr.Net.Core.Extensions
 		}
 
 		/// <summary>
+		/// To the base64.
+		/// </summary>
+		/// <param name="imageIn">The image in.</param>
+		/// <param name="format">The format.</param>
+		/// <returns>System.String.</returns>
+		public static string ToBase64(this Image imageIn, ImageFormat format = null)
+		{
+			if (imageIn == null) return string.Empty;
+			var imgBytes = imageIn.ToByteArray(format);
+			return imgBytes.ToBase64();
+		}
+
+		/// <summary>
 		/// To the stream.
 		/// </summary>
 		/// <param name="imageIn">The image in.</param>

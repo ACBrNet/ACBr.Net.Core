@@ -321,6 +321,7 @@ namespace ACBr.Net.Core.Tests
 		{
 			Assert.True("0321418-40".IsIE("PE"));
 			Assert.True("18.1.001.0000004-9".IsIE("PE"));
+			Assert.True("9999999-40".IsIE("PE"));
 		}
 
 		[Fact]
