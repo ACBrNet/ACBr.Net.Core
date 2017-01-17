@@ -41,7 +41,7 @@ namespace ACBr.Net.Core.Extensions
 				NamespaceHandling = NamespaceHandling.OmitDuplicates
 			};
 
-			var xmlString = new StringBuilder();
+			using (var xmlString = new ACBrStringWriter(encode))
 			using (var xmlTextWriter = XmlWriter.Create(xmlString, settings))
 			{
 				xmlDoc.WriteTo(xmlTextWriter);
