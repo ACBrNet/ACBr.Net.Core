@@ -30,29 +30,8 @@
 // ***********************************************************************
 using System;
 
-#region COM Interop Attributes
-
-#if COM_INTEROP
-
-using System.Runtime.InteropServices;
-
-#endif
-
-#endregion COM Interop Attributes
-
 namespace ACBr.Net.Core
 {
-	#region COM Interop Attributes
-
-#if COM_INTEROP
-
-	[ComVisible(true)]
-	[Guid("902E0118-86BD-48A2-8B9C-E97A3AFFE564")]
-	[ClassInterface(ClassInterfaceType.AutoDual)]
-#endif
-
-	#endregion COM Interop Attributes
-
 	/// <summary>
 	/// Thread-safe equivalent of System.Random, using just static methods.
 	/// If all you want is a source of random numbers, this is an easy class to

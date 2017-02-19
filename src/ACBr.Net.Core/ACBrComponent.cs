@@ -4,7 +4,7 @@
 // Created          : 01-31-2016
 //
 // Last Modified By : RFTD
-// Last Modified On : 04-20-2014
+// Last Modified On : 02-18-2017
 // ***********************************************************************
 // <copyright file="ACBrComponent.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
@@ -28,32 +28,13 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 using System;
 using System.ComponentModel;
-
-#region COM Interop Attributes
-
-#if COM_INTEROP
-
-using System.Runtime.InteropServices;
-
-#endif
-
-#endregion COM Interop Attributes
+using ACBr.Net.Core.Extensions;
 
 namespace ACBr.Net.Core
 {
-	#region COM Interop Attributes
-
-#if COM_INTEROP
-
-	[ComVisible(true)]
-	[Guid("2B681388-A01F-4666-8A70-F021691824F0")]
-	[ClassInterface(ClassInterfaceType.AutoDual)]
-#endif
-
-	#endregion COM Interop Attributes
-
 	[DesignerCategory("ACBr.Net")]
 	[DesignTimeVisible(true)]
 	[TypeConverter(typeof(ACBrExpandableObjectConverter))]
@@ -62,39 +43,31 @@ namespace ACBr.Net.Core
 		#region Fields
 
 		private ISite site;
-		private EventHandler disposed;
 
 		#endregion Fields
 
 		#region Events
 
-		public event EventHandler Disposed
-		{
-#if COM_INTEROP
-			[ComVisible(false)]
-#endif
-			add
-			{
-				disposed += value;
-			}
-#if COM_INTEROP
-			[ComVisible(false)]
-#endif
-			remove
-			{
-				disposed -= value;
-			}
-		}
+		/// <summary>
+		/// Represents the method that handles the <see cref="E:System.ComponentModel.IComponent.Disposed" /> event of a component.
+		/// </summary>
+		public event EventHandler Disposed;
 
 		#endregion Events
 
 		#region Constructor
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ACBrComponent"/> class.
+		/// </summary>
 		protected ACBrComponent()
 		{
 			OnInitialize();
 		}
 
+		/// <summary>
+		/// Finalizes an instance of the <see cref="ACBrComponent"/> class.
+		/// </summary>
 		~ACBrComponent()
 		{
 			Dispose(false);
@@ -146,16 +119,15 @@ namespace ACBr.Net.Core
 
 		private void Dispose(bool disposing)
 		{
-			if (disposing)
-			{
-				GC.SuppressFinalize(this);
-			}
+			if (disposing) GC.SuppressFinalize(this);
 
 			OnDisposing();
-
-			disposed?.Invoke(this, EventArgs.Empty);
+			Disposed.Raise(this, EventArgs.Empty);
 		}
 
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
 		public void Dispose()
 		{
 			Dispose(true);

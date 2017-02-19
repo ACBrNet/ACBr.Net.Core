@@ -33,29 +33,8 @@ using ACBr.Net.Core.Extensions;
 using System;
 using ACBr.Net.Core.Exceptions;
 
-#region COM Interop Attributes
-
-#if COM_INTEROP
-
-using System.Runtime.InteropServices;
-
-#endif
-
-#endregion COM Interop Attributes
-
 namespace ACBr.Net.Core
 {
-	#region COM Interop Attributes
-
-#if COM_INTEROP
-
-	[ComVisible(true)]
-	[Guid("D4B7B16C-495F-40B1-AC89-461D297F76D4")]
-	[ClassInterface(ClassInterfaceType.AutoDual)]
-#endif
-
-	#endregion COM Interop Attributes
-
 	public class CalcDigito
 	{
 		#region Constructor

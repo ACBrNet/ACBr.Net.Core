@@ -33,31 +33,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-#region COM Interop Attributes
-
-#if COM_INTEROP
-
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-
-#endif
-
-#endregion COM Interop Attributes
-
 namespace ACBr.Net.Core.Generics
 {
-	#region COM Interop Attributes
-
-#if COM_INTEROP
-
-	[ComVisible(true)]
-	[Guid("6BDAA268-CB03-4CF1-8F44-9EF994664A47")]
-	[ComDefaultInterface(typeof(IEnumerable))]
-	[ClassInterface(ClassInterfaceType.AutoDual)]
-#endif
-
-	#endregion COM Interop Attributes
-
 	public abstract class GenericCollection<T> : IEnumerable where T : class
 	{
 		#region Fields
@@ -88,15 +65,6 @@ namespace ACBr.Net.Core.Generics
 		/// </summary>
 		/// <value>The count.</value>
 		public int Count => List.Count;
-
-		#region COM Interop Attributes
-
-#if COM_INTEROP
-
-		[IndexerName("GetItem")]
-#endif
-
-		#endregion COM Interop Attributes
 
 		public T this[int idx]
 		{
@@ -132,13 +100,8 @@ namespace ACBr.Net.Core.Generics
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
-#if COM_INTEROP
-
-		public IEnumerator GetEnumerator()
-#else
 
 		public IEnumerator<T> GetEnumerator()
-#endif
 		{
 			return List.GetEnumerator();
 		}

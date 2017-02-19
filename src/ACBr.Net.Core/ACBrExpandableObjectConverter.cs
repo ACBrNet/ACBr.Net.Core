@@ -49,7 +49,7 @@ namespace ACBr.Net.Core
 		/// <returns>System.Object.</returns>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destType)
 		{
-			if ((value != null) && (destType == typeof(string)))
+			if (value != null && destType == typeof(string))
 			{
 				return $"({value.GetType().Name})";
 			}

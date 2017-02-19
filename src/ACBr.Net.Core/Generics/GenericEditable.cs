@@ -32,27 +32,8 @@ using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
 
-#region COM Interop Attributes
-
-#if COM_INTEROP
-
-using System.Runtime.InteropServices;
-
-#endif
-
-#endregion COM Interop Attributes
-
 namespace ACBr.Net.Core.Generics
 {
-	#region COM Interop Attributes
-
-#if COM_INTEROP
-
-	[ComVisible(false)]
-#endif
-
-	#endregion COM Interop Attributes
-
 	public class GenericEditable<T> : IEditableObject where T : class
 	{
 		#region Fields

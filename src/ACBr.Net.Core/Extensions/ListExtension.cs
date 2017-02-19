@@ -51,6 +51,26 @@ namespace ACBr.Net.Core.Extensions
 		}
 
 		/// <summary>
+		/// Remove as linhas vazias da lista.
+		/// </summary>
+		/// <param name="retorno">The retorno.</param>
+		public static void RemoveEmptyLines(this IList<string> retorno)
+		{
+			var i = 0;
+			while (i < retorno.Count)
+			{
+				if (retorno[i].IsEmpty())
+				{
+					retorno.RemoveAt(i);
+				}
+				else
+				{
+					i++;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Adds the range.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>

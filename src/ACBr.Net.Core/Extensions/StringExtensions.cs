@@ -1858,6 +1858,48 @@ namespace ACBr.Net.Core.Extensions
 			return Encoding.UTF8.GetString(base64EncodedBytes);
 		}
 
+		/// <summary>
+		/// Remove as tag HTML do texto.
+		/// </summary>
+		/// <param name="htmlString">The HTML string.</param>
+		/// <returns>System.String.</returns>
+		public static string StripHtml(this string htmlString)
+		{
+			const string PATTERN = @"<(.|\n)*?>";
+			return Regex.Replace(htmlString, PATTERN, string.Empty);
+		}
+
+		/// <summary>
+		/// Remove os espaços duplicados da string.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <returns>System.String.</returns>
+		public static string RemoveDoubleSpaces(this string value)
+		{
+			return Regex.Replace(value, "[ ]{2,}", " ", RegexOptions.None);
+		}
+
+		/// <summary>
+		/// Retorna a string que esta entre as duas string informadas.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <param name="strInicio">The string inicio.</param>
+		/// <param name="strFinal">The string final.</param>
+		/// <returns>System.String.</returns>
+		public static string StringEntreString(this string value, string strInicio, string strFinal)
+		{
+			var ini = value.IndexOf(strInicio, StringComparison.Ordinal);
+			var fim = value.IndexOf(strFinal, StringComparison.Ordinal);
+
+			if (ini > 0) ini = ini + strInicio.Length;
+			if (fim > 0) fim = fim + strFinal.Length;
+			var diff = fim - ini - strFinal.Length;
+
+			if (fim > ini && diff > 0) return value.Substring(ini, diff);
+
+			return string.Empty;
+		}
+
 		#endregion Methods
 	}
 }

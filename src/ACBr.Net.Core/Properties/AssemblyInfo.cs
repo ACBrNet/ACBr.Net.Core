@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("ACBr.Net Core")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ACBr.Net")]
-[assembly: AssemblyCopyright("Copyright © Grupo ACBr.Net 2014 - 2016")]
+[assembly: AssemblyCopyright("Copyright © Grupo ACBr.Net 2014 - 2017")]
 [assembly: AssemblyTrademark("Grupo ACBr.Net https://acbrnet.github.io")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -30,8 +30,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.1.5")]
-[assembly: AssemblyFileVersion("1.0.1.5")]
+[assembly: AssemblyVersion("1.0.1.6")]
+[assembly: AssemblyFileVersion("1.0.1.6")]
 
 //Internal Visible
 //Especificar as assembly que tem acesso aos metodos internos da dll
