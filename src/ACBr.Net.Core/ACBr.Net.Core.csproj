@@ -76,6 +76,7 @@
     <Compile Include="CalcDigito.cs" />
     <Compile Include="CalcDigFormula.cs" />
     <Compile Include="Extensions\AssemblyExtenssions.cs" />
+    <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ByteExtensions.cs" />
     <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Exceptions\Guard.cs" />
@@ -116,6 +117,12 @@
     <Compile Include="Extensions\ObjectExtension.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\XmlDocumentExtensions.cs" />
+    <Compile Include="Txt\TxtEnumAttribute.cs" />
+    <Compile Include="Txt\TxtFieldAttribute.cs" />
+    <Compile Include="Txt\TxtFill.cs" />
+    <Compile Include="Txt\TxtInfo.cs" />
+    <Compile Include="Txt\TxtRecord.cs" />
+    <Compile Include="Txt\TxtRecordBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />

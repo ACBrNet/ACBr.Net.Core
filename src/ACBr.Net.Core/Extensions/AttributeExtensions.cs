@@ -1,14 +1,14 @@
-// ***********************************************************************
+ï»¿// ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 01-06-2015
+// Created          : 04-06-2017
 //
 // Last Modified By : RFTD
-// Last Modified On : 24-03-2016
+// Last Modified On : 04-06-2017
 // ***********************************************************************
-// <copyright file="GenericClone.cs" company="ACBr.Net">
+// <copyright file="AttributeExtensions.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
-//	     		    Copyright (c) 2016 Grupo ACBr.Net
+//	     		    Copyright (c) 2014 - 2017 Grupo ACBr.Net
 //
 //	 Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -30,42 +30,44 @@
 // ***********************************************************************
 
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Linq;
+using System.Reflection;
 
-namespace ACBr.Net.Core.Generics
+namespace ACBr.Net.Core.Extensions
 {
-	/// <summary>
-	/// Classe GenericClone implementação generica da interface ICloneable.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class GenericClone<T> : ICloneable where T : class
+	public static class AttributeExtensions
 	{
-		/// <summary>
-		/// Cria um novo objeto que é uma copia da instancia atual.
-		/// </summary>
-		/// <returns>T.</returns>
-		public T Clone()
+		public static TValue GetAttributeValue<TAttribute, TValue>(
+			this ICustomAttributeProvider type,
+			Func<TAttribute, TValue> valueSelector)
+			where TAttribute : Attribute
 		{
-			using (var ms = new MemoryStream())
-			{
-				var bf = new BinaryFormatter();
-				bf.Serialize(ms, this);
-				ms.Position = 0;
+			var att = type.GetCustomAttributes(
+					typeof(TAttribute), true
+				)
+				.FirstOrDefault() as TAttribute;
 
-				var obj = bf.Deserialize(ms);
-
-				return obj as T;
-			}
+			return att != null ? valueSelector(att) : default(TValue);
 		}
 
-		/// <summary>
-		/// Cria um novo objeto que é uma copia da instancia atual.
-		/// </summary>
-		/// <returns>A new object that is a copy of this instance.</returns>
-		object ICloneable.Clone()
+		public static TAttribute GetAttribute<TAttribute>(this ICustomAttributeProvider provider) where TAttribute : Attribute
 		{
-			return Clone();
+			var att = provider.GetCustomAttributes(typeof(TAttribute), true).FirstOrDefault() as TAttribute;
+			return att;
+		}
+
+		public static TAttribute[] GetAttributes<TAttribute>(this ICustomAttributeProvider type)
+			where TAttribute : Attribute
+		{
+			var att = type.GetCustomAttributes(typeof(TAttribute), true)
+				.Cast<TAttribute>().ToArray();
+			return att;
+		}
+
+		public static bool HasAttribute<T>(this ICustomAttributeProvider provider) where T : Attribute
+		{
+			var atts = provider.GetCustomAttributes(typeof(T), true);
+			return atts.Length > 0;
 		}
 	}
 }

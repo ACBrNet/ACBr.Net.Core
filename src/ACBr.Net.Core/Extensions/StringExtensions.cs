@@ -4,7 +4,7 @@
 // Created          : 01-31-2016
 //
 // Last Modified By : RFTD
-// Last Modified On : 05-15-2016
+// Last Modified On : 04-21-2017
 // ***********************************************************************
 // <copyright file="StringExtensions.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
@@ -36,7 +36,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace ACBr.Net.Core.Extensions
 {
@@ -817,7 +816,7 @@ namespace ACBr.Net.Core.Extensions
 							xRot = "CE";
 							vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "3", "0", "", "", "", "", "" };
 
-							if (fsDocto.ToInt64().Between(30170010, 30190229))
+							if (fsDocto.ToInt64().IsBetween(30170010, 30190229))
 								fatorF = 1;
 							else if (fsDocto.ToInt64() >= 30190230)
 								xRot = "E";
@@ -875,7 +874,7 @@ namespace ACBr.Net.Core.Extensions
 							tamanho = 9;
 							vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, "0,1,5", "1", "", "", "", "", "" };
 
-							if (fsDocto.ToInt64().Between(101031050, 101199979))
+							if (fsDocto.ToInt64().IsBetween(101031050, 101199979))
 								fatorG = 1;
 						}
 						break;
@@ -1092,7 +1091,7 @@ namespace ACBr.Net.Core.Extensions
 							}
 							else if (vDigitos[I].Contains('-'))
 							{
-								ok = d.ToInt32().Between(vDigitos[I].Substring(0, 1).ToInt32(), vDigitos[I].Substring(2, 1).ToInt32());
+								ok = d.ToInt32().IsBetween(vDigitos[I].Substring(0, 1).ToInt32(), vDigitos[I].Substring(2, 1).ToInt32());
 							}
 							else
 							{
@@ -1376,33 +1375,6 @@ namespace ACBr.Net.Core.Extensions
 			{
 				var bytes = Encoding.Default.GetBytes(value);
 				return Encoding.UTF8.GetString(bytes);
-			}
-			catch (Exception ex)
-			{
-				throw new ACBrException("Erro ao codificar string", ex);
-			}
-		}
-
-		/// <summary>
-		/// To the XML string.
-		/// </summary>
-		/// <param name="value">The text.</param>
-		/// <returns>System.String.</returns>
-		/// <exception cref="System.Exception">Erro ao codificar string</exception>
-		public static string ToXmlString(this string value)
-		{
-			try
-			{
-				if (value.IsEmpty()) return string.Empty;
-
-				var bytes = Encoding.Default.GetBytes(value);
-				var text = RemoveAccent(Encoding.UTF8.GetString(bytes));
-
-				var textOut = new StringBuilder();
-				foreach (var current in text.Where(XmlConvert.IsXmlChar))
-					textOut.Append(current);
-
-				return textOut.ToString();
 			}
 			catch (Exception ex)
 			{
@@ -1759,7 +1731,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>System.String.</returns>
 		public static string Before(this string value, int end)
 		{
-			return end == 0 ? string.Empty : value.Between(0, end - 1);
+			return end < 1 ? string.Empty : value.GetStrBetween(0, end - 1);
 		}
 
 		/// <summary>
@@ -1770,7 +1742,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>System.String.</returns>
 		public static string After(this string value, int start)
 		{
-			return value.Between(start + 1, int.MaxValue);
+			return value.GetStrBetween(start + 1, int.MaxValue);
 		}
 
 		/// <summary>
@@ -1780,7 +1752,7 @@ namespace ACBr.Net.Core.Extensions
 		/// <param name="start">The start.</param>
 		/// <param name="end">The end.</param>
 		/// <returns>System.String.</returns>
-		public static string Between(this string value, int start, int end)
+		public static string GetStrBetween(this string value, int start, int end)
 		{
 			if (value.IsEmpty()) return string.Empty;
 
@@ -1809,6 +1781,45 @@ namespace ACBr.Net.Core.Extensions
 			}
 
 			return value.Substring(start, end - start + 1);
+		}
+
+		/// <summary>
+		/// Get string value after [first] a.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <param name="before">The string inicio.</param>
+		public static string Before(this string value, string before)
+		{
+			var posA = value.IndexOf(before);
+			return posA == -1 ? string.Empty : value.Substring(0, posA);
+		}
+
+		/// <summary>
+		/// Get string value after [last] a.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <param name="after">The string inicio.</param>
+		public static string After(this string value, string after)
+		{
+			var posA = value.LastIndexOf(after);
+			if (posA == -1) return string.Empty;
+
+			var adjustedPosA = posA + after.Length;
+			return adjustedPosA >= value.Length ? string.Empty : value.Substring(adjustedPosA);
+		}
+
+		/// <summary>
+		/// Retorna a string que esta entre as duas string informadas.
+		/// </summary>
+		/// <param name="value">The value.</param>
+		/// <param name="strInicio">The string inicio.</param>
+		/// <param name="strFinal">The string final.</param>
+		/// <returns>System.String.</returns>
+		public static string GetStrBetween(this string value, string strInicio, string strFinal)
+		{
+			return Regex.Match(value, Regex.Replace(strInicio, @"[][{}()*+?.\\^$|]", @"\$0") + @"\s*(((?!" +
+				Regex.Replace(strInicio, @"[][{}()*+?.\\^$|]", @"\$0") + @"|" + Regex.Replace(strFinal, @"[][{}()*+?.\\^$|]", @"\$0") + @").)+)\s*" +
+				Regex.Replace(strFinal, @"[][{}()*+?.\\^$|]", @"\$0"), RegexOptions.IgnoreCase).Value.Replace(strInicio, "").Replace(strFinal, "");
 		}
 
 		/// <summary>
@@ -1877,27 +1888,6 @@ namespace ACBr.Net.Core.Extensions
 		public static string RemoveDoubleSpaces(this string value)
 		{
 			return Regex.Replace(value, "[ ]{2,}", " ", RegexOptions.None);
-		}
-
-		/// <summary>
-		/// Retorna a string que esta entre as duas string informadas.
-		/// </summary>
-		/// <param name="value">The value.</param>
-		/// <param name="strInicio">The string inicio.</param>
-		/// <param name="strFinal">The string final.</param>
-		/// <returns>System.String.</returns>
-		public static string StringEntreString(this string value, string strInicio, string strFinal)
-		{
-			var ini = value.IndexOf(strInicio, StringComparison.Ordinal);
-			var fim = value.IndexOf(strFinal, StringComparison.Ordinal);
-
-			if (ini > 0) ini = ini + strInicio.Length;
-			if (fim > 0) fim = fim + strFinal.Length;
-			var diff = fim - ini - strFinal.Length;
-
-			if (fim > ini && diff > 0) return value.Substring(ini, diff);
-
-			return string.Empty;
 		}
 
 		#endregion Methods

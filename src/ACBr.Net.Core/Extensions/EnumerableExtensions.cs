@@ -30,8 +30,10 @@
 // ***********************************************************************
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace ACBr.Net.Core.Extensions
 {
@@ -66,6 +68,18 @@ namespace ACBr.Net.Core.Extensions
 		public static string AsString(this IEnumerable<string> array)
 		{
 			return string.Join(Environment.NewLine, array);
+		}
+
+		/// <summary>
+		/// Faz cast de um ienumerable para outro tipo
+		/// </summary>
+		/// <param name="lista"></param>
+		/// <param name="tipo"></param>
+		/// <returns></returns>
+		public static IEnumerable Cast(this IEnumerable lista, Type tipo)
+		{
+			var method = typeof(Enumerable).GetMethod("Cast").MakeGenericMethod(tipo);
+			return (IEnumerable)method.Invoke(null, new object[] { lista });
 		}
 	}
 }

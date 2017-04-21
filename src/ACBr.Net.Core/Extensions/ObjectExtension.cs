@@ -92,11 +92,11 @@ namespace ACBr.Net.Core.Extensions
 		}
 
 		/// <summary>
-		/// Throws an ArgumentNullException if the given data item is null.
+		/// Dispara <exception cref="System.ArgumentNullException">ArgumentNullException</exception> se o objeto for nulo.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="data">The item to check for nullity.</param>
-		/// <param name="name">The name to use when throwing an exception, if necessary</param>
+		/// <param name="data">O item para checar se é nulo.</param>
+		/// <param name="name">O nome para lançar se na exception, se necessário</param>
 		/// <exception cref="System.ArgumentNullException"></exception>
 		public static void ThrowIfNull<T>(this T data, string name) where T : IComparable<T>
 		{
@@ -104,11 +104,10 @@ namespace ACBr.Net.Core.Extensions
 		}
 
 		/// <summary>
-		/// Throws an ArgumentNullException if the given data item is null.
-		/// No parameter name is specified.
+		/// Dispara <exception cref="System.ArgumentNullException">ArgumentNullException</exception> se o objeto for nulo.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="data">The item to check for nullity.</param>
+		/// <param name="data">O item para checar se é nulo.</param>
 		/// <exception cref="System.ArgumentNullException"></exception>
 		public static void ThrowIfNull<T>(this T data) where T : IComparable<T>
 		{
@@ -116,25 +115,25 @@ namespace ACBr.Net.Core.Extensions
 		}
 
 		/// <summary>
-		/// Determines whether the specified value is null.
+		/// Determina se o valor é nulo ou não.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="value">The value.</param>
-		/// <returns><c>true</c> if the specified value is null; otherwise, <c>false</c>.</returns>
+		/// <param name="value">O valor.</param>
+		/// <returns><c>true</c> se o valor especificado for nulo; caso contrario, <c>false</c>.</returns>
 		public static bool IsNull<T>(this T value) where T : class
 		{
 			return Equals(value, null);
 		}
 
 		/// <summary>
-		/// Betweens the specified low.
+		/// Checar se o valor esta entre os valores informados.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="obj">The object.</param>
-		/// <param name="low">The low.</param>
-		/// <param name="high">The high.</param>
-		/// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-		public static bool Between<T>(this T obj, T low, T high) where T : IComparable<T>
+		/// <param name="obj">O valor.</param>
+		/// <param name="low">O mínimo.</param>
+		/// <param name="high">O máximo.</param>
+		/// <returns><c>true</c> se valor estiver entre o mínimo e o máximo, <c>false</c> se não.</returns>
+		public static bool IsBetween<T>(this T obj, T low, T high) where T : IComparable<T>
 		{
 			return obj.CompareTo(low) >= 0 && obj.CompareTo(high) <= 0;
 		}

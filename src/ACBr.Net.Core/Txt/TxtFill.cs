@@ -1,14 +1,14 @@
 // ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 01-06-2015
+// Created          : 04-06-2017
 //
 // Last Modified By : RFTD
-// Last Modified On : 24-03-2016
+// Last Modified On : 04-06-2017
 // ***********************************************************************
-// <copyright file="GenericClone.cs" company="ACBr.Net">
+// <copyright file="TxtFill.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
-//	     		    Copyright (c) 2016 Grupo ACBr.Net
+//	     		    Copyright (c) 2014 - 2017 Grupo ACBr.Net
 //
 //	 Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -29,43 +29,11 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-
-namespace ACBr.Net.Core.Generics
+namespace ACBr.Net.Core
 {
-	/// <summary>
-	/// Classe GenericClone implementação generica da interface ICloneable.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class GenericClone<T> : ICloneable where T : class
+	public enum TxtFill
 	{
-		/// <summary>
-		/// Cria um novo objeto que é uma copia da instancia atual.
-		/// </summary>
-		/// <returns>T.</returns>
-		public T Clone()
-		{
-			using (var ms = new MemoryStream())
-			{
-				var bf = new BinaryFormatter();
-				bf.Serialize(ms, this);
-				ms.Position = 0;
-
-				var obj = bf.Deserialize(ms);
-
-				return obj as T;
-			}
-		}
-
-		/// <summary>
-		/// Cria um novo objeto que é uma copia da instancia atual.
-		/// </summary>
-		/// <returns>A new object that is a copy of this instance.</returns>
-		object ICloneable.Clone()
-		{
-			return Clone();
-		}
+		Esquerda,
+		Direta
 	}
 }

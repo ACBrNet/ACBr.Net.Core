@@ -1,14 +1,14 @@
 // ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 01-06-2015
+// Created          : 04-06-2017
 //
 // Last Modified By : RFTD
-// Last Modified On : 24-03-2016
+// Last Modified On : 04-06-2017
 // ***********************************************************************
-// <copyright file="GenericClone.cs" company="ACBr.Net">
+// <copyright file="TxtFieldAttribute.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
-//	     		    Copyright (c) 2016 Grupo ACBr.Net
+//	     		    Copyright (c) 2014 - 2017 Grupo ACBr.Net
 //
 //	 Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -30,42 +30,62 @@
 // ***********************************************************************
 
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
-namespace ACBr.Net.Core.Generics
+namespace ACBr.Net.Core
 {
-	/// <summary>
-	/// Classe GenericClone implementação generica da interface ICloneable.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class GenericClone<T> : ICloneable where T : class
+	[AttributeUsage(AttributeTargets.Property)]
+	public class TxtFieldAttribute : Attribute
 	{
-		/// <summary>
-		/// Cria um novo objeto que é uma copia da instancia atual.
-		/// </summary>
-		/// <returns>T.</returns>
-		public T Clone()
+		#region Constructors
+
+		public TxtFieldAttribute(TxtInfo type)
 		{
-			using (var ms = new MemoryStream())
-			{
-				var bf = new BinaryFormatter();
-				bf.Serialize(ms, this);
-				ms.Position = 0;
-
-				var obj = bf.Deserialize(ms);
-
-				return obj as T;
-			}
+			Name = "";
+			Type = type;
+			Minimo = 0;
+			Maximo = 0;
+			Ordem = 0;
+			Preenchimento = TxtFill.Esquerda;
+			Caracter = ' ';
+			Obrigatorio = false;
 		}
 
-		/// <summary>
-		/// Cria um novo objeto que é uma copia da instancia atual.
-		/// </summary>
-		/// <returns>A new object that is a copy of this instance.</returns>
-		object ICloneable.Clone()
+		public TxtFieldAttribute(string name, TxtInfo type) : this(type)
 		{
-			return Clone();
+			Name = name;
 		}
+
+		public TxtFieldAttribute(TxtInfo type, bool obrigatorio) : this(type)
+		{
+			Obrigatorio = obrigatorio;
+		}
+
+		public TxtFieldAttribute(string name, TxtInfo type, bool obrigatorio) : this(type)
+		{
+			Name = name;
+			Obrigatorio = obrigatorio;
+		}
+
+		#endregion Constructors
+
+		#region Properties
+
+		public string Name { get; set; }
+
+		public TxtInfo Type { get; set; }
+
+		public int Ordem { get; set; }
+
+		public int Minimo { get; set; }
+
+		public int Maximo { get; set; }
+
+		public bool Obrigatorio { get; set; }
+
+		public TxtFill Preenchimento { get; set; }
+
+		public char Caracter { get; set; }
+
+		#endregion Properties
 	}
 }

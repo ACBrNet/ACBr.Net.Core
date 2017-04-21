@@ -37,7 +37,7 @@ namespace ACBr.Net.Core.Exceptions
 	/// Helper class for guard statements, which allow prettier
 	/// code for guard clauses
 	/// </summary>
-	public class Guard
+	public static class Guard
 	{
 		/// <summary>
 		/// Will throw a <see cref="InvalidOperationException" /> if the assertion

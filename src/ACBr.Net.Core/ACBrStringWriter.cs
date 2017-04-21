@@ -34,10 +34,25 @@ using System.Text;
 
 namespace ACBr.Net.Core
 {
+	/// <summary>
+	/// Classe derivada da StringWriter que aceita a mudança de encond.
+	/// </summary>
 	public sealed class ACBrStringWriter : StringWriter
 	{
 		#region Constructors
 
+		/// <summary>
+		/// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
+		/// </summary>
+		public ACBrStringWriter()
+		{
+			Encoding = Encoding.UTF8;
+		}
+
+		/// <summary>
+		/// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
+		/// </summary>
+		/// <param name="encoding"></param>
 		public ACBrStringWriter(Encoding encoding)
 		{
 			Encoding = encoding;
@@ -47,6 +62,9 @@ namespace ACBr.Net.Core
 
 		#region Propriedades
 
+		/// <summary>Gets the <see cref="T:System.Text.Encoding" /> in which the output is written.</summary>
+		/// <returns>The Encoding in which the output is written.</returns>
+		/// <filterpriority>1</filterpriority>
 		public override Encoding Encoding { get; }
 
 		#endregion Propriedades

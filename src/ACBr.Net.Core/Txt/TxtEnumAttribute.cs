@@ -1,14 +1,14 @@
 // ***********************************************************************
-// Assembly         : ACBr.Net.Core
+// Assembly         : ACBr.Net.SPED.Core
 // Author           : RFTD
-// Created          : 01-06-2015
+// Created          : 04-06-2017
 //
 // Last Modified By : RFTD
-// Last Modified On : 24-03-2016
+// Last Modified On : 04-06-2017
 // ***********************************************************************
-// <copyright file="GenericClone.cs" company="ACBr.Net">
+// <copyright file="TxtEnumAttribute.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
-//	     		    Copyright (c) 2016 Grupo ACBr.Net
+//	     		    Copyright (c) 2014 - 2017 Grupo ACBr.Net
 //
 //	 Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -30,42 +30,25 @@
 // ***********************************************************************
 
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
-namespace ACBr.Net.Core.Generics
+namespace ACBr.Net.Core
 {
-	/// <summary>
-	/// Classe GenericClone implementação generica da interface ICloneable.
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class GenericClone<T> : ICloneable where T : class
+	[AttributeUsage(AttributeTargets.Field)]
+	public sealed class TxtEnumAttribute : Attribute
 	{
 		/// <summary>
-		/// Cria um novo objeto que é uma copia da instancia atual.
+		/// Initializes a new instance of the <see cref="TxtEnumAttribute"/> class.
 		/// </summary>
-		/// <returns>T.</returns>
-		public T Clone()
+		/// <param name="value">The value.</param>
+		public TxtEnumAttribute(string value)
 		{
-			using (var ms = new MemoryStream())
-			{
-				var bf = new BinaryFormatter();
-				bf.Serialize(ms, this);
-				ms.Position = 0;
-
-				var obj = bf.Deserialize(ms);
-
-				return obj as T;
-			}
+			Value = value;
 		}
 
 		/// <summary>
-		/// Cria um novo objeto que é uma copia da instancia atual.
+		/// Gets or sets the value.
 		/// </summary>
-		/// <returns>A new object that is a copy of this instance.</returns>
-		object ICloneable.Clone()
-		{
-			return Clone();
-		}
+		/// <value>The value.</value>
+		public string Value { get; set; }
 	}
 }
