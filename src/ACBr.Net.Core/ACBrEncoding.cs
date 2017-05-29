@@ -1,12 +1,12 @@
 // ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 04-06-2017
+// Created          : 05-08-2017
 //
 // Last Modified By : RFTD
-// Last Modified On : 04-06-2017
+// Last Modified On : 05-08-2017
 // ***********************************************************************
-// <copyright file="TxtInfo.cs" company="ACBr.Net">
+// <copyright file="ACBrEncoding.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014 - 2017 Grupo ACBr.Net
 //
@@ -29,17 +29,22 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System.Text;
+
 namespace ACBr.Net.Core
 {
-	public enum TxtInfo
+	public static class ACBrEncoding
 	{
-		Str,
-		StrNumber,
-		Int,
-		Enum,
-		Date,
-		Time,
-		MothYear,
-		Number
+		#region Properties
+
+		public static Encoding ISO88591 => Encoding.GetEncoding("ISO-8859-1");
+
+		public static Encoding IBM850 => Encoding.GetEncoding("IBM850");
+
+		public static Encoding CP1252 => Windows1252;
+
+		public static Encoding Windows1252 => Encoding.GetEncoding("Windows-1252");
+
+		#endregion Properties
 	}
 }

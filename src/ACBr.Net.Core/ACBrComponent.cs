@@ -4,7 +4,7 @@
 // Created          : 01-31-2016
 //
 // Last Modified By : RFTD
-// Last Modified On : 02-18-2017
+// Last Modified On : 05-18-2017
 // ***********************************************************************
 // <copyright file="ACBrComponent.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
@@ -35,6 +35,9 @@ using ACBr.Net.Core.Extensions;
 
 namespace ACBr.Net.Core
 {
+	/// <summary>
+	/// Classe base para os componentes ACBr .Net
+	/// </summary>
 	[DesignerCategory("ACBr.Net")]
 	[DesignTimeVisible(true)]
 	[TypeConverter(typeof(ACBrExpandableObjectConverter))]
@@ -79,22 +82,19 @@ namespace ACBr.Net.Core
 
 		ISite IComponent.Site
 		{
-			get
-			{
-				return site;
-			}
-			set
-			{
-				site = value;
-			}
+			get => site;
+			set => site = value;
 		}
 
+		/// <summary>
+		///
+		/// </summary>
 		[Browsable(false)]
 		protected virtual bool DesignMode
 		{
 			get
 			{
-				bool isDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+				var isDesignMode = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
 				if (!isDesignMode)
 				{
@@ -109,8 +109,14 @@ namespace ACBr.Net.Core
 
 		#region Abstract Methods
 
+		/// <summary>
+		/// Função executada no inicio do componente.
+		/// </summary>
 		protected abstract void OnInitialize();
 
+		/// <summary>
+		/// Função executa no dispose do componente.
+		/// </summary>
 		protected abstract void OnDisposing();
 
 		#endregion Abstract Methods

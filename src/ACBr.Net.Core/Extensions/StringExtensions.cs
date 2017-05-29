@@ -531,8 +531,7 @@ namespace ACBr.Net.Core.Extensions
 		/// </summary>
 		/// <param name="toNormalize">String para processar.</param>
 		/// <returns>System.String.</returns>
-		/// <exception cref="System.Exception">Erro ao processar a string</exception>
-		/// <exception cref="Exception">Erro ao processar a string</exception>
+		/// <exception cref="ACBrException">Erro ao processar a string</exception>
 		public static string OnlyNumbers(this string toNormalize)
 		{
 			try
@@ -541,6 +540,27 @@ namespace ACBr.Net.Core.Extensions
 
 				var toReturn = Regex.Replace(toNormalize, "[^0-9]", string.Empty);
 				return toReturn;
+			}
+			catch (Exception ex)
+			{
+				throw new ACBrException("Erro ao processar a string", ex);
+			}
+		}
+
+		/// <summary>
+		/// Remove pontuações, espaços e traços de uma string, deixando apenas Dígitos e Letras
+		/// </summary>
+		/// <param name="str">String para processar.</param>
+		/// <returns>System.String.</returns>
+		/// <exception cref="ACBrException">Erro ao processar a string</exception>
+		public static string RemoveMask(this string str)
+		{
+			try
+			{
+				if (str.IsEmpty()) return str;
+
+				var digitsOnlyRegex = new Regex(@"[^\w]");
+				return digitsOnlyRegex.Replace(str, string.Empty);
 			}
 			catch (Exception ex)
 			{
@@ -733,14 +753,9 @@ namespace ACBr.Net.Core.Extensions
 		{
 			try
 			{
-				if (pInscr.IsEmpty())
-					return false;
-
-				if (pInscr.Trim().ToUpper() == "ISENTO")
-					return true;
-
-				if (!pUf.ValidarUF() || pUf.ToUpper() == "EX")
-					return false;
+				if (pInscr.IsEmpty()) return false;
+				if (pInscr.Trim().ToUpper() == "ISENTO") return true;
+				if (!pUf.ValidarUF() || pUf.ToUpper() == "EX") return false;
 
 				const string c09 = "0-9";
 				int[,] cPesos =
@@ -1477,21 +1492,21 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>String sem carateres especiais e normalizada</returns>
 		public static string RemoveAccent(this string value)
 		{
-			if (value.IsEmpty()) return string.Empty;
+			if (value.IsEmpty()) return value;
 
-			var retorno = value.ReplaceAny(new[] { 'á', 'à', 'â', 'ã', 'ª' }, 'a');
-			retorno = retorno.ReplaceAny(new[] { 'Á', 'À', 'Â', 'Ã', 'Ä' }, 'A');
-			retorno = retorno.ReplaceAny(new[] { 'é', 'è', 'ê', 'ë' }, 'e');
-			retorno = retorno.ReplaceAny(new[] { 'É', 'È', 'Ê', 'Ë' }, 'E');
-			retorno = retorno.ReplaceAny(new[] { 'í', 'ì', 'î' }, 'i');
-			retorno = retorno.ReplaceAny(new[] { 'Í', 'Ì', 'Î' }, 'I');
-			retorno = retorno.ReplaceAny(new[] { 'ó', 'ò', 'ô', 'õ', 'ö', 'º' }, 'o');
-			retorno = retorno.ReplaceAny(new[] { 'Ó', 'Ò', 'Ô', 'Õ', 'Ö' }, 'O');
-			retorno = retorno.ReplaceAny(new[] { 'ú', 'ù', 'û', 'ü' }, 'u');
-			retorno = retorno.ReplaceAny(new[] { 'Ú', 'Ù', 'Û', 'Ü' }, 'U');
-			retorno = retorno.ReplaceAny(new[] { 'Ç' }, 'C');
-			retorno = retorno.ReplaceAny(new[] { 'ç' }, 'c');
-			return retorno;
+			value = Regex.Replace(value, "[áàâãª]", "a");
+			value = Regex.Replace(value, "[ÁÀÂÃÄ]", "A");
+			value = Regex.Replace(value, "[éèêë]", "e");
+			value = Regex.Replace(value, "[ÉÈÊË]", "E");
+			value = Regex.Replace(value, "[íìîï]", "i");
+			value = Regex.Replace(value, "[ÍÌÎÏ]", "I");
+			value = Regex.Replace(value, "[óòôõöº]", "o");
+			value = Regex.Replace(value, "[ÓÒÔÕÖ]", "O");
+			value = Regex.Replace(value, "[úùûü]", "u");
+			value = Regex.Replace(value, "[ÚÙÛÜ]", "U");
+			value = Regex.Replace(value, "[Ç]", "C");
+			value = Regex.Replace(value, "[ç]", "c");
+			return value;
 		}
 
 		/// <summary>
@@ -1652,9 +1667,9 @@ namespace ACBr.Net.Core.Extensions
 
 				return agenciaConta;
 			}
-			catch
+			catch (Exception exception)
 			{
-				return string.Empty;
+				throw new ACBrException("Erro ao formatar agencia conta", exception);
 			}
 		}
 

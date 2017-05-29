@@ -78,7 +78,7 @@ namespace ACBr.Net.Core
 		/// <param name="minimo">Tamanho minimo da string</param>
 		/// <param name="maximo">Tamanho maximo da string</param>
 		/// <param name="direction">Lado onde sera inserido o caracter</param>
-		/// <param name="fillChar">Caracter de preenchimento</param>
+		/// <param name="fillChar">Caractere de preenchimento</param>
 		/// <returns>String ajustada</returns>
 		/// <exception cref="ArgumentOutOfRangeException"></exception>
 		protected virtual string AdjustString(string value, int minimo, int maximo, TxtFill direction, char fillChar)
@@ -118,7 +118,8 @@ namespace ACBr.Net.Core
 		/// Função para gerar a linha txt correspondente a esta classe
 		/// </summary>
 		/// <param name="writer"></param>
-		public abstract void GerarLinha(StreamWriter writer);
+		/// <returns>A quantidade de linha inseridas no stream</returns>
+		public abstract int GerarLinha(StreamWriter writer);
 
 		/// <summary>
 		/// Função que retorno o valor do item já ajustado de acordo com o atributo txt

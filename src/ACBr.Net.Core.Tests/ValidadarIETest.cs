@@ -168,6 +168,7 @@ namespace ACBr.Net.Core.Tests
 		public void ValidoGO()
 		{
 			Assert.True("10.987.654-7".IsIE("GO"));
+			Assert.True("104299274".IsIE("GO"));
 		}
 
 		[Fact]

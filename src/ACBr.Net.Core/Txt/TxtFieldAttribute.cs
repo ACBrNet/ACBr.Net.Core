@@ -33,36 +33,61 @@ using System;
 
 namespace ACBr.Net.Core
 {
+	/// <summary>
+	/// Atributo usado para o gerador de arquivo Txt.
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class TxtFieldAttribute : Attribute
 	{
 		#region Constructors
 
-		public TxtFieldAttribute(TxtInfo type)
+		/// <summary>
+		/// Inicializa uma nova instancia da classe <see cref="TxtFieldAttribute" />.
+		/// </summary>
+		/// <param name="tipo"></param>
+		public TxtFieldAttribute(TxtInfo tipo)
 		{
-			Name = "";
-			Type = type;
+			Nome = "";
+			Tipo = tipo;
 			Minimo = 0;
 			Maximo = 0;
 			Ordem = 0;
 			Preenchimento = TxtFill.Esquerda;
-			Caracter = ' ';
+			CaracterPreenchimento = ' ';
+			SeparadorDecimal = '.';
+			QtdDecimais = 2;
 			Obrigatorio = false;
 		}
 
-		public TxtFieldAttribute(string name, TxtInfo type) : this(type)
+		/// <summary>
+		/// Inicializa uma nova instancia da classe <see cref="TxtFieldAttribute" />.
+		/// </summary>
+		/// <param name="nome"></param>
+		/// <param name="type"></param>
+		public TxtFieldAttribute(string nome, TxtInfo type) : this(type)
 		{
-			Name = name;
+			Nome = nome;
 		}
 
-		public TxtFieldAttribute(TxtInfo type, bool obrigatorio) : this(type)
+		/// <summary>
+		/// Inicializa uma nova instancia da classe <see cref="TxtFieldAttribute" />.
+		/// </summary>
+		/// <param name="tipo"></param>
+		/// <param name="obrigatorio"></param>
+		public TxtFieldAttribute(TxtInfo tipo, bool obrigatorio) : this(tipo)
 		{
 			Obrigatorio = obrigatorio;
 		}
 
-		public TxtFieldAttribute(string name, TxtInfo type, bool obrigatorio) : this(type)
+		/// <summary>
+		/// Inicializa uma nova instancia da classe <see cref="TxtFieldAttribute" />.
+		/// </summary>
+		/// <param name="nome"></param>
+		/// <param name="type"></param>
+		/// <param name="obrigatorio"></param>
+		public TxtFieldAttribute(string nome, TxtInfo type, bool obrigatorio) : this(type)
 		{
-			Name = name;
+			Nome = nome;
 			Obrigatorio = obrigatorio;
 		}
 
@@ -70,21 +95,55 @@ namespace ACBr.Net.Core
 
 		#region Properties
 
-		public string Name { get; set; }
+		/// <summary>
+		/// Define/retorna o nome do campo.
+		/// </summary>
+		public string Nome { get; set; }
 
-		public TxtInfo Type { get; set; }
+		/// <summary>
+		/// Define/retorna o tipo de dado para processamento.
+		/// </summary>
+		public TxtInfo Tipo { get; set; }
 
+		/// <summary>
+		/// Define/retorna a ordem de inserção do dado.
+		/// </summary>
 		public int Ordem { get; set; }
 
+		/// <summary>
+		/// Define/retorna o tamanho mínimo do campo.
+		/// </summary>
 		public int Minimo { get; set; }
 
+		/// <summary>
+		/// Define/retorna o tamanho máximo do campo.
+		/// </summary>
 		public int Maximo { get; set; }
 
+		/// <summary>
+		/// Define/retorna se o campo é obrigatório.
+		/// </summary>
 		public bool Obrigatorio { get; set; }
 
+		/// <summary>
+		/// Define/retorna a partir da da onde sera feito o preenchimento em caso do valor sem menor que o mínimo.
+		/// </summary>
 		public TxtFill Preenchimento { get; set; }
 
-		public char Caracter { get; set; }
+		/// <summary>
+		/// Define/retorna o caractere para ser usado no preenchimento.
+		/// </summary>
+		public char CaracterPreenchimento { get; set; }
+
+		/// <summary>
+		/// Define/retorna a quantidade de digitos decimais em caso de valor numérico.
+		/// </summary>
+		public int QtdDecimais { get; set; }
+
+		/// <summary>
+		/// Define/retorna o separador decimal utilizado em caso de valor numérico com decimais
+		/// </summary>
+		public char SeparadorDecimal { get; set; }
 
 		#endregion Properties
 	}

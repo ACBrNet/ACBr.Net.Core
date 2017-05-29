@@ -480,13 +480,8 @@ namespace ACBr.Net.Core.Extensions
 		/// <returns>System.Decimal.</returns>
 		public static decimal Trunc(this decimal value, int decimalPlaces = 2)
 		{
-			var intP = 1;
-			for (var i = 0; i < decimalPlaces; i++)
-			{
-				intP *= 10;
-			}
-
-			return (int)(value * intP) / 100M;
+			var factor = (decimal)Math.Pow(10, decimalPlaces);
+			return Math.Truncate(value * factor) / factor;
 		}
 
 		/// <summary>

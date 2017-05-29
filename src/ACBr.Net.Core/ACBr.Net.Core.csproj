@@ -71,10 +71,12 @@
     <Compile Include="ACBrComponent.cs">
       <SubType>ACBr.Net</SubType>
     </Compile>
+    <Compile Include="ACBrEncoding.cs" />
     <Compile Include="ACBrException.cs" />
     <Compile Include="ACBrExpandableObjectConverter.cs" />
     <Compile Include="CalcDigito.cs" />
     <Compile Include="CalcDigFormula.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\AssemblyExtenssions.cs" />
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ByteExtensions.cs" />

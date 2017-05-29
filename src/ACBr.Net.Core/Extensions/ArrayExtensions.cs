@@ -1,12 +1,12 @@
 // ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 04-06-2017
+// Created          : 04-21-2017
 //
 // Last Modified By : RFTD
-// Last Modified On : 04-06-2017
+// Last Modified On : 04-21-2017
 // ***********************************************************************
-// <copyright file="TxtInfo.cs" company="ACBr.Net">
+// <copyright file="ArrayExtensions.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2014 - 2017 Grupo ACBr.Net
 //
@@ -20,7 +20,7 @@
 // included in all copies or substantial portions of the Software.
 //	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT.
 // IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -29,17 +29,21 @@
 // <summary></summary>
 // ***********************************************************************
 
-namespace ACBr.Net.Core
+using System;
+
+namespace ACBr.Net.Core.Extensions
 {
-	public enum TxtInfo
+	/// <summary>
+	/// Classe com métodos de extensão para arrays.
+	/// </summary>
+	public static class ArrayExtensions
 	{
-		Str,
-		StrNumber,
-		Int,
-		Enum,
-		Date,
-		Time,
-		MothYear,
-		Number
+		/// <summary>Indicates whether the specified array is null or has a length of zero.</summary>
+		/// <param name="array">The array to test.</param>
+		/// <returns>true if the array parameter is null or has a length of zero; otherwise, false.</returns>
+		internal static bool IsNullOrEmpty(this Array array)
+		{
+			return (array == null || array.Length == 0);
+		}
 	}
 }
