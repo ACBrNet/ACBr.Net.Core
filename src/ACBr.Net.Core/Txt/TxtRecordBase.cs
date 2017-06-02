@@ -119,7 +119,7 @@ namespace ACBr.Net.Core
 		/// </summary>
 		/// <param name="writer"></param>
 		/// <returns>A quantidade de linha inseridas no stream</returns>
-		public abstract int GerarLinha(StreamWriter writer);
+		public abstract void GerarLinha(ACBrTxtWriter writer);
 
 		/// <summary>
 		/// Função que retorno o valor do item já ajustado de acordo com o atributo txt

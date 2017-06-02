@@ -67,6 +67,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ACBrTxtWriterTest.cs" />
     <Compile Include="CryptoTest.cs" />
     <Compile Include="DecimalExtensionsTest.cs" />
     <Compile Include="FillLeftTest.cs" />

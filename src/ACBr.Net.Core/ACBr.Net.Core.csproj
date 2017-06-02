@@ -119,6 +119,7 @@
     <Compile Include="Extensions\ObjectExtension.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\XmlDocumentExtensions.cs" />
+    <Compile Include="Txt\ACBrTxtWriter.cs" />
     <Compile Include="Txt\TxtEnumAttribute.cs" />
     <Compile Include="Txt\TxtFieldAttribute.cs" />
     <Compile Include="Txt\TxtFill.cs" />
@@ -146,9 +147,8 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>if "COM Interop" == "$(ConfigurationName)" (
-$(SolutionDir)..\Tools\TlbExp.exe "$(TargetPath)" /out:"$(TargetDir)$(TargetName).tlb"
-)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
