@@ -181,3 +181,5 @@ FakesAssemblies/
 /src/ACBr.Net.Core.sln.GhostDoc.xml
 *.scgdat
 *.dat
+/src/.vs/ACBr.Net.Core/v15
+/src/.vs/ACBr.Net.Core/v15

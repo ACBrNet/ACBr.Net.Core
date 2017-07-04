@@ -100,6 +100,8 @@
     <Compile Include="Generics\GenericClone.cs" />
     <Compile Include="Generics\GenericCollection.cs" />
     <Compile Include="Generics\GenericEditable.cs" />
+    <Compile Include="Ini\ACBrIniFile.cs" />
+    <Compile Include="Ini\ACBrIniSection.cs" />
     <Compile Include="Logging\FuncLoggerFactory.cs" />
     <Compile Include="Logging\IACBrLog.cs" />
     <Compile Include="Logging\IACBrLogger.cs" />
