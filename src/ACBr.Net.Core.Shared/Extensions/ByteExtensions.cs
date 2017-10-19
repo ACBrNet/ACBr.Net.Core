@@ -29,8 +29,7 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.Drawing;
-using System.IO;
+using System;
 
 namespace ACBr.Net.Core.Extensions
 {
@@ -40,19 +39,14 @@ namespace ACBr.Net.Core.Extensions
 	public static partial class ByteExtensions
 	{
 		/// <summary>
-		/// To the image.
+		/// To the base64.
 		/// </summary>
 		/// <param name="byteArrayIn">The byte array in.</param>
-		/// <returns>Image.</returns>
-		public static Image ToImage(this byte[] byteArrayIn)
+		/// <returns>System.String.</returns>
+		public static string ToBase64(this byte[] byteArrayIn)
 		{
-			if (byteArrayIn == null) return null;
-
-			using (var ms = new MemoryStream(byteArrayIn))
-			{
-				var returnImage = Image.FromStream(ms);
-				return returnImage;
-			}
+			if (byteArrayIn == null || byteArrayIn.Length < 1) return string.Empty;
+			return Convert.ToBase64String(byteArrayIn);
 		}
 	}
 }

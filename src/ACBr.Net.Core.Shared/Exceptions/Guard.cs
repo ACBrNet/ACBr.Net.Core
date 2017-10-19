@@ -28,7 +28,7 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using JetBrains.Annotations;
+
 using System;
 
 namespace ACBr.Net.Core.Exceptions
@@ -51,8 +51,8 @@ namespace ACBr.Net.Core.Exceptions
 		/// <code>
 		/// Guard.Against(string.IsNullOrEmpty(name), "Name must have a value");
 		/// </code></example>
-		[AssertionMethod]
-		public static void Against([AssertionCondition(AssertionConditionType.IS_TRUE)]bool assertion, string message = "")
+
+		public static void Against(bool assertion, string message = "")
 		{
 			if (assertion == false) return;
 			throw new InvalidOperationException(message);
@@ -70,8 +70,7 @@ namespace ACBr.Net.Core.Exceptions
 		/// <code><![CDATA[
 		/// Guard.Against<ArgumentException>(string.IsNullOrEmpty(name), "Name must have a value");
 		/// ]]></code></example>
-		[AssertionMethod]
-		public static void Against<TException>([AssertionCondition(AssertionConditionType.IS_TRUE)]bool assertion, string message = "") where TException : Exception
+		public static void Against<TException>(bool assertion, string message = "") where TException : Exception
 		{
 			if (assertion == false) return;
 			throw (TException)Activator.CreateInstance(typeof(TException), message);
@@ -90,9 +89,7 @@ namespace ACBr.Net.Core.Exceptions
 		/// <code><![CDATA[
 		/// Guard.Against<ArgumentException>(string.IsNullOrEmpty(name), "{0} must have a value", Object);
 		/// ]]></code></example>
-		[AssertionMethod]
-		[StringFormatMethod("message")]
-		public static void Against<TException>([AssertionCondition(AssertionConditionType.IS_FALSE)]bool assertion, string message, params object[] args) where TException : Exception
+		public static void Against<TException>(bool assertion, string message, params object[] args) where TException : Exception
 		{
 			if (assertion == false) return;
 			throw (TException)Activator.CreateInstance(typeof(TException), string.Format(message, args));

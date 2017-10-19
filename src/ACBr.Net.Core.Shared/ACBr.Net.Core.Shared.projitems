@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>8636fa3f-ada1-4d94-bc1b-5976f2614db4</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>ACBr.Net.Core.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ACBrComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ACBrEncoding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ACBrException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ACBrExpandableObjectConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ACBrStringWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CalcDigFormula.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CalcDigito.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\Guard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ArrayExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\AssemblyExtenssions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\AttributeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ByteExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\CharExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DateTimeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DecimalExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DictionaryExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DoubleExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumerableExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EventHandlerExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IntExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ListExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\LongExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ObjectExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StreamExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\X509Certificate2Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\XDocumentExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\XmlDocumentExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\XmlNodeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generics\GenericClone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generics\GenericCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generics\GenericEditable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ini\ACBrIniFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Ini\ACBrIniSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\FuncLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\IACBrLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\IACBrLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\ILoggerExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\ILoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\Log4NetLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\Log4NetLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\LoggerProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\NLogLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\NLogLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\NoLoggingLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\NoLoggingLoggerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StaticRandom.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Txt\ACBrTxtWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Txt\TxtEnumAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Txt\TxtFieldAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Txt\TxtFill.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Txt\TxtInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Txt\TxtRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Txt\TxtRecordBase.cs" />
+  </ItemGroup>
+</Project>
