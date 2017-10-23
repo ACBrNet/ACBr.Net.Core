@@ -49,14 +49,14 @@ namespace ACBr.Net.Core.Extensions
 		public static string GetDescription<T>(this T value) where T : struct
 		{
 			var type = typeof(T);
-			Guard.Against<InvalidOperationException>(!type.IsEnum, "The type parameter T must be an enum type.");
-			Guard.Against<InvalidOperationException>(!Enum.IsDefined(type, value), $"{type} Value {value}");
+			Guard.Against<InvalidOperationException>(!type.IsEnum, "O tipo de parametro T precisa ser um enum.");
+			Guard.Against<InvalidOperationException>(!Enum.IsDefined(type, value), $"{type} o valor {value} não esta definido no enum.");
 
 			var fi = type.GetField(value.ToString(), BindingFlags.Static | BindingFlags.Public);
 			if (fi == null) return string.Empty;
 
 			var ret = fi.GetAttribute<DescriptionAttribute>();
-			return ret != null ? ret.Description : fi.ToString();
+			return ret != null ? ret.Description : value.ToString();
 		}
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace ACBr.Net.Core.Extensions
 		public static string GetDescription<T>(this T valor, T[] valores, string[] retornos) where T : struct
 		{
 			var type = typeof(T);
-			Guard.Against<InvalidOperationException>(!type.IsEnum, "The type parameter T must be an enum type.");
+			Guard.Against<InvalidOperationException>(!type.IsEnum, "O tipo de parametro T precisa ser um enum.");
 			Guard.Against<ACBrException>(valores.Length != retornos.Length, "O quantidade de valores e retornos são diferentes");
 
 			var idx = Array.IndexOf(valores, valor);
