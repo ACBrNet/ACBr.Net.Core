@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>ACBr.Net.Core</id>
-        <version>1.0.1.9-beta1</version>
+        <version>1.2.0.0</version>
         <title>ACBr.Net.Core</title>
         <authors>Grupo ACBr.Net</authors>
         <owners>Grupo ACBr.Net</owners>
@@ -23,5 +23,6 @@
         <file src="..\bin\Release\Net40\ACBr.Net.Core.XML" target="lib\net40\ACBr.Net.Core.XML" />
 		<file src="..\bin\Release\netstandard2.0\ACBr.Net.Core.dll" target="lib\netstandard2.0\ACBr.Net.Core.dll" />
         <file src="..\bin\Release\netstandard2.0\ACBr.Net.Core.xml" target="lib\netstandard2.0\ACBr.Net.Core.xml" />
+        <file src="..\bin\Release\netstandard2.0\ACBr.Net.Core.deps.json" target="lib\netstandard2.0\ACBr.Net.Core.deps.json" />
     </files>
 </package>

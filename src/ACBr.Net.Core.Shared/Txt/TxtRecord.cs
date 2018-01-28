@@ -36,80 +36,82 @@ using ACBr.Net.Core.Extensions;
 
 namespace ACBr.Net.Core
 {
-	public abstract class TxtRecord<TClass> : TxtRecordBase<TClass, TxtFieldAttribute> where TClass : class
-	{
-		#region Methods
+    /// <inheritdoc />
+    public abstract class TxtRecord<TClass> : TxtRecordBase<TClass, TxtFieldAttribute> where TClass : class
+    {
+        #region Methods
 
-		protected override string ObterValor(object value, TxtFieldAttribute field)
-		{
-			var linhaRegistro = string.Empty;
+        /// <inheritdoc />
+        protected override string ObterValor(object value, TxtFieldAttribute field)
+        {
+            var linhaRegistro = string.Empty;
 
-			switch (field.Tipo)
-			{
-				case TxtInfo.Str:
-					linhaRegistro = $"{AdjustString(value?.ToString(), field.Minimo, field.Maximo, field.Preenchimento, field.CaracterPreenchimento)}";
-					break;
+            switch (field.Tipo)
+            {
+                case TxtInfo.Str:
+                    linhaRegistro = $"{AdjustString(value?.ToString(), field.Minimo, field.Maximo, field.Preenchimento, field.CaracterPreenchimento)}";
+                    break;
 
-				case TxtInfo.StrNumber:
-					linhaRegistro = $"{AdjustString(value?.ToString().OnlyNumbers(), field.Minimo, field.Maximo, field.Preenchimento, field.CaracterPreenchimento)}";
-					break;
+                case TxtInfo.StrNumber:
+                    linhaRegistro = $"{AdjustString(value?.ToString().OnlyNumbers(), field.Minimo, field.Maximo, field.Preenchimento, field.CaracterPreenchimento)}";
+                    break;
 
-				case TxtInfo.Int:
-					linhaRegistro = $"{AdjustString(value?.ToString(), field.Minimo, field.Maximo, field.Preenchimento, field.CaracterPreenchimento)}";
-					break;
+                case TxtInfo.Int:
+                    linhaRegistro = $"{AdjustString(value?.ToString(), field.Minimo, field.Maximo, field.Preenchimento, field.CaracterPreenchimento)}";
+                    break;
 
-				case TxtInfo.Enum:
-					var member = value.GetType().GetMember(value.ToString()).FirstOrDefault();
-					var enumAttribute = member?.GetCustomAttributes(false).OfType<TxtEnumAttribute>().FirstOrDefault();
-					var enumValue = enumAttribute?.Value;
-					linhaRegistro = $"{enumValue ?? value.ToString()}";
-					break;
+                case TxtInfo.Enum:
+                    var member = value.GetType().GetMember(value.ToString()).FirstOrDefault();
+                    var enumAttribute = member?.GetCustomAttributes(false).OfType<TxtEnumAttribute>().FirstOrDefault();
+                    var enumValue = enumAttribute?.Value;
+                    linhaRegistro = $"{enumValue ?? value.ToString()}";
+                    break;
 
-				case TxtInfo.Date:
-					DateTime date;
-					if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
-					{
-						linhaRegistro = $"{date:ddMMyyyy}";
-					}
-					break;
+                case TxtInfo.Date:
+                    DateTime date;
+                    if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+                    {
+                        linhaRegistro = $"{date:ddMMyyyy}";
+                    }
+                    break;
 
-				case TxtInfo.Time:
-					DateTime time;
-					if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out time))
-					{
-						linhaRegistro = $"{value:hhmmss}";
-					}
-					break;
+                case TxtInfo.Time:
+                    DateTime time;
+                    if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out time))
+                    {
+                        linhaRegistro = $"{value:hhmmss}";
+                    }
+                    break;
 
-				case TxtInfo.MothYear:
-					DateTime monthYear;
-					if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out monthYear))
-					{
-						linhaRegistro = $"{monthYear:value:MMyyyy}";
-					}
-					break;
+                case TxtInfo.MothYear:
+                    DateTime monthYear;
+                    if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out monthYear))
+                    {
+                        linhaRegistro = $"{monthYear:value:MMyyyy}";
+                    }
+                    break;
 
-				case TxtInfo.Number:
-					decimal number;
-					if (decimal.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture, out number))
-					{
-						var numberFormat = new NumberFormatInfo
-						{
-							NumberDecimalDigits = field.QtdDecimais,
-							NumberDecimalSeparator = field.SeparadorDecimal.ToString(),
-							NumberGroupSeparator = string.Empty
-						};
-						linhaRegistro = $"{AdjustString(number.ToString("N", numberFormat), field.Minimo, field.Maximo, field.Preenchimento, field.CaracterPreenchimento)}";
-					}
-					break;
+                case TxtInfo.Number:
+                    decimal number;
+                    if (decimal.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture, out number))
+                    {
+                        var numberFormat = new NumberFormatInfo
+                        {
+                            NumberDecimalDigits = field.QtdDecimais,
+                            NumberDecimalSeparator = field.SeparadorDecimal.ToString(),
+                            NumberGroupSeparator = string.Empty
+                        };
+                        linhaRegistro = $"{AdjustString(number.ToString("N", numberFormat), field.Minimo, field.Maximo, field.Preenchimento, field.CaracterPreenchimento)}";
+                    }
+                    break;
 
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
-			return linhaRegistro;
-		}
+            return linhaRegistro;
+        }
 
-		#endregion Methods
-	}
+        #endregion Methods
+    }
 }
