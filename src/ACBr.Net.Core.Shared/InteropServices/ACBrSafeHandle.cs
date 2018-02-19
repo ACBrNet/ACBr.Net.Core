@@ -6,7 +6,7 @@
 // Last Modified By : RFTD
 // Last Modified On : 02-18-2018
 // ***********************************************************************
-// <copyright file="ACBrContextHandle.cs" company="ACBr.Net">
+// <copyright file="ACBrSafeHandle.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
@@ -40,7 +40,8 @@ using ExtraConstraints;
 
 namespace ACBr.Net.Core.InteropServices
 {
-    public abstract class ACBrContextHandle : SafeHandle, IACBrLog
+    /// <inheritdoc />
+    public abstract class ACBrSafeHandle : SafeHandle, IACBrLog
     {
         #region InnerTypes
 
@@ -57,7 +58,7 @@ namespace ACBr.Net.Core.InteropServices
                 public static extern IntPtr LoadLibraryW(string lpszLib);
 
                 [DllImport("kernel32", SetLastError = true)]
-                public static extern int FreeLibrary(IntPtr hModule);
+                public static extern bool FreeLibrary(IntPtr hModule);
             }
 
             private class Linux
@@ -135,7 +136,7 @@ namespace ACBr.Net.Core.InteropServices
                         throw new ArgumentOutOfRangeException();
                 }
 
-                Logger = LoggerProvider.LoggerFor(typeof(ACBrContextHandle));
+                Logger = LoggerProvider.LoggerFor(typeof(ACBrSafeHandle));
             }
 
             #endregion Constructors
@@ -156,10 +157,10 @@ namespace ACBr.Net.Core.InteropServices
                 return IsOSX ? OSX.dlopen(libname, 1) : Linux.dlopen(libname, 1);
             }
 
-            public static int FreeLibrary(IntPtr library)
+            public static bool FreeLibrary(IntPtr library)
             {
                 if (IsWindows) return Windows.FreeLibrary(library);
-                return IsOSX ? OSX.dlclose(library) : Linux.dlclose(library);
+                return (IsOSX ? OSX.dlclose(library) : Linux.dlclose(library)) == 0;
             }
 
             public static IntPtr GetProcAddress(IntPtr library, string function)
@@ -187,7 +188,6 @@ namespace ACBr.Net.Core.InteropServices
 
         #region Fields
 
-        protected static object sessionLOCK = new object();
         protected readonly Dictionary<Type, string> methodList;
         protected readonly string className;
 
@@ -197,24 +197,21 @@ namespace ACBr.Net.Core.InteropServices
 
         #region Constructors
 
-        static ACBrContextHandle()
+        static ACBrSafeHandle()
         {
             MinusOne = new IntPtr(-1);
         }
 
         /// <inheritdoc />
-        protected ACBrContextHandle(string dllPath)
+        protected ACBrSafeHandle(string dllPath)
             : base(IntPtr.Zero, true)
         {
-            lock (sessionLOCK)
-            {
-                methodList = new Dictionary<Type, string>();
-                className = GetType().Name;
+            methodList = new Dictionary<Type, string>();
+            className = GetType().Name;
 
-                var pNewSession = LibLoader.LoadLibrary(dllPath);
-                Guard.Against<ACBrException>(pNewSession == IntPtr.Zero, "Não foi possivel carregar a biblioteca.");
-                SetHandle(pNewSession);
-            }
+            var pNewSession = LibLoader.LoadLibrary(dllPath);
+            Guard.Against<ACBrException>(pNewSession == IntPtr.Zero, "Não foi possivel carregar a biblioteca.");
+            SetHandle(pNewSession);
         }
 
         #endregion Constructors
@@ -242,20 +239,20 @@ namespace ACBr.Net.Core.InteropServices
         /// <inheritdoc />
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         protected override bool ReleaseHandle()
+
         {
             if (IsInvalid) return true;
 
-            lock (sessionLOCK)
-            {
-                LibLoader.FreeLibrary(handle);
-                SetHandleAsInvalid();
-            }
+            var ret = LibLoader.FreeLibrary(handle);
 
-            return true;
+            if (ret)
+                SetHandleAsInvalid();
+
+            return ret;
         }
 
         /// <summary>
-        /// Adicionar um delegate a lista para a função informada.
+        /// Adiciona um delegate a lista para a função informada.
         /// </summary>
         /// <param name="functionName">Nome da função para exportar</param>
         /// <typeparam name="T">Delegate da função</typeparam>
@@ -307,12 +304,22 @@ namespace ACBr.Net.Core.InteropServices
             }
         }
 
+        /// <summary>
+        /// Cria e dispara uma <see cref="ACBrException"/> com a mensagem informada.
+        /// </summary>
+        /// <param name="errorMessage">Mensagem de erro.</param>
+        /// <returns><see cref="ACBrException"/></returns>
         protected virtual ACBrException CreateException(string errorMessage)
         {
             this.Log().Error($"{className} - Erro: {errorMessage}");
-            throw new ACBrException(errorMessage);
+            return new ACBrException(errorMessage);
         }
 
+        /// <summary>
+        /// Tatar uma <see cref="Exception"/> e dispara uma <see cref="ACBrException"/> com a mensagem da mesma.
+        /// </summary>
+        /// <param name="exception">Exception</param>
+        /// <returns><see cref="ACBrException"/></returns>
         protected virtual ACBrException ProcessException(Exception exception)
         {
             this.Log().Error($"{className} - Erro: {exception.Message}", exception);

@@ -56,7 +56,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Logging\NLogLoggerFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\NoLoggingLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\NoLoggingLoggerFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)InteropServices\ACBrContextHandle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InteropServices\ACBrSafeHandle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InteropServices\ACBrLPStr.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StaticRandom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Txt\ACBrTxtWriter.cs" />

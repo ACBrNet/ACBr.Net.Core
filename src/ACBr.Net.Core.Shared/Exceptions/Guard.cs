@@ -84,15 +84,18 @@ namespace ACBr.Net.Core.Exceptions
         /// <typeparam name="TException">The type of the t exception.</typeparam>
         /// <param name="assertion">if set to <c>true</c> [assertion].</param>
         /// <param name="message">The message.</param>
+        /// <param name="beforeThowAction">The action.</param>
         /// <example>
         /// Sample usage:
         /// <code><![CDATA[
-        /// Guard.Against<ArgumentException>(string.IsNullOrEmpty(name), "Name must have a value");
+        /// Guard.Against<ArgumentException>(string.IsNullOrEmpty(name), "Name must have a value", (ex) => Logger.Erro("Name must have a value"));
         /// ]]></code></example>
-        public static void Against<TException>(bool assertion, string message = "") where TException : Exception
+        public static void Against<TException>(bool assertion, string message = "", Action<TException> beforeThowAction = null) where TException : Exception
         {
             if (assertion == false) return;
-            throw (TException)Activator.CreateInstance(typeof(TException), message);
+            var exception = (TException)Activator.CreateInstance(typeof(TException), message);
+            beforeThowAction?.Invoke(exception);
+            throw exception;
         }
 
         /// <summary>
