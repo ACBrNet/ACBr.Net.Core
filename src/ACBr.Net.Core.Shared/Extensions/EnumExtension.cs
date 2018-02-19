@@ -28,6 +28,7 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 using ACBr.Net.Core.Exceptions;
 using System;
 using System.ComponentModel;
@@ -35,61 +36,61 @@ using System.Reflection;
 
 namespace ACBr.Net.Core.Extensions
 {
-	/// <summary>
-	/// Class EnumExtension.
-	/// </summary>
-	public static class EnumExtension
-	{
-		/// <summary>
-		/// Retorna a descrição do enum de acordo com o atributo DescriptionAttribute.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="value">The value.</param>
-		/// <returns>System.String.</returns>
-		public static string GetDescription<T>(this T value) where T : struct
-		{
-			var type = typeof(T);
-			Guard.Against<InvalidOperationException>(!type.IsEnum, "O tipo de parametro T precisa ser um enum.");
-			Guard.Against<InvalidOperationException>(!Enum.IsDefined(type, value), $"{type} o valor {value} não esta definido no enum.");
+    /// <summary>
+    /// Class EnumExtension.
+    /// </summary>
+    public static class EnumExtension
+    {
+        /// <summary>
+        /// Retorna a descrição do enum de acordo com o atributo DescriptionAttribute.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value.</param>
+        /// <returns>System.String.</returns>
+        public static string GetDescription<T>(this T value) where T : struct
+        {
+            var type = typeof(T);
+            Guard.Against<InvalidOperationException>(!type.IsEnum, "O tipo de parametro T precisa ser um enum.");
+            Guard.Against<InvalidOperationException>(!Enum.IsDefined(type, value), $"{type} o valor {value} não esta definido no enum.");
 
-			var fi = type.GetField(value.ToString(), BindingFlags.Static | BindingFlags.Public);
-			if (fi == null) return string.Empty;
+            var fi = type.GetField(value.ToString(), BindingFlags.Static | BindingFlags.Public);
+            if (fi == null) return string.Empty;
 
-			var ret = fi.GetAttribute<DescriptionAttribute>();
-			return ret != null ? ret.Description : value.ToString();
-		}
+            var ret = fi.GetAttribute<DescriptionAttribute>();
+            return ret != null ? ret.Description : value.ToString();
+        }
 
-		/// <summary>
-		/// Retorna a descrição do enum de acordo com a lista informada.
-		/// </summary>
-		/// <param name="valor"></param>
-		/// <param name="valores"></param>
-		/// <param name="retornos"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		public static string GetDescription<T>(this T valor, T[] valores, string[] retornos) where T : struct
-		{
-			var type = typeof(T);
-			Guard.Against<InvalidOperationException>(!type.IsEnum, "O tipo de parametro T precisa ser um enum.");
-			Guard.Against<ACBrException>(valores.Length != retornos.Length, "O quantidade de valores e retornos são diferentes");
+        /// <summary>
+        /// Retorna a descrição do enum de acordo com a lista informada.
+        /// </summary>
+        /// <param name="valor"></param>
+        /// <param name="valores"></param>
+        /// <param name="retornos"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string GetDescription<T>(this T valor, T[] valores, string[] retornos) where T : struct
+        {
+            var type = typeof(T);
+            Guard.Against<InvalidOperationException>(!type.IsEnum, "O tipo de parametro T precisa ser um enum.");
+            Guard.Against<ACBrException>(valores.Length != retornos.Length, "O quantidade de valores e retornos são diferentes");
 
-			var idx = Array.IndexOf(valores, valor);
-			return idx < 0 ? string.Empty : retornos[idx];
-		}
+            var idx = Array.IndexOf(valores, valor);
+            return idx < 0 ? string.Empty : retornos[idx];
+        }
 
-		/// <summary>
-		/// Retorna o enum de acordo com a lista informada.
-		/// </summary>
-		/// <param name="valor"></param>
-		/// <param name="valores"></param>
-		/// <param name="retornos"></param>
-		/// <typeparam name="T"></typeparam>
-		/// <returns></returns>
-		public static T ToEnum<T>(this string valor, string[] valores, T[] retornos) where T : struct
-		{
-			Guard.Against<ACBrException>(valores.Length != retornos.Length, "O quantidade de valores e retornos são diferentes");
-			var idx = Array.IndexOf(valores, valor);
-			return idx < 0 ? default(T) : retornos[idx];
-		}
-	}
+        /// <summary>
+        /// Retorna o enum de acordo com a lista informada.
+        /// </summary>
+        /// <param name="valor"></param>
+        /// <param name="valores"></param>
+        /// <param name="retornos"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T ToEnum<T>(this string valor, string[] valores, T[] retornos) where T : struct
+        {
+            Guard.Against<ACBrException>(valores.Length != retornos.Length, "O quantidade de valores e retornos são diferentes");
+            var idx = Array.IndexOf(valores, valor);
+            return idx < 0 ? default(T) : retornos[idx];
+        }
+    }
 }

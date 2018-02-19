@@ -81,6 +81,8 @@ namespace ACBr.Net.Core
 
         public int BufferSize { get; set; }
 
+        public int SectionCount => sections.Count;
+
         public ACBrIniSection this[string section]
         {
             get
@@ -88,7 +90,7 @@ namespace ACBr.Net.Core
                 var ret = sections.SingleOrDefault(x => x.Name == section);
                 if (ret != null) return ret;
 
-                ret = new ACBrIniSection { Name = section };
+                ret = new ACBrIniSection(this, section);
                 sections.Add(ret);
 
                 return ret;
@@ -99,7 +101,45 @@ namespace ACBr.Net.Core
 
         #region Methods
 
-        public TType GetValue<TType>(string section, string propertie, TType defaultValue = default(TType), IFormatProvider format = null)
+        /// <summary>
+        /// Retorna true se a seção existir no ini.
+        /// </summary>
+        /// <param name="section"></param>
+        /// <returns></returns>
+        public bool Contains(string section)
+        {
+            return sections.Any(x => x.Name == section);
+        }
+
+        public bool Contains(ACBrIniSection section)
+        {
+            return sections.Contains(section);
+        }
+
+        public ACBrIniSection AddNew(string section)
+        {
+            var ret = new ACBrIniSection(this, section);
+            sections.Add(ret);
+            return ret;
+        }
+
+        public void Add(ACBrIniSection section)
+        {
+            sections.Add(section);
+        }
+
+        public void Remove(string section)
+        {
+            var ret = sections.Single(x => x.Name == section);
+            sections.Remove(ret);
+        }
+
+        public void Remove(ACBrIniSection section)
+        {
+            sections.Remove(section);
+        }
+
+        public TType Read<TType>(string section, string propertie, TType defaultValue = default(TType), IFormatProvider format = null)
         {
             if (propertie.IsEmpty()) return defaultValue;
             if (section.IsEmpty()) return defaultValue;
@@ -108,7 +148,7 @@ namespace ACBr.Net.Core
             return iniSection.GetValue(propertie, defaultValue, format);
         }
 
-        public void SetValue(string section, string propertie, object value)
+        public void Write(string section, string propertie, object value)
         {
             if (propertie.IsEmpty()) return;
             if (section.IsEmpty()) return;
@@ -145,39 +185,14 @@ namespace ACBr.Net.Core
 
             var path = Path.GetDirectoryName(file);
             var iniFileName = Path.GetFileName(file);
-            encoding = encoding ?? ACBrEncoding.ISO88591;
 
-            var iniFile = new ACBrIniFile(path, iniFileName, encoding, 1024);
-
+            ACBrIniFile ret;
             using (var fileStream = File.OpenRead(file))
-            using (var reader = new StreamReader(fileStream, iniFile.Encoding))
-            {
-                string line;
-                var section = string.Empty;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    line = line.Trim();
+                ret = Load(fileStream, encoding);
 
-                    if (line.IsEmpty()) continue;
-                    if (line.StartsWith(";")) continue;
-
-                    if (line.StartsWith("["))
-                    {
-                        section = line.Substring(1, line.Length - 2);
-                        iniFile.sections.Add(new ACBrIniSection { Name = section });
-                    }
-                    else
-                    {
-                        if (section.IsEmpty()) continue;
-
-                        var iniSection = iniFile[section];
-                        var properties = line.Split('=');
-                        iniSection.Add(properties[0], properties[1]);
-                    }
-                }
-            }
-
-            return iniFile;
+            ret.IniFileName = iniFileName;
+            ret.IniFilePath = path;
+            return ret;
         }
 
         public static ACBrIniFile Load(Stream stream, Encoding encoding = null)
@@ -185,8 +200,7 @@ namespace ACBr.Net.Core
             Guard.Against<ArgumentNullException>(stream == null, nameof(stream));
 
             encoding = encoding ?? ACBrEncoding.ISO88591;
-            var iniFile = new ACBrIniFile();
-            iniFile.Encoding = encoding;
+            var iniFile = new ACBrIniFile { Encoding = encoding };
 
             using (var reader = new StreamReader(stream, iniFile.Encoding))
             {
@@ -202,7 +216,7 @@ namespace ACBr.Net.Core
                     if (line.StartsWith("["))
                     {
                         section = line.Substring(1, line.Length - 2);
-                        iniFile.sections.Add(new ACBrIniSection { Name = section });
+                        iniFile.sections.Add(new ACBrIniSection(iniFile, section));
                     }
                     else
                     {

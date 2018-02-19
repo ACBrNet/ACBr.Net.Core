@@ -59,6 +59,25 @@ namespace ACBr.Net.Core.Exceptions
         }
 
         /// <summary>
+        /// Will throw a <see cref="InvalidOperationException" /> if the assertion
+        /// is true, with the specificied message.
+        /// </summary>
+        /// <param name="assertion">if set to <c>true</c> [assertion].</param>
+        /// <param name="message">The message.</param>
+        /// <param name="args">Parametros da mensagem</param>
+        /// <exception cref="System.InvalidOperationException"></exception>
+        /// <example>
+        /// Sample usage:
+        /// <code><![CDATA[
+        /// Guard.Against(string.IsNullOrEmpty(name), "Name must have a value");
+        /// ]]></code></example>
+        public static void Against(bool assertion, string message, params object[] args)
+        {
+            if (assertion == false) return;
+            throw new InvalidOperationException(string.Format(message, args));
+        }
+
+        /// <summary>
         /// Will throw exception of type <typeparamref name="TException" />
         /// with the specified message if the assertion is true
         /// </summary>

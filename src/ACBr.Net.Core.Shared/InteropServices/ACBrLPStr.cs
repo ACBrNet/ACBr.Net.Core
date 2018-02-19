@@ -1,12 +1,12 @@
-// ***********************************************************************
-// Assembly         : ACBr.Net.ECF
+﻿// ***********************************************************************
+// Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 04-05-2017
+// Created          : 02-18-2018
 //
 // Last Modified By : RFTD
-// Last Modified On : 04-05-2017
+// Last Modified On : 02-18-2018
 // ***********************************************************************
-// <copyright file="ACBrIniSection.cs" company="ACBr.Net">
+// <copyright file="ACBrLPStr.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
@@ -30,56 +30,46 @@
 // ***********************************************************************
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using ACBr.Net.Core.Extensions;
+using System.Runtime.InteropServices;
 
-namespace ACBr.Net.Core
+namespace ACBr.Net.Core.InteropServices
 {
-    public sealed class ACBrIniSection : Dictionary<string, string>
+    public class ACBrLPStr : ICustomMarshaler
     {
-        #region Constructors
+        #region Fields
 
-        public ACBrIniSection(string name) : this(null, name)
-        {
-        }
+        private static readonly ACBrLPStr instance = new ACBrLPStr();
 
-        public ACBrIniSection(ACBrIniFile parent, string name)
-        {
-            Parent = parent;
-            Name = name;
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public ACBrIniFile Parent { get; internal set; }
-
-        public string Name { get; set; }
-
-        #endregion Properties
+        #endregion Fields
 
         #region Methods
 
-        public TType GetValue<TType>(string key, TType defaultValue = default(TType), IFormatProvider format = null)
+        public static ICustomMarshaler GetInstance(string cookie)
         {
-            if (key.IsEmpty()) return defaultValue;
+            return instance;
+        }
 
-            TType ret;
-            try
-            {
-                if (format == null) format = CultureInfo.InvariantCulture;
-                if (!ContainsKey(key)) return defaultValue;
+        public object MarshalNativeToManaged(IntPtr pNativeData)
+        {
+            return Marshal.PtrToStringAnsi(pNativeData);
+        }
 
-                ret = (TType)Convert.ChangeType(this[key], typeof(TType), format);
-            }
-            catch (Exception)
-            {
-                ret = defaultValue;
-            }
+        public void CleanUpNativeData(IntPtr pNativeData)
+        {
+        }
 
-            return ret;
+        public IntPtr MarshalManagedToNative(object ManagedObj)
+        {
+            return IntPtr.Zero;
+        }
+
+        public void CleanUpManagedData(object ManagedObj)
+        {
+        }
+
+        public int GetNativeDataSize()
+        {
+            return IntPtr.Size;
         }
 
         #endregion Methods
