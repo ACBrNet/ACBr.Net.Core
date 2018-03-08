@@ -37,6 +37,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using ACBr.Net.Core.Exceptions;
 
 namespace ACBr.Net.Core.Extensions
 {
@@ -349,8 +350,7 @@ namespace ACBr.Net.Core.Extensions
         {
             try
             {
-                double converted;
-                if (!double.TryParse(dados, NumberStyles.Any, format, out converted))
+                if (!double.TryParse(dados, NumberStyles.Any, format, out var converted))
                     converted = def;
 
                 return converted;
@@ -397,8 +397,7 @@ namespace ACBr.Net.Core.Extensions
         {
             try
             {
-                decimal converted;
-                if (!decimal.TryParse(dados, NumberStyles.Any, format, out converted))
+                if (!decimal.TryParse(dados, NumberStyles.Any, format, out var converted))
                     converted = def;
 
                 return converted;
@@ -445,8 +444,7 @@ namespace ACBr.Net.Core.Extensions
         {
             try
             {
-                int converted;
-                if (!int.TryParse(dados, NumberStyles.Any, format, out converted))
+                if (!int.TryParse(dados, NumberStyles.Any, format, out var converted))
                     converted = def;
 
                 return converted;
@@ -492,8 +490,7 @@ namespace ACBr.Net.Core.Extensions
         {
             try
             {
-                long converted;
-                if (!long.TryParse(dados, NumberStyles.Any, format, out converted))
+                if (!long.TryParse(dados, NumberStyles.Any, format, out var converted))
                     converted = def;
 
                 return converted;
@@ -515,9 +512,30 @@ namespace ACBr.Net.Core.Extensions
         {
             try
             {
-                DateTime converted;
-                if (!DateTime.TryParse(dados, out converted))
+                if (!DateTime.TryParse(dados, out var converted))
                     converted = default(DateTime);
+
+                return converted;
+            }
+            catch (Exception ex)
+            {
+                throw new ACBrException("Erro ao converter string", ex);
+            }
+        }
+
+        /// <summary>
+        /// To the data.
+        /// </summary>
+        /// <param name="dados">The dados.</param>
+        /// <returns>DateTime.</returns>
+        /// <exception cref="System.Exception">Erro ao converter string</exception>
+        /// <exception cref="Exception">Erro ao converter string</exception>
+        public static DateTimeOffset ToDataOffset(this string dados)
+        {
+            try
+            {
+                if (!DateTimeOffset.TryParse(dados, out var converted))
+                    converted = default(DateTimeOffset);
 
                 return converted;
             }
@@ -600,7 +618,6 @@ namespace ACBr.Net.Core.Extensions
         /// </summary>
         /// <param name="cpfcnpj">CPFCNPJ</param>
         /// <returns><c>true</c> se o [CPF ou CNPJ] é válido; senão, <c>false</c>.</returns>
-        // ReSharper disable once InconsistentNaming
         public static bool IsCPFOrCNPJ(this string cpfcnpj)
         {
             var value = cpfcnpj.OnlyNumbers();
@@ -1206,33 +1223,119 @@ namespace ACBr.Net.Core.Extensions
         {
             var mascara = new string('#', pInscr.Length);
             pUf = pUf.Trim().ToUpper();
-            if (pUf == "AC") mascara = "##.###.###/###-##";
-            if (pUf == "AL") mascara = "#########";
-            if (pUf == "AP") mascara = "#########";
-            if (pUf == "AM") mascara = "##.###.###-#";
-            if (pUf == "BA") mascara = "#######-##";
-            if (pUf == "CE") mascara = "########-#";
-            if (pUf == "DF") mascara = "###########-##";
-            if (pUf == "ES") mascara = "#########";
-            if (pUf == "GO") mascara = "##.###.###-#";
-            if (pUf == "MA") mascara = "#########";
-            if (pUf == "MT") mascara = "##########-#";
-            if (pUf == "MS") mascara = "##.###.###-#";
-            if (pUf == "MG") mascara = "###.###.###/####";
-            if (pUf == "PA") mascara = "##-######-#";
-            if (pUf == "PB") mascara = "########-#";
-            if (pUf == "PR") mascara = "###.#####-##";
-            if (pUf == "PE") mascara = pInscr.Length > 9 ? "##.#.###.#######-#" : "#######-##";
-            if (pUf == "PI") mascara = "#########";
-            if (pUf == "RJ") mascara = "##.###.##-#";
-            if (pUf == "RN") mascara = pInscr.Length > 9 ? "##.#.###.###-#" : "##.###.###-#";
-            if (pUf == "RS") mascara = "###/#######";
-            if (pUf == "RO") mascara = pInscr.Length > 13 ? "#############-#" : "###.#####-#";
-            if (pUf == "RR") mascara = "########-#";
-            if (pUf == "SC") mascara = "###.###.###";
-            if (pUf == "SP") mascara = pInscr.Length > 1 && pInscr[0] == 'P' ? "#-########.#/###" : "###.###.###.###";
-            if (pUf == "SE") mascara = "##.###.###-#";
-            if (pUf == "TO") mascara = pInscr.Length == 11 ? "##.##.######-#" : "##.###.###-#";
+
+            Guard.Against<ArgumentException>(!ValidarUF(pUf), "UF infomada invalida.");
+
+            switch (pUf)
+            {
+                case "AC":
+                    mascara = "##.###.###/###-##";
+                    break;
+
+                case "AL":
+                    mascara = "#########";
+                    break;
+
+                case "AP":
+                    mascara = "#########";
+                    break;
+
+                case "AM":
+                    mascara = "##.###.###-#";
+                    break;
+
+                case "BA":
+                    mascara = "#######-##";
+                    break;
+
+                case "CE":
+                    mascara = "########-#";
+                    break;
+
+                case "DF":
+                    mascara = "###########-##";
+                    break;
+
+                case "ES":
+                    mascara = "#########";
+                    break;
+
+                case "GO":
+                    mascara = "##.###.###-#";
+                    break;
+
+                case "MA":
+                    mascara = "#########";
+                    break;
+
+                case "MT":
+                    mascara = "##########-#";
+                    break;
+
+                case "MS":
+                    mascara = "##.###.###-#";
+                    break;
+
+                case "MG":
+                    mascara = "###.###.###/####";
+                    break;
+
+                case "PA":
+                    mascara = "##-######-#";
+                    break;
+
+                case "PB":
+                    mascara = "########-#";
+                    break;
+
+                case "PR":
+                    mascara = "###.#####-##";
+                    break;
+
+                case "PE":
+                    mascara = pInscr.Length > 9 ? "##.#.###.#######-#" : "#######-##";
+                    break;
+
+                case "PI":
+                    mascara = "#########";
+                    break;
+
+                case "RJ":
+                    mascara = "##.###.##-#";
+                    break;
+
+                case "RN":
+                    mascara = pInscr.Length > 9 ? "##.#.###.###-#" : "##.###.###-#";
+                    break;
+
+                case "RS":
+                    mascara = "###/#######";
+                    break;
+
+                case "RO":
+                    mascara = pInscr.Length > 13 ? "#############-#" : "###.#####-#";
+                    break;
+
+                case "RR":
+                    mascara = "########-#";
+                    break;
+
+                case "SC":
+                    mascara = "###.###.###";
+                    break;
+
+                case "SP":
+                    mascara = pInscr.Length > 1 && pInscr[0] == 'P' ? "#-########.#/###" : "###.###.###.###";
+                    break;
+
+                case "SE":
+                    mascara = "##.###.###-#";
+                    break;
+
+                case "TO":
+                    mascara = pInscr.Length == 11 ? "##.##.######-#" : "##.###.###-#";
+                    break;
+            }
 
             var fsDocto = "";
             for (var i = 1; i <= pInscr.Trim().Length; i++)
@@ -1892,8 +1995,8 @@ namespace ACBr.Net.Core.Extensions
         /// <returns>System.String.</returns>
         public static string StripHtml(this string htmlString)
         {
-            const string PATTERN = @"<(.|\n)*?>";
-            return Regex.Replace(htmlString, PATTERN, string.Empty);
+            const string pattern = @"<(.|\n)*?>";
+            return Regex.Replace(htmlString, pattern, string.Empty);
         }
 
         /// <summary>

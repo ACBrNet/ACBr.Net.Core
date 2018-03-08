@@ -68,32 +68,28 @@ namespace ACBr.Net.Core
                     break;
 
                 case TxtInfo.Date:
-                    DateTime date;
-                    if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+                    if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var date))
                     {
                         linhaRegistro = $"{date:ddMMyyyy}";
                     }
                     break;
 
                 case TxtInfo.Time:
-                    DateTime time;
-                    if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out time))
+                    if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out _))
                     {
                         linhaRegistro = $"{value:hhmmss}";
                     }
                     break;
 
                 case TxtInfo.MothYear:
-                    DateTime monthYear;
-                    if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out monthYear))
+                    if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var monthYear))
                     {
                         linhaRegistro = $"{monthYear:value:MMyyyy}";
                     }
                     break;
 
                 case TxtInfo.Number:
-                    decimal number;
-                    if (decimal.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture, out number))
+                    if (decimal.TryParse(value?.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture, out var number))
                     {
                         var numberFormat = new NumberFormatInfo
                         {

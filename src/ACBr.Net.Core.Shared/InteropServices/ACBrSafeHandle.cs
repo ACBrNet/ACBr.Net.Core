@@ -49,7 +49,7 @@ namespace ACBr.Net.Core.InteropServices
         {
             #region InnerTypes
 
-            private class Windows
+            private static class Windows
             {
                 [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true)]
                 public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
@@ -61,7 +61,7 @@ namespace ACBr.Net.Core.InteropServices
                 public static extern bool FreeLibrary(IntPtr hModule);
             }
 
-            private class Linux
+            private static class Linux
             {
                 [DllImport("libdl.so.2")]
                 public static extern IntPtr dlopen(string path, int flags);
@@ -73,7 +73,7 @@ namespace ACBr.Net.Core.InteropServices
                 public static extern int dlclose(IntPtr handle);
             }
 
-            private class OSX
+            private static class OSX
             {
                 [DllImport("/usr/lib/libSystem.dylib")]
                 public static extern IntPtr dlopen(string path, int flags);
@@ -165,20 +165,19 @@ namespace ACBr.Net.Core.InteropServices
 
             public static IntPtr GetProcAddress(IntPtr library, string function)
             {
-                var num = !IsWindows ? (!IsOSX ? Linux.dlsym(library, function) : OSX.dlsym(library, function)) : Windows.GetProcAddress(library, function);
+                var num = !IsWindows ? (!IsOSX ? Linux.dlsym(library, function) : OSX.dlsym(library, function)) :
+                                       Windows.GetProcAddress(library, function);
 
-                if (num == IntPtr.Zero) Logger.Warn("Função não encontrada: " + function);
+                if (num == IntPtr.Zero || num == MinusOne) Logger.Warn("Função não encontrada: " + function);
                 return num;
             }
 
             public static T LoadFunction<[DelegateConstraint]T>(IntPtr procaddress) where T : class
             {
-                Guard.Against<ArgumentException>(!typeof(T).IsSubclassOf(typeof(Delegate)), $"{typeof(T).Name} is not a delegate type");
-                if (procaddress == IntPtr.Zero) return default(T);
+                if (procaddress == IntPtr.Zero || procaddress == MinusOne) return null;
+                var functionPointer = Marshal.GetDelegateForFunctionPointer(procaddress, typeof(T));
 
-                var funcaoSat = Marshal.GetDelegateForFunctionPointer(procaddress, typeof(T));
-
-                return funcaoSat as T;
+                return functionPointer as T;
             }
 
             #endregion Methods
@@ -190,8 +189,6 @@ namespace ACBr.Net.Core.InteropServices
 
         protected readonly Dictionary<Type, string> methodList;
         protected readonly string className;
-
-        public static readonly IntPtr MinusOne;
 
         #endregion Fields
 
@@ -217,6 +214,11 @@ namespace ACBr.Net.Core.InteropServices
         #endregion Constructors
 
         #region Properties
+
+        /// <summary>
+        ///
+        /// </summary>
+        public static IntPtr MinusOne { get; }
 
         /// <inheritdoc />
         public override bool IsInvalid

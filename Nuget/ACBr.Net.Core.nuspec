@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>ACBr.Net.Core</id>
-        <version>1.2.1.0-beta3</version>
+        <version>1.2.1.0-beta4</version>
         <title>ACBr.Net.Core</title>
         <authors>Grupo ACBr.Net</authors>
         <owners>Grupo ACBr.Net</owners>
@@ -14,7 +14,8 @@
         <tags>ACBr ACBr.Net Automação Comercial</tags>
 		<dependencies>
             <group targetFramework=".NETStandard2.0">
-                <dependency id="System.Configuration.ConfigurationManager" version="4.4.0" exclude="Build,Analyzers" />
+				<dependency id="NETStandard.Library" version="2.0.1" exclude="Build,Analyzers" />
+                <dependency id="System.Configuration.ConfigurationManager" version="4.4.1" exclude="Build,Analyzers" />
             </group>
         </dependencies>
     </metadata>
