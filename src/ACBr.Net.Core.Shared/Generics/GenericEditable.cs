@@ -47,7 +47,7 @@ namespace ACBr.Net.Core.Generics
 		/// <summary>
 		/// Begins an edit on an object.
 		/// </summary>
-		public void BeginEdit()
+		public virtual void BeginEdit()
 		{
 			//exit if in Edit mode
 			//uncomment if  CancelEdit discards changes since the
@@ -77,7 +77,7 @@ namespace ACBr.Net.Core.Generics
 		/// <summary>
 		/// Discards changes since the last <see cref="M:System.ComponentModel.IEditableObject.BeginEdit" /> call.
 		/// </summary>
-		public void CancelEdit()
+		public virtual void CancelEdit()
 		{
 			//check for inappropriate call sequence
 			if (null == props) return;
@@ -105,7 +105,7 @@ namespace ACBr.Net.Core.Generics
 		/// <summary>
 		/// Pushes changes since the last <see cref="M:System.ComponentModel.IEditableObject.BeginEdit" /> or <see cref="M:System.ComponentModel.IBindingList.AddNew" /> call into the underlying object.
 		/// </summary>
-		public void EndEdit()
+		public virtual void EndEdit()
 		{
 			//delete current values
 			props = null;
