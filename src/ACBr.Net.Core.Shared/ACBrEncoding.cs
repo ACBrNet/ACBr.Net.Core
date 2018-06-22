@@ -38,22 +38,31 @@ namespace ACBr.Net.Core
     /// </summary>
     public static class ACBrEncoding
     {
+        #region Fields
+
+        private static Encoding iso88591;
+        private static Encoding ibm850;
+        private static Encoding ibm860;
+        private static Encoding windows1252;
+
+        #endregion Fields
+
         #region Properties
 
         /// <summary>
         /// Retorna o enconding ISO-8859-1
         /// </summary>
-        public static Encoding ISO88591 => Encoding.GetEncoding("ISO-8859-1");
+        public static Encoding ISO88591 => iso88591 ?? (iso88591 = Encoding.GetEncoding("ISO-8859-1"));
 
         /// <summary>
         /// Retorna o enconding IBM850
         /// </summary>
-        public static Encoding IBM850 => Encoding.GetEncoding("IBM850");
+        public static Encoding IBM850 => ibm850 ?? (ibm850 = Encoding.GetEncoding("IBM850"));
 
         /// <summary>
         /// Retorna o enconding IBM860
         /// </summary>
-        public static Encoding IBM860 => Encoding.GetEncoding("IBM860");
+        public static Encoding IBM860 => ibm860 ?? (ibm860 = Encoding.GetEncoding("IBM860"));
 
         /// <summary>
         /// Retorna o enconding CP1252
@@ -63,7 +72,7 @@ namespace ACBr.Net.Core
         /// <summary>
         /// Retorna o enconding Windows-1252
         /// </summary>
-        public static Encoding Windows1252 => Encoding.GetEncoding("Windows-1252");
+        public static Encoding Windows1252 => windows1252 ?? (windows1252 = Encoding.GetEncoding("Windows-1252"));
 
         #endregion Properties
     }
