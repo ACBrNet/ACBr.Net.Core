@@ -32,8 +32,8 @@
 
   <ItemGroup>
     <PackageReference Include="ExtraConstraints.Fody" Version="1.13.0" />
-    <PackageReference Include="Fody" Version="3.0.3" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
+    <PackageReference Include="Fody" Version="3.0.4" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
