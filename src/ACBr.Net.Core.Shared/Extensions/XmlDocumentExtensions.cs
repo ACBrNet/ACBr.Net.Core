@@ -34,19 +34,19 @@ using System.Xml.Linq;
 
 namespace ACBr.Net.Core.Extensions
 {
-	public static class XmlDocumentExtensions
-	{
-		public static XDocument ToXDocument(this XmlDocument document)
-		{
-			return document.ToXDocument(LoadOptions.None);
-		}
+    public static class XmlDocumentExtensions
+    {
+        public static XDocument ToXDocument(this XmlDocument document)
+        {
+            return document.ToXDocument(LoadOptions.None);
+        }
 
-		public static XDocument ToXDocument(this XmlDocument document, LoadOptions options)
-		{
-			using (var reader = new XmlNodeReader(document))
-			{
-				return XDocument.Load(reader, options);
-			}
-		}
-	}
+        public static XDocument ToXDocument(this XmlDocument document, LoadOptions options)
+        {
+            using (var reader = new XmlNodeReader(document))
+            {
+                return XDocument.Load(reader, options);
+            }
+        }
+    }
 }

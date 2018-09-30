@@ -31,6 +31,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace ACBr.Net.Core.Extensions
 {
@@ -50,8 +51,7 @@ namespace ACBr.Net.Core.Extensions
             if (eventHandler == null)
                 return;
 
-            var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
-            if (synchronizeInvoke != null && synchronizeInvoke.InvokeRequired)
+            if (eventHandler.Target is ISynchronizeInvoke synchronizeInvoke && synchronizeInvoke.InvokeRequired)
             {
                 synchronizeInvoke.Invoke(eventHandler, new[] { sender, e });
             }
@@ -72,8 +72,7 @@ namespace ACBr.Net.Core.Extensions
             if (eventHandler == null)
                 return;
 
-            var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
-            if (synchronizeInvoke != null && synchronizeInvoke.InvokeRequired)
+            if (eventHandler.Target is ISynchronizeInvoke synchronizeInvoke && synchronizeInvoke.InvokeRequired)
             {
                 synchronizeInvoke.Invoke(eventHandler, new[] { null, e });
             }
@@ -95,8 +94,7 @@ namespace ACBr.Net.Core.Extensions
             if (eventHandler == null)
                 return;
 
-            var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
-            if (synchronizeInvoke != null && synchronizeInvoke.InvokeRequired)
+            if (eventHandler.Target is ISynchronizeInvoke synchronizeInvoke && synchronizeInvoke.InvokeRequired)
             {
                 synchronizeInvoke.Invoke(eventHandler, new[] { sender, e });
             }
@@ -118,8 +116,7 @@ namespace ACBr.Net.Core.Extensions
             if (eventHandler == null)
                 return;
 
-            var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
-            if (synchronizeInvoke != null && synchronizeInvoke.InvokeRequired)
+            if (eventHandler.Target is ISynchronizeInvoke synchronizeInvoke && synchronizeInvoke.InvokeRequired)
             {
                 synchronizeInvoke.Invoke(eventHandler, new[] { null, e });
             }
@@ -140,8 +137,7 @@ namespace ACBr.Net.Core.Extensions
                 return;
 
             var e = EventArgs.Empty;
-            var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
-            if (synchronizeInvoke != null && synchronizeInvoke.InvokeRequired)
+            if (eventHandler.Target is ISynchronizeInvoke synchronizeInvoke && synchronizeInvoke.InvokeRequired)
             {
                 synchronizeInvoke.Invoke(eventHandler, new[] { sender, e });
             }
@@ -162,8 +158,7 @@ namespace ACBr.Net.Core.Extensions
                 return;
 
             var e = EventArgs.Empty;
-            var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
-            if (synchronizeInvoke != null && synchronizeInvoke.InvokeRequired)
+            if (eventHandler.Target is ISynchronizeInvoke synchronizeInvoke && synchronizeInvoke.InvokeRequired)
             {
                 synchronizeInvoke.Invoke(eventHandler, new[] { null, e });
             }
@@ -184,8 +179,7 @@ namespace ACBr.Net.Core.Extensions
                 return;
 
             var e = EventArgs.Empty;
-            var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
-            if (synchronizeInvoke != null && synchronizeInvoke.InvokeRequired)
+            if (eventHandler.Target is ISynchronizeInvoke synchronizeInvoke && synchronizeInvoke.InvokeRequired)
             {
                 synchronizeInvoke.Invoke(eventHandler, new[] { sender, e });
             }
@@ -206,8 +200,7 @@ namespace ACBr.Net.Core.Extensions
                 return;
 
             var e = EventArgs.Empty;
-            var synchronizeInvoke = eventHandler.Target as ISynchronizeInvoke;
-            if (synchronizeInvoke != null && synchronizeInvoke.InvokeRequired)
+            if (eventHandler.Target is ISynchronizeInvoke synchronizeInvoke && synchronizeInvoke.InvokeRequired)
             {
                 synchronizeInvoke.Invoke(eventHandler, new[] { null, e });
             }

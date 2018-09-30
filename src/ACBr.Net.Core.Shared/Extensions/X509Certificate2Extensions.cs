@@ -32,8 +32,6 @@
 using ACBr.Net.Core.Exceptions;
 using System;
 using System.Linq;
-using System.Security;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
@@ -42,36 +40,8 @@ namespace ACBr.Net.Core.Extensions
     /// <summary>
     /// Extensões para Certificados
     /// </summary>
-    public static class X509Certificate2Extensions
+    public static partial class X509Certificate2Extensions
     {
-        /// <summary>
-        /// Retorna true se o certificado for do tipo A3.
-        /// </summary>
-        /// <param name="certificado">Certificado que deverá ser validado se é A3 ou não.</param>
-        /// <returns></returns>
-        public static bool IsA3(this X509Certificate2 certificado)
-        {
-            Guard.Against<ArgumentNullException>(certificado == null, nameof(certificado));
-
-            var result = false;
-
-            try
-            {
-                var service = certificado.PrivateKey as RSACryptoServiceProvider;
-
-                if (service != null)
-                {
-                    result = service.CspKeyContainerInfo.Removable && service.CspKeyContainerInfo.HardwareDevice;
-                }
-            }
-            catch
-            {
-                result = false;
-            }
-
-            return result;
-        }
-
         /// <summary>
         /// Retorna o CNPJ do certificado se o mesmo possuir.
         /// </summary>
@@ -83,7 +53,8 @@ namespace ACBr.Net.Core.Extensions
 
             var cnpj = string.Empty;
             var extensions = from X509Extension extension in certificado.Extensions
-                             select extension.Format(true) into s1
+                             select extension.Format(true)
+                into s1
                              select s1.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var lines in extensions)
@@ -112,40 +83,14 @@ namespace ACBr.Net.Core.Extensions
         }
 
         /// <summary>
-        /// Seta o pin do certificado se o mesmo for do tipo A3.
+        /// Verifica se o certificado digital esta dentro da validade.
+        /// <para>Verificar validade do certificado digital, se vencido dispara ArgumentException</para>
         /// </summary>
-        /// <param name="certificado">O certificado</param>
-        /// <param name="pin">O pin</param>
-        public static void SetPin(this X509Certificate2 certificado, string pin)
+        /// <param name="certificado"></param>
+        public static bool IsValid(this X509Certificate2 certificado)
         {
-            Guard.Against<ArgumentNullException>(pin.IsEmpty(), nameof(pin));
-            if (!certificado.IsA3()) return;
-
-            // prepare password
-            var pass = new SecureString();
-            foreach (var t in pin)
-            {
-                pass.AppendChar(t);
-            }
-
-            // take private key
-            var privateKey = certificado.PrivateKey as RSACryptoServiceProvider;
-
-            // make new CSP parameters based on parameters from current private key but throw in password
-            var cspParameters = new CspParameters(privateKey.CspKeyContainerInfo.ProviderType,
-                privateKey.CspKeyContainerInfo.ProviderName,
-                privateKey.CspKeyContainerInfo.KeyContainerName)
-            {
-                KeyNumber = (int)privateKey.CspKeyContainerInfo.KeyNumber,
-                KeyPassword = pass,
-                Flags = CspProviderFlags.NoPrompt | CspProviderFlags.UseDefaultKeyContainer
-            };
-
-            // make RSA crypto provider based on given CSP parameters
-            var rsaCsp = new RSACryptoServiceProvider(cspParameters);
-
-            // set modified RSA crypto provider back
-            certificado.PrivateKey = rsaCsp;
+            var dataExpiracao = Convert.ToDateTime(certificado.GetExpirationDateString());
+            return dataExpiracao <= DateTime.Now;
         }
     }
 }

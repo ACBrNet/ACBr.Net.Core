@@ -264,11 +264,9 @@ namespace ACBr.Net.Core.Extensions
         {
             try
             {
-                Array arr = toReverse.ToCharArray();
-                Array.Reverse(arr); // reverse the string
-                var c = (char[])arr;
-                var b = Encoding.Default.GetBytes(c);
-                return Encoding.Default.GetString(b);
+                if (toReverse.IsEmpty() || toReverse.Length == 1) return toReverse;
+
+                return new string(toReverse.ToCharArray().Reverse().ToArray());
             }
             catch (Exception ex)
             {
