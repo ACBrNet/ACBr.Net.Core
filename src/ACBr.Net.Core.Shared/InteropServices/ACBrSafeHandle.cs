@@ -205,6 +205,7 @@ namespace ACBr.Net.Core.InteropServices
             : base(IntPtr.Zero, true)
         {
             methodList = new Dictionary<Type, string>();
+            methodCache = new Dictionary<string, Delegate>();
             className = GetType().Name;
 
             var pNewSession = LibLoader.LoadLibrary(dllPath);
