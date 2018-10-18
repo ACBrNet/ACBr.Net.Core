@@ -36,7 +36,18 @@ namespace ACBr.Net.Core.InteropServices
 {
     public class ACBrLPStr : ICustomMarshaler
     {
+        #region Fields
+
+        private static ACBrLPStr marshaler;
+
+        #endregion Fields
+
         #region Methods
+
+        public static ICustomMarshaler GetInstance(string cookie)
+        {
+            return marshaler ?? (marshaler = new ACBrLPStr());
+        }
 
         /// <inheritdoc />
         public object MarshalNativeToManaged(IntPtr pNativeData)
