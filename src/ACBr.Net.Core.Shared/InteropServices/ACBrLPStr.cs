@@ -66,6 +66,15 @@ namespace ACBr.Net.Core.InteropServices
             return IntPtr.Size;
         }
 
+        public static ICustomMarshaler GetInstance(string cookie)
+        {
+            if (static_instance == null)
+            {
+                return static_instance = new ACBrLPStr();
+            }
+            return static_instance;
+        }
+        
         #endregion Methods
     }
 }
