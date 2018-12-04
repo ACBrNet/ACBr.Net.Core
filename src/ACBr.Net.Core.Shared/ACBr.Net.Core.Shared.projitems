@@ -42,6 +42,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Generics\GenericClone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Generics\GenericCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Generics\GenericEditable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generics\OperationResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ini\ACBrIniFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Ini\ACBrIniSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\FuncLoggerFactory.cs" />
@@ -59,7 +60,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)InteropServices\ACBrSafeHandle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InteropServices\ACBrLPStr.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StaticRandom.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Txt\ACBrTxtWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ACBrTxtWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Txt\TxtEnumAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Txt\TxtFieldAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Txt\TxtFill.cs" />

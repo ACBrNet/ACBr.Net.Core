@@ -34,83 +34,86 @@ using System.Reflection;
 
 namespace ACBr.Net.Core.Generics
 {
-	public class GenericEditable<T> : IEditableObject where T : class
-	{
-		#region Fields
+    public class GenericEditable<T> : IEditableObject where T : class
+    {
+        #region Fields
 
-		private Hashtable props;
+        private Hashtable props;
 
-		#endregion Fields
+        #endregion Fields
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// Begins an edit on an object.
-		/// </summary>
-		public virtual void BeginEdit()
-		{
-			//exit if in Edit mode
-			//uncomment if  CancelEdit discards changes since the
-			//LAST BeginEdit call is desired action
-			//otherwise CancelEdit discards changes since the
-			//FIRST BeginEdit call is desired action
-			if (null != props) return;
+        /// <summary>
+        /// Begins an edit on an object.
+        /// </summary>
+        public virtual void BeginEdit()
+        {
+            //exit if in Edit mode
+            //uncomment if  CancelEdit discards changes since the
+            //LAST BeginEdit call is desired action
+            //otherwise CancelEdit discards changes since the
+            //FIRST BeginEdit call is desired action
+            if (null != props) return;
 
-			//enumerate properties
-			var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            //enumerate properties
+            var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-			props = new Hashtable(properties.Length - 1);
+            props = new Hashtable(properties.Length - 1);
 
-			foreach (var prop in properties)
-			{
-				//check if there is set accessor
-				if (null == prop.GetSetMethod()) continue;
+            foreach (var prop in properties)
+            {
+                //check if there is set accessor
+                if (null == prop.GetSetMethod()) continue;
 
-				var value = prop.GetValue(this, null);
+                var value = prop.GetValue(this, null);
 
-				// Begin child edit
-				(value as IEditableObject)?.BeginEdit();
-				props.Add(prop.Name, value);
-			}
-		}
+                // Begin child edit
+                (value as IEditableObject)?.BeginEdit();
+                props.Add(prop.Name, value);
+            }
+        }
 
-		/// <summary>
-		/// Discards changes since the last <see cref="M:System.ComponentModel.IEditableObject.BeginEdit" /> call.
-		/// </summary>
-		public virtual void CancelEdit()
-		{
-			//check for inappropriate call sequence
-			if (null == props) return;
+        /// <summary>
+        /// Discards changes since the last <see cref="M:System.ComponentModel.IEditableObject.BeginEdit" /> call.
+        /// </summary>
+        public virtual void CancelEdit()
+        {
+            //check for inappropriate call sequence
+            if (null == props) return;
 
-			//restore old values
-			var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            //restore old values
+            var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-			foreach (var t in properties)
-			{
-				//check if there is set accessor
-				if (null == t.GetSetMethod()) continue;
+            foreach (var t in properties)
+            {
+                //check if there is set accessor
+                if (null == t.GetSetMethod()) continue;
 
-				var value = props[t.Name];
+                var value = props[t.Name];
 
-				// Cancel child edit
-				(value as IEditableObject)?.CancelEdit();
+                // Cancel child edit
+                (value as IEditableObject)?.CancelEdit();
 
-				t.SetValue(this, value, null);
-			}
+                t.SetValue(this, value, null);
+            }
 
-			//delete current values
-			props = null;
-		}
+            //delete current values
+            props = null;
+        }
 
-		/// <summary>
-		/// Pushes changes since the last <see cref="M:System.ComponentModel.IEditableObject.BeginEdit" /> or <see cref="M:System.ComponentModel.IBindingList.AddNew" /> call into the underlying object.
-		/// </summary>
-		public virtual void EndEdit()
-		{
-			//delete current values
-			props = null;
-		}
+        /// <summary>
+        /// Pushes changes since the last <see cref="M:System.ComponentModel.IEditableObject.BeginEdit" /> or <see cref="M:System.ComponentModel.IBindingList.AddNew" /> call into the underlying object.
+        /// </summary>
+        public virtual void EndEdit()
+        {
+            foreach (var t in props.Values)
+                (t as IEditableObject)?.EndEdit();
 
-		#endregion Methods
-	}
+            //delete current values
+            props = null;
+        }
+
+        #endregion Methods
+    }
 }

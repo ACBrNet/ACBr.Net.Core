@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>ACBr.Net.Core</id>
-        <version>1.2.3.0</version>
+        <version>1.2.3.1</version>
         <title>ACBr.Net.Core</title>
         <authors>Grupo ACBr.Net</authors>
         <owners>Grupo ACBr.Net</owners>
