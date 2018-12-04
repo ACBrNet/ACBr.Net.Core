@@ -70,7 +70,7 @@ namespace ACBr.Net.Core.Extensions
             var cspParameters = new CspParameters(privateKey.CspKeyContainerInfo.ProviderType,
                 privateKey.CspKeyContainerInfo.ProviderName,
                 privateKey.CspKeyContainerInfo.KeyContainerName,
-                privateKey.CspKeyContainerInfo.CryptoKeySecurity,
+                new System.Security.AccessControl.CryptoKeySecurity(),
                 pass);
 
             // make RSA crypto provider based on given CSP parameters
