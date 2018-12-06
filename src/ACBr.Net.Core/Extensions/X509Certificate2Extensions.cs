@@ -1,10 +1,9 @@
 using System;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using ACBr.Net.Core.Exceptions;
 
 namespace ACBr.Net.Core.Extensions
@@ -70,7 +69,7 @@ namespace ACBr.Net.Core.Extensions
             var cspParameters = new CspParameters(privateKey.CspKeyContainerInfo.ProviderType,
                 privateKey.CspKeyContainerInfo.ProviderName,
                 privateKey.CspKeyContainerInfo.KeyContainerName,
-                new System.Security.AccessControl.CryptoKeySecurity(),
+                new CryptoKeySecurity(),
                 pass);
 
             // make RSA crypto provider based on given CSP parameters
