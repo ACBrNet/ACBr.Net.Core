@@ -283,7 +283,7 @@ namespace ACBr.Net.Core.InteropServices
 
             var method = methodList[typeof(T)];
             this.Log().Debug($"{className} : Acessando o método [{method}] da biblioteca.");
-            if (methodCache.ContainsKey("method")) return methodCache[method] as T;
+            if (methodCache.ContainsKey(method)) return methodCache[method] as T;
 
             var mHandler = LibLoader.GetProcAddress(handle, method);
 
