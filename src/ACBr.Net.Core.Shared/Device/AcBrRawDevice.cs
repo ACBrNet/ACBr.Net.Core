@@ -178,7 +178,7 @@ namespace ACBr.Net.Core.Device
 
         public override void SendCommand(byte[] dados)
         {
-            var sendDados = Convert(dados);
+            var sendDados = WriteConvert(dados);
             printer.SendCommand(Config.Porta.Replace("RAW:", string.Empty), sendDados);
         }
 

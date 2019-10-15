@@ -28,7 +28,6 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using ACBr.Net.Core.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

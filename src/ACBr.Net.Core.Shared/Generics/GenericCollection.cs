@@ -28,93 +28,92 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
-using ACBr.Net.Core.Exceptions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace ACBr.Net.Core.Generics
 {
-	public abstract class GenericCollection<T> : IEnumerable where T : class
-	{
-		#region Fields
+    public abstract class GenericCollection<T> : IEnumerable where T : class
+    {
+        #region Fields
 
-		/// <summary>
-		/// The list
-		/// </summary>
-		protected List<T> List;
+        /// <summary>
+        /// The list
+        /// </summary>
+        protected List<T> List;
 
-		#endregion Fields
+        #endregion Fields
 
-		#region Constructor
+        #region Constructor
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GenericCollection{T}" /> class.
-		/// </summary>
-		protected internal GenericCollection()
-		{
-			List = new List<T>();
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenericCollection{T}" /> class.
+        /// </summary>
+        protected internal GenericCollection()
+        {
+            List = new List<T>();
+        }
 
-		#endregion Constructor
+        #endregion Constructor
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets the count.
-		/// </summary>
-		/// <value>The count.</value>
-		public int Count => List.Count;
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <value>The count.</value>
+        public int Count => List.Count;
 
-		public T this[int idx]
-		{
-			get
-			{
-				Guard.Against<IndexOutOfRangeException>(idx >= Count || idx < 0);
-				return List[idx];
-			}
-			set
-			{
-				Guard.Against<IndexOutOfRangeException>(idx >= Count || idx < 0);
-				List[idx] = value;
-			}
-		}
+        public T this[int idx]
+        {
+            get
+            {
+                Guard.Against<IndexOutOfRangeException>(idx >= Count || idx < 0);
+                return List[idx];
+            }
+            set
+            {
+                Guard.Against<IndexOutOfRangeException>(idx >= Count || idx < 0);
+                List[idx] = value;
+            }
+        }
 
-		#endregion Properties
+        #endregion Properties
 
-		#region Methods
+        #region Methods
 
-		/// <summary>
-		/// Clears this instance.
-		/// </summary>
-		public virtual void Clear()
-		{
-			List.Clear();
-		}
+        /// <summary>
+        /// Clears this instance.
+        /// </summary>
+        public virtual void Clear()
+        {
+            List.Clear();
+        }
 
-		#endregion Methods
+        #endregion Methods
 
-		#region IEnumerable
+        #region IEnumerable
 
-		/// <summary>
-		/// Returns an enumerator that iterates through the collection.
-		/// </summary>
-		/// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
 
-		public IEnumerator<T> GetEnumerator()
-		{
-			return List.GetEnumerator();
-		}
+        public IEnumerator<T> GetEnumerator()
+        {
+            return List.GetEnumerator();
+        }
 
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-		#endregion IEnumerable
-	}
+        #endregion IEnumerable
+    }
 }

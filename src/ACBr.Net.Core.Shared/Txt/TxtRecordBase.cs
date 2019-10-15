@@ -33,101 +33,100 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ACBr.Net.Core.Exceptions;
 using ACBr.Net.Core.Extensions;
 using ACBr.Net.Core.Generics;
 
 namespace ACBr.Net.Core
 {
-	/// <summary>
-	/// Classe base para gerador de arquivo Txt
-	/// </summary>
-	/// <typeparam name="TClass">Classe do arquivo</typeparam>
-	/// <typeparam name="TAttribute">Atributo Txt</typeparam>
-	public abstract class TxtRecordBase<TClass, TAttribute> : GenericClone<TClass> where TClass : class where TAttribute : Attribute
-	{
-		#region Methods
+    /// <summary>
+    /// Classe base para gerador de arquivo Txt
+    /// </summary>
+    /// <typeparam name="TClass">Classe do arquivo</typeparam>
+    /// <typeparam name="TAttribute">Atributo Txt</typeparam>
+    public abstract class TxtRecordBase<TClass, TAttribute> : GenericClone<TClass> where TClass : class where TAttribute : Attribute
+    {
+        #region Methods
 
-		/// <summary>
-		/// Função para validação, se o valor do checkAction for false lança um exception
-		/// </summary>
-		/// <param name="checkAction">Função para checagem</param>
-		/// <param name="mensagemErro">Mensagem de erro</param>
-		/// <exception cref="ACBrException"></exception>
-		protected virtual void Check(Func<bool> checkAction, string mensagemErro)
-		{
-			Check(checkAction(), mensagemErro);
-		}
+        /// <summary>
+        /// Função para validação, se o valor do checkAction for false lança um exception
+        /// </summary>
+        /// <param name="checkAction">Função para checagem</param>
+        /// <param name="mensagemErro">Mensagem de erro</param>
+        /// <exception cref="ACBrException"></exception>
+        protected virtual void Check(Func<bool> checkAction, string mensagemErro)
+        {
+            Check(checkAction(), mensagemErro);
+        }
 
-		/// <summary>
-		/// Lança um exceção se o valor do check for false;
-		/// </summary>
-		/// <param name="check"></param>
-		/// <param name="mensagemErro">Mensagem de erro</param>
-		/// <exception cref="ACBrException"></exception>
-		protected virtual void Check(bool check, string mensagemErro)
-		{
-			Guard.Against<ACBrException>(!check, mensagemErro);
-		}
+        /// <summary>
+        /// Lança um exceção se o valor do check for false;
+        /// </summary>
+        /// <param name="check"></param>
+        /// <param name="mensagemErro">Mensagem de erro</param>
+        /// <exception cref="ACBrException"></exception>
+        protected virtual void Check(bool check, string mensagemErro)
+        {
+            Guard.Against<ACBrException>(!check, mensagemErro);
+        }
 
-		/// <summary>
-		/// Função para ajustar a string de acordo com os parametros informados
-		/// </summary>
-		/// <param name="value">String de origem</param>
-		/// <param name="minimo">Tamanho minimo da string</param>
-		/// <param name="maximo">Tamanho maximo da string</param>
-		/// <param name="direction">Lado onde sera inserido o caracter</param>
-		/// <param name="fillChar">Caractere de preenchimento</param>
-		/// <returns>String ajustada</returns>
-		/// <exception cref="ArgumentOutOfRangeException"></exception>
-		protected virtual string AdjustString(string value, int minimo, int maximo, TxtFill direction, char fillChar)
-		{
-			if (value.IsEmpty()) value = string.Empty;
+        /// <summary>
+        /// Função para ajustar a string de acordo com os parametros informados
+        /// </summary>
+        /// <param name="value">String de origem</param>
+        /// <param name="minimo">Tamanho minimo da string</param>
+        /// <param name="maximo">Tamanho maximo da string</param>
+        /// <param name="direction">Lado onde sera inserido o caracter</param>
+        /// <param name="fillChar">Caractere de preenchimento</param>
+        /// <returns>String ajustada</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        protected virtual string AdjustString(string value, int minimo, int maximo, TxtFill direction, char fillChar)
+        {
+            if (value.IsEmpty()) value = string.Empty;
 
-			// limita o maximo
-			value = value.Substring(0, Math.Min(maximo, value.Length));
+            // limita o maximo
+            value = value.Substring(0, Math.Min(maximo, value.Length));
 
-			// checa se esta igual ou maior que o minimo
-			if (value.Length >= minimo) return value;
+            // checa se esta igual ou maior que o minimo
+            if (value.Length >= minimo) return value;
 
-			// ajusta o minimo
-			switch (direction)
-			{
-				case TxtFill.Esquerda:
-					return value.FillLeft(minimo, fillChar);
+            // ajusta o minimo
+            switch (direction)
+            {
+                case TxtFill.Esquerda:
+                    return value.FillLeft(minimo, fillChar);
 
-				case TxtFill.Direta:
-					return value.FillRight(minimo, fillChar);
+                case TxtFill.Direta:
+                    return value.FillRight(minimo, fillChar);
 
-				default:
-					throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
-			}
-		}
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+            }
+        }
 
-		/// <summary>
-		/// Retorna todas as propriedades que tenha o atributo txt
-		/// </summary>
-		/// <returns></returns>
-		protected virtual IEnumerable<PropertyInfo> GetProperties()
-		{
-			return typeof(TClass).GetProperties().Where(x => x.HasAttribute<TAttribute>());
-		}
+        /// <summary>
+        /// Retorna todas as propriedades que tenha o atributo txt
+        /// </summary>
+        /// <returns></returns>
+        protected virtual IEnumerable<PropertyInfo> GetProperties()
+        {
+            return typeof(TClass).GetProperties().Where(x => x.HasAttribute<TAttribute>());
+        }
 
-		/// <summary>
-		/// Função para gerar a linha txt correspondente a esta classe
-		/// </summary>
-		/// <param name="writer"></param>
-		/// <returns>A quantidade de linha inseridas no stream</returns>
-		public abstract void GerarLinha(ACBrTxtWriter writer);
+        /// <summary>
+        /// Função para gerar a linha txt correspondente a esta classe
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <returns>A quantidade de linha inseridas no stream</returns>
+        public abstract void GerarLinha(ACBrTxtWriter writer);
 
-		/// <summary>
-		/// Função que retorno o valor do item já ajustado de acordo com o atributo txt
-		/// </summary>
-		/// <param name="value">Valor do objeto</param>
-		/// <param name="field">Atributo txt</param>
-		/// <returns></returns>
-		protected abstract string ObterValor(object value, TAttribute field);
+        /// <summary>
+        /// Função que retorno o valor do item já ajustado de acordo com o atributo txt
+        /// </summary>
+        /// <param name="value">Valor do objeto</param>
+        /// <param name="field">Atributo txt</param>
+        /// <returns></returns>
+        protected abstract string ObterValor(object value, TAttribute field);
 
-		#endregion Methods
-	}
+        #endregion Methods
+    }
 }

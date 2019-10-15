@@ -32,7 +32,6 @@
 using ACBr.Net.Core.Extensions;
 using System;
 using System.Linq;
-using ACBr.Net.Core.Exceptions;
 
 namespace ACBr.Net.Core
 {

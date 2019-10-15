@@ -37,7 +37,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using ACBr.Net.Core.Exceptions;
 
 namespace ACBr.Net.Core.Extensions
 {

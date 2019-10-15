@@ -33,7 +33,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using ACBr.Net.Core.Exceptions;
 using ACBr.Net.Core.Extensions;
 
 namespace ACBr.Net.Core

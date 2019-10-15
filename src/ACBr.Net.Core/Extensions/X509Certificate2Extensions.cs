@@ -4,7 +4,6 @@ using System.Security;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using ACBr.Net.Core.Exceptions;
 
 namespace ACBr.Net.Core.Extensions
 {
