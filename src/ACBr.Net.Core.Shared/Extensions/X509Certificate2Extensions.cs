@@ -29,7 +29,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using ACBr.Net.Core.Exceptions;
 using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;

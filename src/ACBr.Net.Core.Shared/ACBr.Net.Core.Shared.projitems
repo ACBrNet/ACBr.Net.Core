@@ -11,11 +11,17 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ACBrComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ACBrEncoding.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ACBrException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ACBrExpandableObjectConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ACBrStringWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CalcDigFormula.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CalcDigito.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Device\ACBrDeviceConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Device\ACBrDeviceManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Device\ACBrRawDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Device\ACBrDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Device\ACBrSerialDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Device\ACBrTcpDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ACBrException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\Guard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ArrayExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AssemblyExtenssions.cs" />

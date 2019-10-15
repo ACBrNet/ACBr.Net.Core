@@ -31,12 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExtraConstraints.Fody" Version="1.13.3" />
-    <PackageReference Include="Fody" Version="3.3.2">
+    <PackageReference Include="ExtraConstraints.Fody" Version="1.14.0" />
+    <PackageReference Include="Fody" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.6.0" />
+    <PackageReference Include="System.IO.Ports" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>

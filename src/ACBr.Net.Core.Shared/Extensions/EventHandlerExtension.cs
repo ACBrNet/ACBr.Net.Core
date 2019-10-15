@@ -84,6 +84,27 @@ namespace ACBr.Net.Core.Extensions
         /// <summary>
         /// Chama o evento.
         /// </summary>
+        /// <param name="eventHandler">The event handler.</param>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
+        public static void Raise(this PropertyChangedEventHandler eventHandler, object sender, PropertyChangedEventArgs e)
+        {
+            if (eventHandler == null)
+                return;
+
+            if (eventHandler.Target is ISynchronizeInvoke synchronizeInvoke && synchronizeInvoke.InvokeRequired)
+            {
+                synchronizeInvoke.Invoke(eventHandler, new[] { sender, e });
+            }
+            else
+            {
+                eventHandler.DynamicInvoke(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// Chama o evento.
+        /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="eventHandler">The event handler.</param>
         /// <param name="sender">The sender.</param>

@@ -31,7 +31,7 @@
 
 using System;
 
-namespace ACBr.Net.Core.Exceptions
+namespace ACBr.Net.Core
 {
     /// <summary>
     /// Helper class for guard statements, which allow prettier

@@ -34,7 +34,6 @@ using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-using ACBr.Net.Core.Exceptions;
 using ACBr.Net.Core.Logging;
 using ExtraConstraints;
 
