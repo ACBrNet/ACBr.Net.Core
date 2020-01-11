@@ -1,12 +1,12 @@
 // ***********************************************************************
 // Assembly         : ACBr.Net.Core
 // Author           : RFTD
-// Created          : 04-19-2014
+// Created          : 02-28-2015
 //
 // Last Modified By : RFTD
 // Last Modified On : 08-30-2015
 // ***********************************************************************
-// <copyright file="AssemblyExtenssions.cs" company="ACBr.Net">
+// <copyright file="ImageExtensions.cs" company="ACBr.Net">
 //		        		   The MIT License (MIT)
 //	     		    Copyright (c) 2016 Grupo ACBr.Net
 //
@@ -30,50 +30,41 @@
 // ***********************************************************************
 
 using System;
+using System.Diagnostics;
+using System.Linq;
 
 #if NETFULL
 
-using System.IO;
-using System.Drawing;
+using System.Management;
 
 #endif
 
 namespace ACBr.Net.Core.Extensions
 {
     /// <summary>
-    /// Class ByteExtensions.
+    /// Class ProcessExtensions.
     /// </summary>
-    public static partial class ByteExtensions
+    public static class ProcessExtensions
     {
         /// <summary>
-        /// To the base64.
+        /// Gets the owner.
         /// </summary>
-        /// <param name="byteArrayIn">The byte array in.</param>
+        /// <param name="process">The process.</param>
         /// <returns>System.String.</returns>
-        public static string ToBase64(this byte[] byteArrayIn)
+        public static string GetOwner(this Process process)
         {
-            if (byteArrayIn == null || byteArrayIn.Length < 1) return string.Empty;
-            return Convert.ToBase64String(byteArrayIn);
-        }
+            var query = "Select * From Win32_Process Where ProcessID = " + process.Id;
+            var searcher = new ManagementObjectSearcher(query);
+            var processList = searcher.Get();
 
-#if NETFULL
-
-        /// <summary>
-        /// To the image.
-        /// </summary>
-        /// <param name="byteArrayIn">The byte array in.</param>
-        /// <returns>Image.</returns>
-        public static Image ToImage(this byte[] byteArrayIn)
-        {
-            if (byteArrayIn == null) return null;
-
-            using (var ms = new MemoryStream(byteArrayIn))
+            foreach (var obj in processList.Cast<ManagementObject>())
             {
-                var returnImage = Image.FromStream(ms);
-                return returnImage;
+                object[] argList = { string.Empty, string.Empty };
+                var returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
+                if (returnVal == 0) return argList[0].ToString();
             }
-        }
 
-#endif
+            return string.Empty;
+        }
     }
 }
