@@ -29,44 +29,91 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
 namespace ACBr.Net.Core
 {
-	/// <summary>
-	/// Classe derivada da StringWriter que aceita a mudança de encond.
-	/// </summary>
-	public sealed class ACBrStringWriter : StringWriter
-	{
-		#region Constructors
+    /// <summary>
+    /// Classe derivada da StringWriter que aceita a mudança de enconding e usa UTF8 como padrão.
+    /// </summary>
+    public sealed class ACBrStringWriter : StringWriter
+    {
+        #region Constructors
 
-		/// <summary>
-		/// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
-		/// </summary>
-		public ACBrStringWriter()
-		{
-			Encoding = Encoding.UTF8;
-		}
+        /// <summary>
+        /// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
+        /// </summary>
+        public ACBrStringWriter() : this(Encoding.UTF8, new StringBuilder(), CultureInfo.CurrentCulture)
+        {
+        }
 
-		/// <summary>
-		/// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
-		/// </summary>
-		/// <param name="encoding"></param>
-		public ACBrStringWriter(Encoding encoding)
-		{
-			Encoding = encoding;
-		}
+        /// <summary>
+        /// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
+        /// </summary>
+        /// <param name="encoding"></param>
+        public ACBrStringWriter(Encoding encoding) : this(encoding, new StringBuilder(), CultureInfo.CurrentCulture)
+        {
+        }
 
-		#endregion Constructors
+        /// <summary>
+        /// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
+        /// </summary>
+        /// <param name="encoding"></param>
+        /// <param name="formatProvider"></param>
+        public ACBrStringWriter(Encoding encoding, IFormatProvider formatProvider)
+            : this(encoding, new StringBuilder(), formatProvider)
+        {
+        }
 
-		#region Propriedades
+        /// <summary>
+        /// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
+        /// </summary>
+        /// <param name="formatProvider"></param>
+        public ACBrStringWriter(IFormatProvider formatProvider)
+            : this(Encoding.UTF8, new StringBuilder(), formatProvider)
+        {
+        }
 
-		/// <summary>Gets the <see cref="T:System.Text.Encoding" /> in which the output is written.</summary>
-		/// <returns>The Encoding in which the output is written.</returns>
-		/// <filterpriority>1</filterpriority>
-		public override Encoding Encoding { get; }
+        /// <summary>
+        /// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
+        /// </summary>
+        /// <param name="encoding"></param>
+        /// <param name="sb"></param>
+        public ACBrStringWriter(Encoding encoding, StringBuilder sb) : this(encoding, sb, CultureInfo.CurrentCulture)
+        {
+        }
 
-		#endregion Propriedades
-	}
+        /// <summary>
+        /// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
+        /// </summary>
+        /// <param name="sb"></param>
+        public ACBrStringWriter(StringBuilder sb) : this(Encoding.UTF8, sb, CultureInfo.CurrentCulture)
+        {
+        }
+
+        /// <summary>
+        /// Inicializar uma nova instancida da classe <see cref="ACBrStringWriter" />.
+        /// </summary>
+        /// <param name="encoding"></param>
+        /// <param name="sb"></param>
+        /// <param name="formatProvider"></param>
+        public ACBrStringWriter(Encoding encoding, StringBuilder sb, IFormatProvider formatProvider) : base(sb, formatProvider)
+        {
+            Encoding = encoding;
+        }
+
+        #endregion Constructors
+
+        #region Propriedades
+
+        /// <summary>Gets the <see cref="T:System.Text.Encoding" /> in which the output is written.</summary>
+        /// <returns>The Encoding in which the output is written.</returns>
+        /// <filterpriority>1</filterpriority>
+        public override Encoding Encoding { get; }
+
+        #endregion Propriedades
+    }
 }
