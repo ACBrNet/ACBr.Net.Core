@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace RDDFe.Sync.Core.Linq
+namespace ACBr.Net.Core.Extensions
 {
     public static class QueryExtensions
     {
