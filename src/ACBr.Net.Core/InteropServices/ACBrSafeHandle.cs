@@ -39,7 +39,7 @@ using ExtraConstraints;
 
 namespace ACBr.Net.Core.InteropServices
 {
-    /// <inheritdoc />
+    /// <inheritdoc cref="SafeHandle" />
     public abstract class ACBrSafeHandle : SafeHandle, IACBrLog
     {
         #region InnerTypes

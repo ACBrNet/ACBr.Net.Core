@@ -890,7 +890,7 @@ namespace ACBr.Net.Core.Extensions
                         yRot = "E";
                         yMd = 11;
                         yTp = 1;
-                        vDigitos = new[] { "DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "7", "0", "" };
+                        vDigitos = new[] { "DVY", "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "7,8", "0", "" };
                         break;
 
                     case "ES":
@@ -1010,7 +1010,7 @@ namespace ACBr.Net.Core.Extensions
 
                     case "RS":
                         tamanho = 10;
-                        vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, "0-4", "", "", "", "" };
+                        vDigitos = new[] { "DVX", c09, c09, c09, c09, c09, c09, c09, c09, c09, "", "", "", "" };
                         break;
 
                     case "RO":
@@ -2004,6 +2004,19 @@ namespace ACBr.Net.Core.Extensions
         public static string RemoveDoubleSpaces(this string value)
         {
             return Regex.Replace(value, "[ ]{2,}", " ", RegexOptions.None);
+        }
+
+        /// <summary>
+        /// Confere se a string contém apenas caracteres hexadecimal.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsHex(this string value)
+        {
+            return value.Select(currentCharacter =>
+                (currentCharacter >= '0' && currentCharacter <= '9') ||
+                (currentCharacter >= 'a' && currentCharacter <= 'f') ||
+                (currentCharacter >= 'A' && currentCharacter <= 'F')).All(isHexCharacter => isHexCharacter);
         }
 
         #endregion Methods
